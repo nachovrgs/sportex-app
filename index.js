@@ -1,4 +1,2 @@
-import { AppRegistry } from 'react-native';
-import App from './App/App';
-
-AppRegistry.registerComponent('LogSignScreen', () => App);
+__STRESS_TEST__ = false;
+import App from './src/App';
