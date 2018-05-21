@@ -24,7 +24,7 @@ export default StyleSheet.create({
         marginTop: 10,
         textAlign: 'center',
         opacity: 0.9,
-        color: '#FFF'
+        color: colors.text
     },
     input: {
         height: 40,

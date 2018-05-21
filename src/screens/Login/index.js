@@ -2,29 +2,40 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 
+import { login } from '../../navigation';
+
 import PropTypes from 'prop-types';
 import styles from './styles';
 
 // create a component
 export default class Login extends Component {
+    static navigatorStyle = {
+        navBarTextColor: '#ecf0f1',
+        navBarBackgroundColor: '#2c3e50',
+        navBarComponentAlignment: 'center'
+    };
     constructor() {
         super();
         this.state = {
-          username: '',
-          password: '',
+            username: '',
+            password: ''
         };
+    }    
+    onUsernameChanged = (username) => {
+        this.setState({  
+            username: username,
+            password: this.state.password 
+        });
     }
     
-    onUsernameChanged(username) {
-        this.setState({ username });
+    onPasswordChanged = (password) => {
+        this.setState({  
+            username: this.state.username,
+            password: password 
+        });
     }
-    
-    onPasswordChanged(password) {
-        this.setState({ password });
-    }
-
-    login() {
-        //TODO
+    loginAction = () => {
+        login();
     }
 
     render() {
@@ -63,8 +74,8 @@ export default class Login extends Component {
                             Registrate
                         </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.buttonContainer}>
-                        <Text style={styles.loginButton} onSubmit={this.login}>Ingresar</Text>
+                    <TouchableOpacity style={styles.buttonContainer} onPress={this.loginAction}>
+                        <Text style={styles.loginButton} >Ingresar</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>

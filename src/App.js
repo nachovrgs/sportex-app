@@ -1,25 +1,66 @@
 import { Navigation } from 'react-native-navigation';
 
-import { registerScreens } from './screens';
+import { registerScreens, screens } from './screens';
 
-registerScreens(); // this is where you register all of your app's screens
+// call from index.js
+function init(){
+  var loggedIn = false;
 
-// start the app
-Navigation.startTabBasedApp({
-  tabs: [
-    {
-      label: '',
-      screen: 'sportex.Login',
-      icon: require('./assets/images/login.png'),
-      selectedIcon: require('./assets/images/login.png'),
-      title: 'Login'
-    },
-    {
-      label: '',
-      screen: 'sportex.EventFeed',
-      icon: require('./assets/images/events.png'),
-      selectedIcon: require('./assets/images/events_s.png'),
-      title: 'Partidos'
-    }
-  ]
-});
+  if(!loggedIn){
+    startLogin();
+  } else {
+    startMainApp();
+  }
+}
+
+
+// For Authentication
+export function startLogin() {
+  Navigation.startSingleScreenApp({
+      screen: {
+          screen: screens.login.id, 
+          title: screens.login.title, 
+          navigatorStyle: {},
+          navigatorButtons: {} 
+        },
+  });
+}
+
+// Main app
+export function startMainApp() {
+  // start the main app
+  Navigation.startTabBasedApp({
+      tabs: [
+      {
+          label: '',
+          screen: screens.userProfile.id,
+          icon: require('./assets/images/profile.png'),
+          selectedIcon: require('./assets/images/profile.png'),
+          title: screens.userProfile.title
+      },
+      {
+          label: '',
+          screen: screens.eventFeed.id,
+          icon: require('./assets/images/events.png'),
+          selectedIcon: require('./assets/images/events_s.png'),
+          title: screens.eventFeed.title
+      },
+      ],
+      tabsStyle: {
+          tabBarButtonColor: '#ecf0f1', 
+          tabBarSelectedButtonColor: '#e74c3c',
+          tabBarBackgroundColor: '#2c3e50', 
+          initialTabIndex: 1, // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
+      },
+      appStyle: {
+          tabBarButtonColor: '#ecf0f1', 
+          tabBarSelectedButtonColor: '#e74c3c',
+          tabBarBackgroundColor: '#2c3e50', 
+          initialTabIndex: 1, // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
+      },
+      animationType: 'slide-down' // optional, add transition animation to root change: 'none', 'slide-down', 'fade'
+  });
+}
+
+registerScreens();
+init();

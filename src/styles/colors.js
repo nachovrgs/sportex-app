@@ -1,6 +1,8 @@
 export default {
-    background: '#2c3e50',
+    background: '#ecf0f1',
     borders: '#16a085',
-    text: '#ecf0f1',
-    button: '#34495e'
+    text: '#2c3e50',
+    button: '#34495e',
+    main: '#bdc3c7',
+    selections: '#e74c3c'
   };

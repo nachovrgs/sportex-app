@@ -1,71 +1,38 @@
 //import libraries
 import React, { Component } from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
-import geolib from 'geolib'
-
-import { screens } from '../../screens'
-import { navigate } from '../../navigation';
 
 import styles from './styles'
 
 // create a component
-class EventContainer extends Component {
+export default class EventScreen extends Component {
+    static navigatorStyle = {
+        navBarTextColor: '#ecf0f1',
+        navBarBackgroundColor: '#2c3e50',
+        navBarComponentAlignment: 'center',
+        tabBarHidden: true,
+    };
     constructor(props) {
         super(props);
         this.state = {
-            item: {},
-            coords: {}
+            item: {}
         }
-        this.loadLocation = this.loadLocation.bind(this);
-        this.getDistance = this.getDistance.bind(this);
     }
-
+    
     componentDidMount() {
         this._mounted = true;
         this.setState({
-            item: this.props.eventItem,
-            coords: {}
+            item: this.props.eventItem
         })
         this.loadLocation()        
     }
     componentWillUnmount() {
         this._mounted = false;
     }
-    loadLocation() {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                this.setState({
-                    item: this.state.item,
-                    coords: position.coords
-                })
-            },
-            error => {
-                console.log(error)
-            })
-    }
-    getDistance() {
-        if(this._mounted && this.state.coords.longitude) {
-            var distance = geolib.getDistance(this.state.coords,
-                {latitude: this.state.item.latitude, longitude: this.state.item.longitude}
-            );
-            return parseFloat((distance * 0.00001).toFixed(0));
-        }
-    }
+
     render() {
-        const event = this.state.item
-        const goToEvent = () => {
-            this.props.navigator.push({
-            screen: screens.event.id,
-            title: screens.event.title,
-            animated: true,
-            animationType: 'fade',
-            backButtonHidden: screens.event.backButtonHidden,
-          });
-        }
         return (
-            <TouchableOpacity 
-            onPress={goToEvent}
-            style={styles.container}>
+            <View style={styles.container}>
                 <View style={styles.head}>
                     <View style={styles.timeContainer}>
                         <Image 
@@ -96,8 +63,7 @@ class EventContainer extends Component {
                         </Text>
                     </View>
                 </View>
-            </TouchableOpacity>
+            </View>
         );
     }
 }
-export default EventContainer;
