@@ -1,6 +1,6 @@
 //import libraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, AsyncStorage } from 'react-native';
 
 import { EventContainer } from '../../components'
 
@@ -41,14 +41,15 @@ export default class EventFeed extends Component {
             }
         ]
     };
-
+    _keyExtractor = (item, index) => item.id.toString();
     constructor(props) {
         super(props);
         this.state = {
             dataSource: [],
             isLoading: true,
             isError: false,
-            error: ""
+            error: "",
+            token: ""
         }
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
@@ -70,21 +71,29 @@ export default class EventFeed extends Component {
             }
         }
     }
-    _renderEvent(item) {
-        return <EventContainer eventItem={item.item} />
-    }
+    _renderItem = ({item}) => (
+       <EventContainer eventItem={item} />  
+    )
 
-    componentDidMount() {
-        fetch(API_URI)
+    async componentDidMount() {
+        await this.getToken()
+        fetch(API_URI + "event", {
+            method: 'GET',
+            headers: {
+                Authorization: "Bearer " + this.state.token.replace(/"/g,""),
+            }
+        })
             .then((response) => {
                 if (response.ok) {
+                    console.log("Got events from api.")
                     return response.json();
                 }
                 else {
                     this.setState({
                         isLoading: false,
                         isError: true,
-                        error: "Network response was not ok."
+                        error: "Network response was not ok.",
+                        token: ""
                     })
                     return new Error('Network response was not ok.');
                 }
@@ -93,17 +102,47 @@ export default class EventFeed extends Component {
                 this.setState({
                     dataSource: jsonResponse,
                     isLoading: false,
-                    error: ""
+                    error: "",
+                    token: ""
                 })
             })
             .catch((error) => {
                 this.setState({
                     isLoading: false,
                     isError: true,
-                    error: error.message
+                    error: error.message,
+                    token: ""
                 })
                 throw error;
             });
+    }
+
+    getToken = async () => {
+        try {
+            console.log("Getting token")
+            const token = await AsyncStorage.getItem('token')
+            const tokenExp = await AsyncStorage.getItem('tokenExp')
+            if (token == null) {
+                console.log("Token is null")
+                logout()
+            }
+            this.setState({
+                isLoading: false,
+                isError: false,
+                error: "",
+                token: token
+            })
+            console.log("Token: " + token)
+        } catch (error) {
+            console.log("Error getting data from storage" + error)
+            this.setState({
+                isLoading: false,
+                isError: true,
+                error: "Could not get token from store",
+                token: ""
+            })
+            logout()
+        }
     }
 
     render() {
@@ -120,14 +159,20 @@ export default class EventFeed extends Component {
                         <Text>{this.state.error}</Text>
                     </View>
                     :
-                    <View style={styles.container}>
-                        <FlatList
-                            style={styles.eventList}
-                            data={this.state.dataSource}
-                            keyExtractor={item => item._id}
-                            renderItem={item => this._renderEvent(item)}
-                        />
-                    </View>
+                    this.state.dataSource.length == 0
+                        ?
+                        <View style={styles.container}>
+                            <Text>No hay eventos</Text>
+                        </View>
+                        :
+                        <View style={styles.container}>
+                            <FlatList
+                                style={styles.eventList}
+                                data={this.state.dataSource}
+                                keyExtractor={this._keyExtractor}
+                                renderItem={this._renderItem}
+                            />
+                        </View>
         );
     }
 }

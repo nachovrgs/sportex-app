@@ -14,7 +14,7 @@ export default StyleSheet.create({
     },
     formContainer: {
         flex: 1,
-        padding: 20
+        padding: 20,
     },
     logo: {
         width: 100,
@@ -30,7 +30,7 @@ export default StyleSheet.create({
         height: 40,
         backgroundColor: 'rgba(255,255,255,0.2)',
         marginBottom: 10,
-        color: '#FFF',
+        color: colors.text,
         paddingHorizontal: 20,
     },
     buttonContainer: {

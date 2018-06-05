@@ -53,51 +53,57 @@ class EventContainer extends Component {
     }
     render() {
         const event = this.state.item
-        const goToEvent = () => {
-            this.props.navigator.push({
-            screen: screens.event.id,
-            title: screens.event.title,
-            animated: true,
-            animationType: 'fade',
-            backButtonHidden: screens.event.backButtonHidden,
-          });
+        if(JSON.stringify(event) != JSON.stringify({})){
+            console.log("Event is:" + JSON.stringify(event))
+            const goToEvent = () => {
+                this.props.navigator.push({
+                screen: screens.event.id,
+                title: screens.event.title,
+                animated: true,
+                animationType: 'fade',
+                backButtonHidden: screens.event.backButtonHidden,
+              });
+            }
+            return (
+                <TouchableOpacity 
+                onPress={goToEvent}
+                style={styles.container}>
+                    <View style={styles.head}>
+                        <View style={styles.timeContainer}>
+                            <Image 
+                                style={styles.eventImage}
+                                source={require('../../assets/images/time.png')} />
+                            <Text style={styles.time}> 
+                                {event.description}
+                            </Text>
+                        </View>
+                        <View style={styles.titleContainer}>
+                            <Text style={styles.title}> 
+                                {event.eventName}
+                            </Text>
+                        </View>
+                        <View style={styles.locationContainer}>
+                            <Image 
+                                style={styles.eventImage}
+                                source={require('../../assets/images/location.png')} />
+                            <Text style={styles.title}> 
+                                {this.getDistance()} km
+                            </Text>
+                        </View>
+                    </View>
+                    <View style={styles.info}>
+                        <View style={styles.titleContainer}>
+                            <Text style={styles.title}> 
+                                {event.description}
+                            </Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            );
         }
-        return (
-            <TouchableOpacity 
-            onPress={goToEvent}
-            style={styles.container}>
-                <View style={styles.head}>
-                    <View style={styles.timeContainer}>
-                        <Image 
-                            style={styles.eventImage}
-                            source={require('../../assets/images/time.png')} />
-                        <Text style={styles.time}> 
-                            {event.time}
-                        </Text>
-                    </View>
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.title}> 
-                            {event.name}
-                        </Text>
-                    </View>
-                    <View style={styles.locationContainer}>
-                        <Image 
-                            style={styles.eventImage}
-                            source={require('../../assets/images/location.png')} />
-                        <Text style={styles.title}> 
-                            {this.getDistance()} km
-                        </Text>
-                    </View>
-                </View>
-                <View style={styles.info}>
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.title}> 
-                            {event.description}
-                        </Text>
-                    </View>
-                </View>
-            </TouchableOpacity>
-        );
+        else {
+            return null
+        }
     }
 }
 export default EventContainer;
