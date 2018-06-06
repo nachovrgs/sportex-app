@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors } from '../../styles';
+import { colors, sizes } from '../../styles';
 
 export default StyleSheet.create({
     container: {
@@ -21,28 +21,33 @@ export default StyleSheet.create({
     },
     time: {
         flex: 1,
-        fontSize: 20,
+        fontSize: sizes.medium,
         color: colors.text,
         marginLeft: 10,
-    },
-    locationContainer: {
-        flex: 1,
-        alignItems: 'flex-end'
-    },
-    eventImage: {
-        height:25,
-        width: 25
-    },
-    info: {
-        flex:1,
-        flexDirection: 'row',
     },
     titleContainer: {
         flex: 1,
     },
     title: {
         flex: 1,
-        fontSize: 20,
+        fontSize: sizes.medium,
         color: colors.text
+    },
+    location: {
+        flex: 1,
+        fontSize: sizes.small,
+        color: colors.text
+    },
+    locationContainer: {
+        flex: 1,
+        alignItems: 'flex-end',
+    },
+    eventImage: {
+        height:25,
+        width: 25
+    },
+    info: {
+        flex:3,
+        flexDirection: 'row',
     },
 });

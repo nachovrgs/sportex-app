@@ -42,6 +42,7 @@ export default class EventFeed extends Component {
         ]
     };
     _keyExtractor = (item, index) => item.id.toString();
+
     constructor(props) {
         super(props);
         this.state = {
@@ -50,7 +51,7 @@ export default class EventFeed extends Component {
             isError: false,
             error: "",
             token: ""
-        }
+        }        
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     }
 
@@ -72,7 +73,7 @@ export default class EventFeed extends Component {
         }
     }
     _renderItem = ({item}) => (
-       <EventContainer eventItem={item} />  
+       <EventContainer eventItem={item} navigator={this.props.navigator} />  
     )
 
     async componentDidMount() {
@@ -85,7 +86,6 @@ export default class EventFeed extends Component {
         })
             .then((response) => {
                 if (response.ok) {
-                    console.log("Got events from api.")
                     return response.json();
                 }
                 else {
@@ -119,7 +119,6 @@ export default class EventFeed extends Component {
 
     getToken = async () => {
         try {
-            console.log("Getting token")
             const token = await AsyncStorage.getItem('token')
             const tokenExp = await AsyncStorage.getItem('tokenExp')
             if (token == null) {
@@ -132,7 +131,6 @@ export default class EventFeed extends Component {
                 error: "",
                 token: token
             })
-            console.log("Token: " + token)
         } catch (error) {
             console.log("Error getting data from storage" + error)
             this.setState({

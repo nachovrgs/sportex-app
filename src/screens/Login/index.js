@@ -58,7 +58,6 @@ export default class Login extends Component {
         return new Error('Network response was not ok.');
     }
     loginAction = async () => {
-        console.log("Logging in")
         this.setState({
             username: this.state.username,
             password: this.state.password,
@@ -76,7 +75,6 @@ export default class Login extends Component {
             }),
         }).then((response) => {
             if (response.ok) {
-                console.log("Got an api response")
                 return response.json();
             }
             else {
@@ -92,10 +90,8 @@ export default class Login extends Component {
     }
     storeTokenAndLogin = async (response) => {
         try {
-            console.log("Saving token in store. Token: " + JSON.stringify(response.token))
             await AsyncStorage.setItem('token', JSON.stringify(response.token))
             await AsyncStorage.setItem('tokenExp', JSON.stringify(response.expires))
-            console.log("Stored token, starting app")
             login()
         } catch (error) {
             console.log("Error saving data in storage" + error)

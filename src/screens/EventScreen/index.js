@@ -1,6 +1,7 @@
 //import libraries
 import React, { Component } from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
+import geolib from 'geolib'
 
 import styles from './styles'
 
@@ -15,7 +16,8 @@ export default class EventScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            item: {}
+            item: {},
+            coords: {}
         }
     }
     
@@ -30,7 +32,30 @@ export default class EventScreen extends Component {
         this._mounted = false;
     }
 
+     //Helpers
+     loadLocation() {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                this.setState({
+                    item: this.state.item,
+                    coords: position.coords
+                })
+            },
+            error => {
+                console.log(error)
+            })
+    }
+    getDistance() {
+        if(this._mounted && this.state.coords.longitude && this.state.item.location != null) {
+            var distance = geolib.getDistance(this.state.coords,
+                {latitude: this.state.item.latitude, longitude: this.state.item.longitude}
+            );
+            return parseFloat((distance * 0.00001).toFixed(0));
+        }
+    }
+
     render() {
+        const event = this.state.item
         return (
             <View style={styles.container}>
                 <View style={styles.head}>
@@ -39,12 +64,12 @@ export default class EventScreen extends Component {
                             style={styles.eventImage}
                             source={require('../../assets/images/time.png')} />
                         <Text style={styles.time}> 
-                            {event.time}
+                            {event.startingTime}
                         </Text>
                     </View>
                     <View style={styles.titleContainer}>
                         <Text style={styles.title}> 
-                            {event.name}
+                            {event.eventName}
                         </Text>
                     </View>
                     <View style={styles.locationContainer}>

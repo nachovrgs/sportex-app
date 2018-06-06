@@ -30,7 +30,7 @@ export const screens = {
     },
     event: {
         id: 'sportex.EventScreen',
-        title: 'Ver',
+        title: 'Partido',
         backButtonHidden: true
     }
 }

@@ -11,7 +11,6 @@ async function init() {
         const token = await AsyncStorage.getItem('token');
         const tokenExp = await AsyncStorage.getItem('tokenExp');
         if (token !== null && tokenExp != null) {
-            console.log("Got exisiting tokens")
             //TODO: Check token expiration
             startMainApp();
         }

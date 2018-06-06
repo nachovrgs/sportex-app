@@ -18,6 +18,7 @@ class EventContainer extends Component {
         }
         this.loadLocation = this.loadLocation.bind(this);
         this.getDistance = this.getDistance.bind(this);
+        this.handlePress = this.handlePress.bind(this);
     }
 
     componentDidMount() {
@@ -31,6 +32,8 @@ class EventContainer extends Component {
     componentWillUnmount() {
         this._mounted = false;
     }
+
+    //Helpers
     loadLocation() {
         navigator.geolocation.getCurrentPosition(
             position => {
@@ -44,29 +47,32 @@ class EventContainer extends Component {
             })
     }
     getDistance() {
-        if(this._mounted && this.state.coords.longitude) {
+        if(this._mounted && this.state.coords.longitude && this.state.item.location != null) {
             var distance = geolib.getDistance(this.state.coords,
                 {latitude: this.state.item.latitude, longitude: this.state.item.longitude}
             );
             return parseFloat((distance * 0.00001).toFixed(0));
         }
     }
+    handlePress() {
+        this.props.navigator.push({
+            screen: screens.event.id,
+            title: screens.event.title,
+            animated: true,
+            animationType: 'fade',
+            backButtonHidden: screens.event.backButtonHidden,
+            passProps: {
+                eventItem: this.state.item
+            },
+      });
+    }
     render() {
         const event = this.state.item
-        if(JSON.stringify(event) != JSON.stringify({})){
-            console.log("Event is:" + JSON.stringify(event))
-            const goToEvent = () => {
-                this.props.navigator.push({
-                screen: screens.event.id,
-                title: screens.event.title,
-                animated: true,
-                animationType: 'fade',
-                backButtonHidden: screens.event.backButtonHidden,
-              });
-            }
+        if(JSON.stringify(event) != JSON.stringify({})) {
+            
             return (
                 <TouchableOpacity 
-                onPress={goToEvent}
+                onPress={ () => this.handlePress() }
                 style={styles.container}>
                     <View style={styles.head}>
                         <View style={styles.timeContainer}>
@@ -74,7 +80,7 @@ class EventContainer extends Component {
                                 style={styles.eventImage}
                                 source={require('../../assets/images/time.png')} />
                             <Text style={styles.time}> 
-                                {event.description}
+                                {event.startingTime.split('T')[1]}
                             </Text>
                         </View>
                         <View style={styles.titleContainer}>
@@ -86,7 +92,7 @@ class EventContainer extends Component {
                             <Image 
                                 style={styles.eventImage}
                                 source={require('../../assets/images/location.png')} />
-                            <Text style={styles.title}> 
+                            <Text style={styles.location}> 
                                 {this.getDistance()} km
                             </Text>
                         </View>
