@@ -60,11 +60,11 @@ export default class EventFeed extends Component {
         if (event.type == 'NavBarButtonPress') {
             if (event.id == 'add') {
                 this.props.navigator.push({
-                    screen: screens.createEvent.id,
-                    title: screens.createEvent.title,
+                    screen: screens.createEvent1.id,
+                    title: screens.createEvent1.title,
                     animated: true,
                     animationType: 'fade',
-                    backButtonHidden: screens.createEvent.backButtonHidden,
+                    backButtonHidden: screens.createEvent1.backButtonHidden,
                 });
             }
             else if (event.id == 'logout') {
