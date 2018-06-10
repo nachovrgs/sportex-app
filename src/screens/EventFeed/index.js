@@ -78,7 +78,7 @@ export default class EventFeed extends Component {
 
     async componentDidMount() {
         await this.getToken()
-        fetch(API_URI + "event", {
+        fetch(`${API_URI}/event/`, {
             method: 'GET',
             headers: {
                 Authorization: "Bearer " + this.state.token.replace(/"/g,""),

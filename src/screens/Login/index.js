@@ -63,7 +63,7 @@ export default class Login extends Component {
             password: this.state.password,
             isLoading: true
         })
-        fetch(API_URI + "auth", {
+        fetch(`${API_URI}/auth/`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',

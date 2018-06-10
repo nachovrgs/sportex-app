@@ -39,6 +39,10 @@ export default class CreateEvent_1 extends Component {
             animated: true,
             animationType: 'fade',
             backButtonHidden: screens.createEvent2.backButtonHidden,
+            passProps: {
+                name: this.state.name,
+                description: this.state.description
+            },
         });
     }
     render() {
@@ -65,7 +69,7 @@ export default class CreateEvent_1 extends Component {
                         placeholderTextColor="rgba(0,0,255,0.7)"
                         style={styles.input} />
                     <TouchableOpacity style={styles.buttonContainer} onPress={this.nextAction}>
-                        <Text style={styles.nextButton}>Próximo</Text>
+                        <Text style={styles.nextButton}>Siguiente</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>

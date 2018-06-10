@@ -4,6 +4,7 @@ import Login from './Login';
 import EventFeed from './EventFeed';
 import CreateEvent_1 from './CreateEvent_1';
 import CreateEvent_2 from './CreateEvent_2';
+import CreateEvent_3 from './CreateEvent_3';
 import UserProfile from './UserProfile';
 import EventScreen from './EventScreen';
 
@@ -27,7 +28,12 @@ export const screens = {
     createEvent2: {
         id: 'sportex.CreateEvent_2',
         title: 'Cuando es?',
-        backButtonHidden: true
+        backButtonHidden: false
+    },
+    createEvent3: {
+        id: 'sportex.CreateEvent_3',
+        title: 'Finaliza',
+        backButtonHidden: false
     },
     userProfile: {
         id: 'sportex.UserProfile',
@@ -47,6 +53,7 @@ export function registerScreens() {
     Navigation.registerComponent(screens.eventFeed.id, () => EventFeed);
     Navigation.registerComponent(screens.createEvent1.id, () => CreateEvent_1);
     Navigation.registerComponent(screens.createEvent2.id, () => CreateEvent_2);
+    Navigation.registerComponent(screens.createEvent3.id, () => CreateEvent_3);
     Navigation.registerComponent(screens.userProfile.id, () => UserProfile);
     Navigation.registerComponent(screens.event.id, () => EventScreen);
 }
