@@ -30,15 +30,6 @@ export default class EventFeed extends Component {
                 buttonFontSize: 20,
                 buttonFontWeight: '600',
             }
-        ],
-        leftButtons: [
-            {
-                icon: require('../../assets/images/logout.png'),
-                id: 'logout',
-                buttonColor: '#ecf0f1',
-                buttonFontSize: 50,
-                buttonFontWeight: '900',
-            }
         ]
     };
     _keyExtractor = (item, index) => item.id.toString();
@@ -66,9 +57,6 @@ export default class EventFeed extends Component {
                     animationType: 'fade',
                     backButtonHidden: screens.createEvent1.backButtonHidden,
                 });
-            }
-            else if (event.id == 'logout') {
-                logout();
             }
         }
     }
@@ -119,8 +107,8 @@ export default class EventFeed extends Component {
 
     getToken = async () => {
         try {
-            const token = await AsyncStorage.getItem('token')
-            const tokenExp = await AsyncStorage.getItem('tokenExp')
+            const token = await AsyncStorage.getItem('Sportex:token')
+            const tokenExp = await AsyncStorage.getItem('Sportex:tokenExp')
             if (token == null) {
                 console.log("Token is null")
                 logout()

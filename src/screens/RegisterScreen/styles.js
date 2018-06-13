@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { colors } from '../../styles';
+import { colors, sizes } from '../../styles';
 
 export default StyleSheet.create({
     container: {
@@ -15,13 +15,27 @@ export default StyleSheet.create({
         height: 40,
         backgroundColor: 'rgba(255,255,255,0.2)',
         marginBottom: 10,
+    },
+    textInput: {
         color: colors.text,
         paddingHorizontal: 20,
     },
+    dateInput: {
+        height: 40,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        marginBottom: 10,
+        flexDirection: 'row',
+    },
     buttonContainer: {
         flex: 1,
-        alignSelf: 'center',
-        position: 'absolute',
-        bottom: 65
-    }
+        alignSelf: 'center'
+    },
+    calendarIcon: {
+        width: 20,
+        height: 20,
+    },
+    dateTimeText: {
+        fontSize: sizes.medium,
+        color: colors.text,
+    },
 });

@@ -5,18 +5,19 @@ import { colors, sizes } from '../../styles';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'rgba(255,255,255,0.1)'
+        backgroundColor: 'rgba(255,255,255,0.1)',
     },
     formContainer: {
-        flex: 1,
+        flex: 5,
         padding: 60,
     },
     calendarContainer: {
         flex: 5,
-        alignItems:'center' ,
+        alignSelf: 'center',
     },
     selectorContainer: {
         flexDirection: 'column',
+        alignItems: 'center',
         flex: 1
     },
     calendarIcon: {
@@ -28,16 +29,9 @@ export default StyleSheet.create({
         marginTop: 20,
     },
     buttonContainer: {
-        flex: 1
-    },
-    createButtonContainer: {
-        marginTop: 10,
-        backgroundColor: colors.button,
-        paddingVertical: 15,
-    },
-    createButtonText: {
-        textAlign: 'center',
-        color: '#FFFFFF',
-        fontWeight: '700',
-    },
+        flex: 1,
+        alignSelf: 'center',
+        position: 'absolute',
+        bottom: 65
+    }
 });

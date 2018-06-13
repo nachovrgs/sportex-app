@@ -8,8 +8,8 @@ import { registerScreens, screens } from './screens';
 async function init() {
     console.log("Initializing app")
     try {
-        const token = await AsyncStorage.getItem('token');
-        const tokenExp = await AsyncStorage.getItem('tokenExp');
+        const token = await AsyncStorage.getItem('Sportex:token');
+        const tokenExp = await AsyncStorage.getItem('Sportex:tokenExp');
         if (token !== null && tokenExp != null) {
             //TODO: Check token expiration
             startMainApp();

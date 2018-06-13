@@ -2,9 +2,10 @@
 import React, { Component } from 'react'
 import { View, Text, Image, TouchableOpacity, ActivityIndicator, AsyncStorage } from 'react-native'
 import Autocomplete from 'react-native-autocomplete-input'
-import { CheckBox, Slider } from 'react-native-elements'
+import { CheckBox, Slider, Button } from 'react-native-elements'
 import styles from './styles'
 
+import { logout } from '../../navigation';
 import { API_URI } from '../../constants'
 import { screens } from '../../screens';
 
@@ -50,17 +51,6 @@ export default class CreateEvent_3 extends Component {
     }
 
     createAction = () => {
-        console.log(JSON.stringify({
-            StandardProfileID: 1,
-            EventName: this.state.name,
-            Description: this.state.description,
-            EventType: 1,
-            StartingTime: this.state.date + "T" + this.state.time,
-            LocationID: 1,
-            IsPublic: this.state.isPublic ? 1 : 0,
-            MaxStarters: this.state.maxStarters,
-            MasSubs: this.state.maxSubs
-        }))
         fetch(`${API_URI}/event/`, {
             method: 'POST',
             headers: {
@@ -113,8 +103,8 @@ export default class CreateEvent_3 extends Component {
 
     getToken = async () => {
         try {
-            const token = await AsyncStorage.getItem('token')
-            const tokenExp = await AsyncStorage.getItem('tokenExp')
+            const token = await AsyncStorage.getItem('Sportex:token')
+            const tokenExp = await AsyncStorage.getItem('Sportex:tokenExp')
             if (token == null) {
                 console.log("Token is null")
                 logout()
@@ -135,6 +125,10 @@ export default class CreateEvent_3 extends Component {
             })
             logout()
         }
+    }
+
+    isReady = () => {
+        return true
     }
 
     findLocation = (query) => {
@@ -166,39 +160,35 @@ export default class CreateEvent_3 extends Component {
                     </View>
                     :
                     <View style={styles.container}>
-                        <CheckBox
-                            center
-                            title='Evento Public'
-                            checkedIcon='dot-circle-o'
-                            uncheckedIcon='circle-o'
-                            checked={this.state.isPublic}
-                            onPress={() => this.setState({ isPublic: !this.state.isPublic })}
-                        />
-                        <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
-                            <Slider
-                                value={this.state.maxStarters}
-                                onValueChange={(value) => this.setState({ maxStarters: value })}
-                                step={1}
-                                maximumValue={20}
-                                minimumValue={10} />
-                            <Text>Value: {this.state.maxStarters}</Text>
-                        </View>
-                        <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
-                            <Slider
-                                value={this.state.maxSubs}
-                                onValueChange={(value) => this.setState({ maxSubs: value })}
-                                step={1}
-                                maximumValue={20}
-                                minimumValue={0} />
-                            <Text>Value: {this.state.maxSubs}</Text>
-                        </View>
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity style={styles.createButtonContainer} onPress={this.createAction}>
-                                <Text style={styles.createButtonText}>Crear</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <View style={styles.formContainer}>
+                            <CheckBox
+                                center
+                                title='Evento Public'
+                                checkedIcon='dot-circle-o'
+                                uncheckedIcon='circle-o'
+                                checked={this.state.isPublic}
+                                onPress={() => this.setState({ isPublic: !this.state.isPublic })}
+                            />
+                            <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
+                                <Slider
+                                    value={this.state.maxStarters}
+                                    onValueChange={(value) => this.setState({ maxStarters: value })}
+                                    step={1}
+                                    maximumValue={20}
+                                    minimumValue={10} />
+                                <Text>Value: {this.state.maxStarters}</Text>
+                            </View>
+                            <View style={{ flex: 1, alignItems: 'stretch', justifyContent: 'center' }}>
+                                <Slider
+                                    value={this.state.maxSubs}
+                                    onValueChange={(value) => this.setState({ maxSubs: value })}
+                                    step={1}
+                                    maximumValue={20}
+                                    minimumValue={0} />
+                                <Text>Value: {this.state.maxSubs}</Text>
+                            </View>
 
-                        {/*  <Autocomplete
+                            {/*  <Autocomplete
                     autoCapitalize="none"
                     autoCorrect={false}
                     containerStyle={styles.autocompleteContainer}
@@ -223,6 +213,15 @@ export default class CreateEvent_3 extends Component {
                 </Text>
                         )}
                 </View> */}
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Button
+                                large
+                                title='Crear'
+                                onPress={this.createAction}
+                                disabled={!this.isReady()}
+                            />
+                        </View>
                     </View>
         );
     }

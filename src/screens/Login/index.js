@@ -14,6 +14,7 @@ import {
 
 import { login } from '../../navigation';
 
+import { screens } from '../../screens';
 import { API_URI } from '../../constants'
 import PropTypes from 'prop-types';
 import styles from './styles';
@@ -25,8 +26,8 @@ export default class Login extends Component {
         navBarBackgroundColor: '#2c3e50',
         navBarComponentAlignment: 'center'
     };
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             username: '',
             password: '',
@@ -90,13 +91,22 @@ export default class Login extends Component {
     }
     storeTokenAndLogin = async (response) => {
         try {
-            await AsyncStorage.setItem('token', JSON.stringify(response.token))
-            await AsyncStorage.setItem('tokenExp', JSON.stringify(response.expires))
+            await AsyncStorage.setItem('Sportex:token', JSON.stringify(response.token))
+            await AsyncStorage.setItem('Sportex:tokenExp', JSON.stringify(response.expires))
             login()
         } catch (error) {
             console.log("Error saving data in storage" + error)
             this.resetValues()
         }
+    }
+    registerAction = () => {
+        this.props.navigator.push({
+            screen: screens.register.id,
+            title: screens.register.title,
+            animated: true,
+            animationType: 'fade',
+            backButtonHidden: screens.register.backButtonHidden
+        });
     }
     render() {
         const { username, password, isLoading } = this.state;
@@ -142,7 +152,7 @@ export default class Login extends Component {
                             ref={(input) => this.passwordInput = input}
                             placeholderTextColor="rgba(255,255,255,0.7)"
                             style={styles.input} />
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={this.registerAction}>
                             <Text style={styles.register}>
                                 Registrate
                         </Text>

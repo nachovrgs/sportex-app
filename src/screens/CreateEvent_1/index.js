@@ -2,8 +2,11 @@
 import React, { Component } from 'react'
 import { View, Text, Image, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native'
 
+import { Button } from 'react-native-elements'
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { screens } from '../../screens';
 import styles from './styles'
+import { colors } from '../../styles';
 
 // create a component
 export default class CreateEvent_1 extends Component {
@@ -17,20 +20,21 @@ export default class CreateEvent_1 extends Component {
         super(props);
         this.state = {
             name: '',
-            description: '',
+            description: ''
         };
     }
     onNameChanged = (name) => {
         this.setState({
-            name: name,
-            description: this.state.description,
+            name: name
         });
     }
     onDescriptionChanged = (description) => {
         this.setState({
-            name: this.state.name,
-            description: description,
+            description: description
         });
+    }
+    isReady = () => {
+        return this.state.name && this.state.description && this.state.name != '' && this.state.description != ''
     }
     nextAction = () => {
         this.props.navigator.push({
@@ -68,9 +72,16 @@ export default class CreateEvent_1 extends Component {
                         ref={(input) => this.descriptionInput = input}
                         placeholderTextColor="rgba(0,0,255,0.7)"
                         style={styles.input} />
-                    <TouchableOpacity style={styles.buttonContainer} onPress={this.nextAction}>
-                        <Text style={styles.nextButton}>Siguiente</Text>
-                    </TouchableOpacity>
+
+
+                </View>
+                <View style={styles.buttonContainer}>
+                    <Button
+                        large
+                        title='Siguiente'
+                        onPress={this.nextAction}
+                        disabled={!this.isReady()}
+                    />
                 </View>
             </KeyboardAvoidingView>
         );

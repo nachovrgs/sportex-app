@@ -1,6 +1,7 @@
 import {Navigation, ScreenVisibilityListener} from 'react-native-navigation';
 
 import Login from './Login';
+import RegisterScreen from './RegisterScreen';
 import EventFeed from './EventFeed';
 import CreateEvent_1 from './CreateEvent_1';
 import CreateEvent_2 from './CreateEvent_2';
@@ -15,6 +16,11 @@ export const screens = {
         title: 'Login',
         backButtonHidden: true
     },
+    register : {
+        id: 'sportex.Register',
+        title: 'Registrate',
+        backButtonHidden: false
+    },
     eventFeed: {
         id: 'sportex.EventFeed',
         title: 'Partidos',
@@ -23,7 +29,7 @@ export const screens = {
     createEvent1: {
         id: 'sportex.CreateEvent_1',
         title: 'Crear Partido',
-        backButtonHidden: true
+        backButtonHidden: false
     },
     createEvent2: {
         id: 'sportex.CreateEvent_2',
@@ -43,13 +49,14 @@ export const screens = {
     event: {
         id: 'sportex.EventScreen',
         title: 'Partido',
-        backButtonHidden: true
+        backButtonHidden: false
     }
 }
 
 // This registers all screens 
 export function registerScreens() {
     Navigation.registerComponent(screens.login.id, () => Login);
+    Navigation.registerComponent(screens.register.id, () => RegisterScreen);
     Navigation.registerComponent(screens.eventFeed.id, () => EventFeed);
     Navigation.registerComponent(screens.createEvent1.id, () => CreateEvent_1);
     Navigation.registerComponent(screens.createEvent2.id, () => CreateEvent_2);
