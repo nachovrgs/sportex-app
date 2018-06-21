@@ -1,10 +1,14 @@
 //import libraries
 import React, { Component } from 'react'
-import { View, Text, Image, TouchableOpacity, AsyncStorage } from 'react-native'
+import { View, Text, Image, AsyncStorage } from 'react-native'
 import geolib from 'geolib'
 
+import { API_URI } from '../../constants'
+import { screens } from '../../screens';
 import styles from './styles'
-import { logout } from '../../navigation';
+import { getTokenForUsage } from '../../helpers/storage';
+
+import { logInfo, logError } from '../../helpers/logger'
 
 // create a component
 export default class EventScreen extends Component {
@@ -37,10 +41,12 @@ export default class EventScreen extends Component {
         }
 
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.loadData()
     }
-
-    async componentDidMount() {
-        await this.getToken()
+    async loadData() {
+        this.state.token = await getTokenForUsage()
+    }
+    componentDidMount() {
         this._mounted = true;
         this.setState({
             item: this.props.eventItem
@@ -52,7 +58,7 @@ export default class EventScreen extends Component {
     onNavigatorEvent(event) {
         if (event.type == 'NavBarButtonPress') {
             if (event.id == 'delete') {
-                fetch(`${API_URI}/event/`, {
+                fetch(`${API_URI}/event/${this.state.item.id}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: "Bearer " + this.state.token.replace(/"/g, "")
@@ -89,32 +95,7 @@ export default class EventScreen extends Component {
             }
         }
     }
-    getToken = async () => {
-        try {
-            const token = await AsyncStorage.getItem('Sportex:token')
-            const tokenExp = await AsyncStorage.getItem('Sportex:tokenExp')
-            if (token == null) {
-                console.log("Token is null")
-                logout()
-            }
-            this.setState({
-                isLoading: false,
-                isError: false,
-                error: "",
-                token: token
-            })
-        } catch (error) {
-            console.log("Error getting data from storage" + error)
-            this.setState({
-                isLoading: false,
-                isError: true,
-                error: "Could not get token from store",
-                token: ""
-            })
-            logout()
-        }
-    }
-    
+
     componentWillUnmount() {
         this._mounted = false;
     }

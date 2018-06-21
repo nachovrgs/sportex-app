@@ -5,7 +5,8 @@ import DateTimePicker from 'react-native-modal-datetime-picker'
 import { CheckBox, Button, Input } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { logout } from '../../navigation';
+import { screens } from '../../screens';
+import { logout } from '../../helpers/navigation';
 import { API_URI } from '../../constants'
 import styles from './styles'
 

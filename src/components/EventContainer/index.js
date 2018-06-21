@@ -4,7 +4,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native'
 import geolib from 'geolib'
 
 import { screens } from '../../screens'
-import { navigate } from '../../navigation';
+import { navigate } from '../../helpers/navigation';
 
 import styles from './styles'
 
