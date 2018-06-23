@@ -5,6 +5,8 @@ import { View } from 'react-native'
 import { resetAndLogout } from '../../helpers/storage';
 import { screens } from '../../screens';
 
+import { getTokenForUsage } from '../../helpers/storage';
+import { API_URI } from '../../constants'
 import styles from './styles'
 
 // create a component
@@ -29,9 +31,56 @@ export default class UserProfile extends Component {
     };
     constructor(props) {
         super(props);
+        this.state = {
+            dataSource: [],
+            isLoading: true,
+            isError: false,
+            error: "",
+            token: ""
+        }  
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.loadData()
     }
-
+    async loadData() {
+        this.state.token = await getTokenForUsage()
+        fetch(`${API_URI}/StandardProfile/`, {
+            method: 'GET',
+            headers: {
+                Authorization: "Bearer " + this.state.token.replace(/"/g,""),
+            }
+        })
+            .then((response) => {
+                if (response.ok) {
+                    return response.json();
+                }
+                else {
+                    this.setState({
+                        isLoading: false,
+                        isError: true,
+                        error: "Network response was not ok.",
+                        token: ""
+                    })
+                    return new Error('Network response was not ok.');
+                }
+            })
+            .then((jsonResponse) => {
+                this.setState({
+                    dataSource: jsonResponse,
+                    isLoading: false,
+                    error: "",
+                    token: ""
+                })
+            })
+            .catch((error) => {
+                this.setState({
+                    isLoading: false,
+                    isError: true,
+                    error: error.message,
+                    token: ""
+                })
+                throw error;
+            });
+    }
     // Handle nav bar navigation
     onNavigatorEvent(event) {
         if (event.type == 'NavBarButtonPress') {
