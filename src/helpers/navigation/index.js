@@ -1,7 +1,4 @@
-import React, { Component } from 'react'
-
-import { startLogin, startMainApp } from '../App'
-import { screens } from '../screens'
+import { startLogin, startMainApp } from '../../App'
 
 // Handle login logic
 export function login() {

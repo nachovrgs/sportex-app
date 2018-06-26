@@ -1,24 +1,18 @@
 import { Navigation } from 'react-native-navigation';
 
-import { AsyncStorage } from 'react-native';
-
 import { registerScreens, screens } from './screens';
+
+import { isLoggedIn } from './helpers/storage'
+
+import { logInfo } from './helpers/logger'
 
 // call from index.js
 async function init() {
-    console.log("Initializing app")
-    try {
-        const token = await AsyncStorage.getItem('Sportex:token');
-        const tokenExp = await AsyncStorage.getItem('Sportex:tokenExp');
-        if (token !== null && tokenExp != null) {
-            //TODO: Check token expiration
-            startMainApp();
-        }
-        console.log("No exisiting tokens, Starting login")        
-        startLogin();
-    } catch (error) {
-        console.log("Error retrieving data, Starting login")
-        // Error retrieving data          
+    logInfo("Initializing app")
+    if (isLoggedIn()) {
+        startMainApp();
+    }
+    else {
         startLogin();
     }
 }

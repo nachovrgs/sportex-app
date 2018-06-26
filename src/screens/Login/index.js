@@ -12,7 +12,10 @@ import {
     ActivityIndicator
 } from 'react-native';
 
-import { login } from '../../navigation';
+import { login } from '../../helpers/navigation';
+import { logInfo, logError } from '../../helpers/logger'
+
+import { setTokenInfo } from '../../helpers/storage';
 
 import { screens } from '../../screens';
 import { API_URI } from '../../constants'
@@ -71,8 +74,8 @@ export default class Login extends Component {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                Username: "ignacio",//this.state.username,
-                Password: "1234"//this.state.password,
+                Username: this.state.username,
+                Password: this.state.password,
             }),
         }).then((response) => {
             if (response.ok) {
@@ -89,16 +92,17 @@ export default class Login extends Component {
                 this.resetValues()
             });
     }
+
     storeTokenAndLogin = async (response) => {
-        try {
-            await AsyncStorage.setItem('Sportex:token', JSON.stringify(response.token))
-            await AsyncStorage.setItem('Sportex:tokenExp', JSON.stringify(response.expires))
+        if(setTokenInfo(response.token, response.tokenExp)) { 
             login()
-        } catch (error) {
-            console.log("Error saving data in storage" + error)
+        }
+        else {
             this.resetValues()
         }
     }
+
+    
     registerAction = () => {
         this.props.navigator.push({
             screen: screens.register.id,

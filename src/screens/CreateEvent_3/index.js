@@ -5,7 +5,7 @@ import Autocomplete from 'react-native-autocomplete-input'
 import { CheckBox, Slider, Button } from 'react-native-elements'
 import styles from './styles'
 
-import { logout } from '../../navigation';
+import { logout } from '../../helpers/navigation';
 import { API_URI } from '../../constants'
 import { screens } from '../../screens';
 

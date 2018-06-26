@@ -1,9 +1,8 @@
 //import libraries
 import React, { Component } from 'react'
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View } from 'react-native'
 
-import { logout } from '../../navigation';
-
+import { resetAndLogout } from '../../helpers/storage';
 import { screens } from '../../screens';
 
 import styles from './styles'
@@ -46,7 +45,7 @@ export default class UserProfile extends Component {
                 });
             }
             else if (event.id == 'logout') {
-                logout();
+                resetAndLogout()
             }
         }
     }

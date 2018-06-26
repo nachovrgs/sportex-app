@@ -1,4 +1,12 @@
 {
   "name": "sportex",
-  "displayName": "sportex"
+  "displayName": "sportex",
+  "expo": {
+    "name": "sportex",
+    "slug": "sportex",
+    "sdkVersion": "24.0.0"
+  },
+  "assetBundlePatterns": [
+    "src/assets/images//**"
+  ]
 }

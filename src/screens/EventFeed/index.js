@@ -1,16 +1,15 @@
 //import libraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, AsyncStorage } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native'
 
 import { EventContainer } from '../../components'
 
-import { screens } from '../../screens';
+import { screens } from '../../screens'
 
-import { logout } from '../../navigation';
-
+import { getTokenForUsage } from '../../helpers/storage';
 import { API_URI } from '../../constants'
-import PropTypes from 'prop-types';
 import styles from './styles';
+import { logInfo, logError } from '../../helpers/logger'
 
 // create a component
 export default class EventFeed extends Component {
@@ -44,6 +43,7 @@ export default class EventFeed extends Component {
             token: ""
         }        
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+        this.loadData()
     }
 
     // Handle nav bar navigation
@@ -64,8 +64,8 @@ export default class EventFeed extends Component {
        <EventContainer eventItem={item} navigator={this.props.navigator} />  
     )
 
-    async componentDidMount() {
-        await this.getToken()
+    async loadData() {
+        this.state.token = await getTokenForUsage()
         fetch(`${API_URI}/event/`, {
             method: 'GET',
             headers: {
@@ -103,32 +103,6 @@ export default class EventFeed extends Component {
                 })
                 throw error;
             });
-    }
-
-    getToken = async () => {
-        try {
-            const token = await AsyncStorage.getItem('Sportex:token')
-            const tokenExp = await AsyncStorage.getItem('Sportex:tokenExp')
-            if (token == null) {
-                console.log("Token is null")
-                logout()
-            }
-            this.setState({
-                isLoading: false,
-                isError: false,
-                error: "",
-                token: token
-            })
-        } catch (error) {
-            console.log("Error getting data from storage" + error)
-            this.setState({
-                isLoading: false,
-                isError: true,
-                error: "Could not get token from store",
-                token: ""
-            })
-            logout()
-        }
     }
 
     render() {
