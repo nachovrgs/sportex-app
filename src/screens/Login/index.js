@@ -19,14 +19,14 @@ import { setTokenInfo } from '../../helpers/storage';
 
 import { screens } from '../../screens';
 import { API_URI } from '../../constants'
-import PropTypes from 'prop-types';
 import styles from './styles';
+import { colors } from '../../styles';
 
 // create a component
 export default class Login extends Component {
     static navigatorStyle = {
         navBarTextColor: '#ecf0f1',
-        navBarBackgroundColor: '#2c3e50',
+        navBarBackgroundColor: colors.navbar,
         navBarComponentAlignment: 'center'
     };
     constructor(props) {
@@ -94,7 +94,7 @@ export default class Login extends Component {
     }
 
     storeTokenAndLogin = async (response) => {
-        if(setTokenInfo(response.token, response.tokenExp)) { 
+        if(setTokenInfo(response.token, response.expires, response.accountId)) { 
             login()
         }
         else {

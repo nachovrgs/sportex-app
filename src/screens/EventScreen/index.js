@@ -9,12 +9,13 @@ import styles from './styles'
 import { getTokenForUsage } from '../../helpers/storage';
 
 import { logInfo, logError } from '../../helpers/logger'
+import { colors } from '../../styles';
 
 // create a component
 export default class EventScreen extends Component {
     static navigatorStyle = {
         navBarTextColor: '#ecf0f1',
-        navBarBackgroundColor: '#2c3e50',
+        navBarBackgroundColor: colors.navbar,
         navBarComponentAlignment: 'center',
         tabBarHidden: true,
     };
