@@ -2,8 +2,7 @@
 import React, { Component } from 'react'
 import { View, Text, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
 import DateTimePicker from 'react-native-modal-datetime-picker'
-import { CheckBox, Button, Input } from 'react-native-elements'
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { Button, Input } from 'native-base'
 
 import { screens } from '../../screens';
 import { logout } from '../../helpers/navigation';

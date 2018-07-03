@@ -8,6 +8,8 @@ import android.util.TypedValue;
 
 import com.reactnativenavigation.controllers.SplashActivity;
 
+import com.reactnativenavigation.controllers.SplashActivity;
+
 public class MainActivity extends SplashActivity {
 
     @Override
@@ -15,13 +17,13 @@ public class MainActivity extends SplashActivity {
         LinearLayout view = new LinearLayout(this);
         TextView textView = new TextView(this);
 
-        view.setBackgroundColor(Color.parseColor("#607D8B"));
+        view.setBackgroundColor(Color.parseColor("rgb(19, 26, 54)"));
         view.setGravity(Gravity.CENTER);
 
         textView.setTextColor(Color.parseColor("#FFFFFF"));
-        textView.setText("Sportex");
+        textView.setText("SPORTEX");
         textView.setGravity(Gravity.CENTER);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 40);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 50);
 
         view.addView(textView);
         return view;

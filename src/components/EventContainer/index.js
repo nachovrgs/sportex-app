@@ -3,9 +3,11 @@ import React, { Component } from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import geolib from 'geolib'
 
+import { EventCard, ExpandedEventCard } from '../../components'
 import { screens } from '../../screens'
 import { navigate } from '../../helpers/navigation';
 
+import { colors } from '../../styles';
 import styles from './styles'
 
 // create a component
@@ -14,7 +16,8 @@ class EventContainer extends Component {
         super(props);
         this.state = {
             item: {},
-            coords: {}
+            coords: {},
+            expanded: false
         }
         this.loadLocation = this.loadLocation.bind(this);
         this.getDistance = this.getDistance.bind(this);
@@ -27,7 +30,8 @@ class EventContainer extends Component {
             item: this.props.eventItem,
             coords: {}
         })
-        this.loadLocation()        
+        this.loadLocation()
+        this.selectBackgroundColor()
     }
     componentWillUnmount() {
         this._mounted = false;
@@ -47,64 +51,32 @@ class EventContainer extends Component {
             })
     }
     getDistance() {
-        if(this._mounted && this.state.coords.longitude && this.state.item.location != null) {
+        if (this._mounted && this.state.coords.longitude && this.state.item.location != null) {
             var distance = geolib.getDistance(this.state.coords,
-                {latitude: this.state.item.latitude, longitude: this.state.item.longitude}
+                { latitude: this.state.item.latitude, longitude: this.state.item.longitude }
             );
             return parseFloat((distance * 0.00001).toFixed(0));
         }
     }
-    handlePress() {
-        this.props.navigator.push({
-            screen: screens.event.id,
-            title: screens.event.title,
-            animated: true,
-            animationType: 'fade',
-            backButtonHidden: screens.event.backButtonHidden,
-            passProps: {
-                eventItem: this.state.item
-            },
-      });
+    selectBackgroundColor() {
+        if (this._mounted) {
+            var backColors = [colors.bar_rank_1, colors.bar_rank_2, colors.bar_rank_3]
+            return backColors[Math.floor(Math.random() * backColors.length)];
+        }
     }
+    handlePress() {
+        this.state.expanded = !this.state.expanded
+        this.forceUpdate()
+    }
+
     render() {
-        const event = this.state.item
-        if(JSON.stringify(event) != JSON.stringify({})) {
-            
+        if (JSON.stringify(this.state.item) != JSON.stringify({})) {
             return (
-                <TouchableOpacity 
-                onPress={ () => this.handlePress() }
-                style={styles.container}>
-                    <View style={styles.head}>
-                        <View style={styles.timeContainer}>
-                            <Image 
-                                style={styles.eventImage}
-                                source={require('../../assets/images/time.png')} />
-                            <Text style={styles.time}> 
-                                {event.startingTime.split('T')[1]}
-                            </Text>
-                        </View>
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.title}> 
-                                {event.eventName}
-                            </Text>
-                        </View>
-                        <View style={styles.locationContainer}>
-                            <Image 
-                                style={styles.eventImage}
-                                source={require('../../assets/images/location.png')} />
-                            <Text style={styles.location}> 
-                                {this.getDistance()} km
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={styles.info}>
-                        <View style={styles.titleContainer}>
-                            <Text style={styles.title}> 
-                                {event.description}
-                            </Text>
-                        </View>
-                    </View>
-                </TouchableOpacity>
+                this.state.expanded
+                    ?
+                    <ExpandedEventCard eventItem={this.state.item} navigator={this.props.navigator} onclick={this.handlePress} />
+                    :
+                    <EventCard eventItem={this.state.item} navigator={this.props.navigator} onclick={this.handlePress} />
             );
         }
         else {

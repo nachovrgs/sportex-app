@@ -1,20 +1,21 @@
 //import libraries
 import React, { Component } from 'react'
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 
 import { resetAndLogout } from '../../helpers/storage';
 import { screens } from '../../screens';
 
-import { getTokenForUsage } from '../../helpers/storage';
+import { getTokenForUsage, getAccountIdForUsage } from '../../helpers/storage';
 import { API_URI } from '../../constants'
 import styles from './styles'
+import { colors } from '../../styles';
 
 // create a component
 export default class UserProfile extends Component {
     //Navigation
     static navigatorStyle = {
         navBarTextColor: '#ecf0f1',
-        navBarBackgroundColor: '#2c3e50',
+        navBarBackgroundColor: colors.navbar,
         navBarComponentAlignment: 'center',
         navBarTextAlignment: 'center'
     };
@@ -32,18 +33,21 @@ export default class UserProfile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dataSource: [],
+            profile: {},
             isLoading: true,
             isError: false,
             error: "",
-            token: ""
+            token: "",
+            accountID: ""
         }  
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.loadData()
     }
+
     async loadData() {
         this.state.token = await getTokenForUsage()
-        fetch(`${API_URI}/StandardProfile/`, {
+        this.state.accountID = await getAccountIdForUsage()
+        fetch(`${API_URI}/standardProfile/account/${this.state.accountID}`, {
             method: 'GET',
             headers: {
                 Authorization: "Bearer " + this.state.token.replace(/"/g,""),
@@ -65,7 +69,7 @@ export default class UserProfile extends Component {
             })
             .then((jsonResponse) => {
                 this.setState({
-                    dataSource: jsonResponse,
+                    profile: jsonResponse,
                     isLoading: false,
                     error: "",
                     token: ""
@@ -99,9 +103,29 @@ export default class UserProfile extends Component {
         }
     }
     render() {
+        const profile = this.state.profile
         return (
             <View style={styles.container}>
+            <View style={styles.head}>
+                <View style={styles.timeContainer}>
+                    <Text style={styles.time}>
+                        {profile.firstName}
+                    </Text>
+                </View>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.title}>
+                        {profile.lastName}
+                    </Text>
+                </View>
             </View>
+            <View style={styles.info}>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.title}>
+                        {profile.mailAddress}
+                    </Text>
+                </View>
+            </View>
+        </View>
         );
     }
 }

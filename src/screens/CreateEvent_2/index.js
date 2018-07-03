@@ -1,11 +1,10 @@
-//import libraries
+/* //import libraries
 import React, { Component } from 'react'
 import { View, Text, Image, TouchableOpacity, KeyboardAvoidingView, TextInput } from 'react-native'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 import styles from './styles'
 
 import { Button } from 'react-native-elements'
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { screens } from '../../screens';
 // create a component
 export default class CreateEvent_2 extends Component {
@@ -141,3 +140,4 @@ export default class CreateEvent_2 extends Component {
         );
     }
 }
+ */

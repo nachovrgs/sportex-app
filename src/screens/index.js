@@ -3,64 +3,57 @@ import {Navigation, ScreenVisibilityListener} from 'react-native-navigation';
 import Login from './Login';
 import RegisterScreen from './RegisterScreen';
 import EventFeed from './EventFeed';
-import CreateEvent_1 from './CreateEvent_1';
-import CreateEvent_2 from './CreateEvent_2';
-import CreateEvent_3 from './CreateEvent_3';
+import CreateEvent from './CreateEvent';
 import UserProfile from './UserProfile';
 import EventScreen from './EventScreen';
+import Groups from './Groups';
 
 // Add ALL screens here for easy use all over project
 export const screens = {
     login : {
         id: 'sportex.Login',
-        title: 'Login',
+        title: 'Sportex',
         backButtonHidden: true
     },
     register : {
         id: 'sportex.Register',
-        title: 'Registrate',
+        title: 'Sportex',
         backButtonHidden: false
     },
     eventFeed: {
         id: 'sportex.EventFeed',
-        title: 'Partidos',
-        backButtonHidden: false
+        title: 'Sportex',
+        backButtonHidden: true
     },
-    createEvent1: {
-        id: 'sportex.CreateEvent_1',
-        title: 'Crear Partido',
-        backButtonHidden: false
-    },
-    createEvent2: {
-        id: 'sportex.CreateEvent_2',
-        title: 'Cuando es?',
-        backButtonHidden: false
-    },
-    createEvent3: {
-        id: 'sportex.CreateEvent_3',
-        title: 'Finaliza',
+    createEvent: {
+        id: 'sportex.CreateEvent',
+        title: 'Sportex',
         backButtonHidden: false
     },
     userProfile: {
         id: 'sportex.UserProfile',
-        title: 'Perfil',
+        title: 'Sportex',
         backButtonHidden: false
     },
     event: {
         id: 'sportex.EventScreen',
-        title: 'Partido',
+        title: 'Sportex',
         backButtonHidden: false
+    },
+    groups: {
+        id: 'sportex.Groups',
+        title: 'Sportex',
+        backButtonHidden: true
     }
 }
 
-// This registers all screens 
+// This registers all screens
 export function registerScreens() {
     Navigation.registerComponent(screens.login.id, () => Login);
     Navigation.registerComponent(screens.register.id, () => RegisterScreen);
     Navigation.registerComponent(screens.eventFeed.id, () => EventFeed);
-    Navigation.registerComponent(screens.createEvent1.id, () => CreateEvent_1);
-    Navigation.registerComponent(screens.createEvent2.id, () => CreateEvent_2);
-    Navigation.registerComponent(screens.createEvent3.id, () => CreateEvent_3);
+    Navigation.registerComponent(screens.createEvent.id, () => CreateEvent);
     Navigation.registerComponent(screens.userProfile.id, () => UserProfile);
     Navigation.registerComponent(screens.event.id, () => EventScreen);
+    Navigation.registerComponent(screens.groups.id, () => Groups);
 }

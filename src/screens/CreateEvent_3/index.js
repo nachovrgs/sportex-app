@@ -1,4 +1,4 @@
-//import libraries
+/* //import libraries
 import React, { Component } from 'react'
 import { View, Text, Image, TouchableOpacity, ActivityIndicator, AsyncStorage } from 'react-native'
 import Autocomplete from 'react-native-autocomplete-input'
@@ -47,7 +47,7 @@ export default class CreateEvent_3 extends Component {
         await this.getToken()
         /* fetch(`${API_URI}/location/`).then(res => res.json()).then((locations) => {
             this.setState({ locations: locations });
-        }); */
+        });
     }
 
     createAction = () => {
@@ -145,7 +145,7 @@ export default class CreateEvent_3 extends Component {
     render() {
         /* const { query } = this.state.query;
         const locations = this.findLocation(query);
-        const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim(); */
+        const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim(); 
         return (
             this.state.isLoading
                 ?
@@ -212,7 +212,7 @@ export default class CreateEvent_3 extends Component {
                                 Busca una cancha
                 </Text>
                         )}
-                </View> */}
+                </View> }
                         </View>
                         <View style={styles.buttonContainer}>
                             <Button
@@ -225,4 +225,4 @@ export default class CreateEvent_3 extends Component {
                     </View>
         );
     }
-}
+} */

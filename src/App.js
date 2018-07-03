@@ -49,6 +49,13 @@ export function startMainApp() {
                 selectedIcon: require('./assets/images/events_s.png'),
                 title: screens.eventFeed.title
             },
+            {
+                label: '',
+                screen: screens.groups.id,
+                icon: require('./assets/images/groups.png'),
+                selectedIcon: require('./assets/images/groups.png'),
+                title: screens.groups.title
+            },
         ],
         tabsStyle: {
             tabBarButtonColor: '#ecf0f1',

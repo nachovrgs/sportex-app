@@ -1,6 +1,6 @@
 //import libraries
 import React, { Component } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, ActivityIndicator, ScrollView } from 'react-native'
 
 import { EventContainer } from '../../components'
 
@@ -9,14 +9,14 @@ import { screens } from '../../screens'
 import { getTokenForUsage } from '../../helpers/storage';
 import { API_URI } from '../../constants'
 import styles from './styles';
-import { logInfo, logError } from '../../helpers/logger'
+import { colors } from '../../styles';
 
 // create a component
 export default class EventFeed extends Component {
     //Navigation
     static navigatorStyle = {
         navBarTextColor: '#ecf0f1',
-        navBarBackgroundColor: '#2c3e50',
+        navBarBackgroundColor: colors.navbar,
         navBarComponentAlignment: 'center',
         navBarTextAlignment: 'center'
     };
@@ -41,7 +41,7 @@ export default class EventFeed extends Component {
             isError: false,
             error: "",
             token: ""
-        }        
+        }
         this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
         this.loadData()
     }
@@ -51,17 +51,17 @@ export default class EventFeed extends Component {
         if (event.type == 'NavBarButtonPress') {
             if (event.id == 'add') {
                 this.props.navigator.push({
-                    screen: screens.createEvent1.id,
-                    title: screens.createEvent1.title,
+                    screen: screens.createEvent.id,
+                    title: screens.createEvent.title,
                     animated: true,
                     animationType: 'fade',
-                    backButtonHidden: screens.createEvent1.backButtonHidden,
+                    backButtonHidden: screens.createEvent.backButtonHidden,
                 });
             }
         }
     }
     _renderItem = ({item}) => (
-       <EventContainer eventItem={item} navigator={this.props.navigator} />  
+       <EventContainer eventItem={item} navigator={this.props.navigator} />
     )
 
     async loadData() {
@@ -125,14 +125,14 @@ export default class EventFeed extends Component {
                             <Text>No hay eventos</Text>
                         </View>
                         :
-                        <View style={styles.container}>
+                        <ScrollView style={styles.container}>
                             <FlatList
                                 style={styles.eventList}
                                 data={this.state.dataSource}
                                 keyExtractor={this._keyExtractor}
                                 renderItem={this._renderItem}
                             />
-                        </View>
+                        </ScrollView>
         );
     }
 }
