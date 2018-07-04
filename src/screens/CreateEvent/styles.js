@@ -5,40 +5,9 @@ import { colors, sizes } from '../../styles';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'rgba(255,255,255,0.1)',
+        backgroundColor: colors.background
     },
-    formContainer: {
-        flex: 5,
-        padding: 60,
-    },
-    input: {
-        height: 40,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        marginBottom: 10,
-        color: colors.text,
-        paddingHorizontal: 20,
-    },
-    buttonContainer: {
-        flex: 1,
-        alignSelf: 'center',
-        position: 'absolute',
-        bottom: 65
-    },
-    calendarContainer: {
-        flex: 5,
-        alignSelf: 'center',
-    },
-    selectorContainer: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        flex: 1
-    },
-    calendarIcon: {
-        width: 40,
-        height: 40,
-    },
-    dateTimeText: {
-        fontSize: sizes.large,
-        marginTop: 20,
+    createButton: {
+        marginTop: 280,
     },
 });

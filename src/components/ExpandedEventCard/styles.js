@@ -5,7 +5,6 @@ import { colors, sizes } from '../../styles';
 export default StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'row',
         height: 200,
         margin: 22,
         backgroundColor: 'rgba(255,255,255,0.9)',
@@ -14,10 +13,14 @@ export default StyleSheet.create({
         borderColor: colors.borders,
         elevation: 1,
     },
+    allContainer: {
+      flexDirection: 'row',
+      flex: 7,
+    },
     sidebar: {
         flex: 1,
         backgroundColor: colors.bar_rank_2,
-        borderBottomLeftRadius: 10,
+        borderBottomLeftRadius: 0,
         borderTopLeftRadius: 10,
     },
     mainInfo: {
@@ -33,24 +36,38 @@ export default StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
     },
-    timeContainer: {
-        flex: 1,
-        flexDirection: 'row',
-        marginTop: 30,
-    },
-    time: {
-        flex: 1,
-        fontSize: sizes.medium,
-        color: colors.text,
-        marginLeft: 10,
-    },
     titleContainer: {
-        flex: 1,
+        flex: 2,
     },
     title: {
         flex: 1,
         fontSize: sizes.medium,
-        color: colors.text
+        color: colors.background
+    },
+    userContainer: {
+      flex: 2,
+      flexDirection: 'row',
+    },
+    user: {
+        flex: 1,
+        fontSize: sizes.medium,
+        color: colors.text,
+        marginTop:5,
+        marginLeft: 10,
+    },
+    timeContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        marginTop: 20,
+    },
+    timeIcon: {
+      fontSize: sizes.medium,
+    },
+    time: {
+        flex: 1,
+        fontSize: sizes.small,
+        color: colors.text,
+        marginLeft: 10,
     },
     location: {
         flex: 1,
@@ -63,16 +80,22 @@ export default StyleSheet.create({
     },
     fill: {
         flex: 1,
-        fontSize: sizes.medium,
+        fontSize: sizes.small,
         color: colors.text
     },
     fillContainer: {
-        flex: 1,
+        flex: 2,
         marginTop: 30,
         alignItems: 'flex-end',
+    },
+    fillIcon: {
+      fontSize: sizes.medium,
     },
     eventImage: {
         height: 25,
         width: 25
+    },
+    button: {
+        flex: 2,
     },
 });

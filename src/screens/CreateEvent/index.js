@@ -25,10 +25,10 @@ import {
   Right,
   Title,
   DatePicker,
-  Icon,
-  ListItem
+  Icon
 } from "native-base";
 import { logout } from "../../helpers/navigation";
+import { getTokenForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import { screens } from "../../screens";
 import styles from "./styles";
@@ -74,57 +74,6 @@ export default class CreateEvent_1 extends Component {
   }
 
   //Helper methods
-  createAction = () => {
-    fetch(`${API_URI}/event/`, {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer " + this.state.token.replace(/"/g, ""),
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        StandardProfileID: 1,
-        EventName: this.state.name,
-        Description: this.state.description,
-        EventType: 1,
-        StartingTime: this.state.date + "T" + this.state.time,
-        LocationID: 1,
-        IsPublic: this.state.isPublic ? 1 : 0,
-        MaxStarters: this.state.maxStarters,
-        MasSubs: this.state.maxSubs
-      })
-    })
-      .then(response => {
-        if (response.ok) {
-          //Event created,oing to feed
-          this.props.navigator.push({
-            screen: screens.eventFeed.id,
-            title: screens.eventFeed.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.eventFeed.backButtonHidden
-          });
-        } else {
-          this.setState({
-            isLoading: false,
-            isError: true,
-            error: "Network response was not ok.",
-            token: ""
-          });
-          return new Error("Network response was not ok.");
-        }
-      })
-      .catch(error => {
-        this.setState({
-          isLoading: false,
-          isError: true,
-          error: error.message,
-          token: ""
-        });
-        throw error;
-      });
-  };
-
   async getToken() {
     this.state.token = await getTokenForUsage();
   }
@@ -200,7 +149,7 @@ export default class CreateEvent_1 extends Component {
   _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
   _handleDatePicked = date => {
-    console.log(date)
+    console.log(date);
     this.setState({
       startingDate: date,
       startingTime: this.state.startingTime
@@ -219,36 +168,40 @@ export default class CreateEvent_1 extends Component {
     });
     this._hideTimePicker();
   };
-  cleanDate = (date) => {
-      if (date) {
-          var day = String(date.getDate()).length == 1 ? "0" + date.getDate() : date.getDate();
-          var month = String(date.getMonth()).length == 1 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
-          var year = date.getFullYear();
-          return year + "-" + month + "-" + day;
-      }
-  }
+  cleanDate = date => {
+    if (date) {
+      var day =
+        String(date.getDate()).length == 1
+          ? "0" + date.getDate()
+          : date.getDate();
+      var month =
+        String(date.getMonth()).length == 1
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1;
+      var year = date.getFullYear();
+      return year + "-" + month + "-" + day;
+    }
+  };
 
-  cleanTime = (time) => {
-      if (time) {
-          var hour = String(time.getHours()).length == 1 ? "0" + time.getHours() : time.getHours();
-          var minute = String(time.getMinutes()).length == 1 ? "0" + time.getMinutes() : time.getMinutes();
-          var second = String(time.getSeconds()).length == 1 ? "0" + time.getSeconds() : time.getSeconds();
-          return hour + ':' + minute + ':' + second;
-      }
-  }
+  cleanTime = time => {
+    if (time) {
+      var hour =
+        String(time.getHours()).length == 1
+          ? "0" + time.getHours()
+          : time.getHours();
+      var minute =
+        String(time.getMinutes()).length == 1
+          ? "0" + time.getMinutes()
+          : time.getMinutes();
+      var second =
+        String(time.getSeconds()).length == 1
+          ? "0" + time.getSeconds()
+          : time.getSeconds();
+      return hour + ":" + minute + ":" + second;
+    }
+  };
   createAction = () => {
-    console.log(JSON.stringify({
-      StandardProfileID: 1,
-      EventName: this.state.name,
-      Description: this.state.description,
-      EventType: 1,
-      StartingTime: this.state.date + "T" + this.state.time,
-      LocationID: 1,
-      IsPublic: this.state.isPublic ? 1 : 0,
-      MaxStarters: this.state.maxStarters,
-      MasSubs: this.state.maxSubs
-    }))
-    fetch(`${API_URI}/event/`, {
+    fetch(`${API_URI}/event`, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + this.state.token.replace(/"/g, ""),
@@ -260,7 +213,10 @@ export default class CreateEvent_1 extends Component {
         EventName: this.state.name,
         Description: this.state.description,
         EventType: 1,
-        StartingTime: this.state.date + "T" + this.state.time,
+        StartingTime:
+          this.cleanDate(this.state.startingDate) +
+          "T" +
+          this.cleanTime(this.state.startingTime),
         LocationID: 1,
         IsPublic: this.state.isPublic ? 1 : 0,
         MaxStarters: this.state.maxStarters,
@@ -269,6 +225,7 @@ export default class CreateEvent_1 extends Component {
     })
       .then(response => {
         if (response.ok) {
+          console.log("Network response was ok.");
           //Event created,oing to feed
           this.props.navigator.push({
             screen: screens.eventFeed.id,
@@ -278,7 +235,7 @@ export default class CreateEvent_1 extends Component {
             backButtonHidden: screens.eventFeed.backButtonHidden
           });
         } else {
-          console.log("Network response was not ok.")
+          console.log("Network response was not ok.");
           this.setState({
             isLoading: false,
             isError: true,
@@ -289,7 +246,7 @@ export default class CreateEvent_1 extends Component {
         }
       })
       .catch(error => {
-        console.log(error)
+        console.log(error);
         this.setState({
           isLoading: false,
           isError: true,
@@ -312,7 +269,7 @@ export default class CreateEvent_1 extends Component {
         </Header>
         <Content>
           <Form>
-            <Item floatingLabel>
+            <Item fixedLabel>
               <Label>Nombre</Label>
               <Input
                 returnKeyType="next"
@@ -321,7 +278,7 @@ export default class CreateEvent_1 extends Component {
                 autoCorrect={true}
               />
             </Item>
-            <Item floatingLabel>
+            <Item fixedLabel>
               <Label>Descripción</Label>
               <Input
                 value={description}
@@ -331,68 +288,61 @@ export default class CreateEvent_1 extends Component {
               />
             </Item>
             <Item>
-              <ListItem>
-                <TouchableOpacity onPress={this._showDateTimePicker}>
-                  <Image
-                    style={styles.calendarIcon}
-                    source={require("../../assets/images/calendar.png")}
-                  />
-                  <Text style={styles.dateTimeText}>
-                    {this.cleanDate(this.state.startingDate)}
-                  </Text>
-                </TouchableOpacity>
-                <DateTimePicker
-                  isVisible={this.state.isDateTimePickerVisible}
-                  onConfirm={this._handleDatePicked}
-                  onCancel={this._hideDateTimePicker}
-                  minimumDate={new Date()}
-                  // maximumDate={new Date().setMonth((new Date().getMonth()+1))}
-                />
-              </ListItem>
+              <TouchableOpacity onPress={this._showDateTimePicker}>
+                <Icon active name="calendar" />
+              </TouchableOpacity>
+              <Input
+                editable={false}
+                placeholder="Fecha"
+                value={this.cleanDate(this.state.startingDate)}
+              />
+              <DateTimePicker
+                isVisible={this.state.isDateTimePickerVisible}
+                onConfirm={this._handleDatePicked}
+                onCancel={this._hideDateTimePicker}
+                minimumDate={new Date()}
+                // maximumDate={new Date().setMonth((new Date().getMonth()+1))}
+              />
             </Item>
             <Item>
-              <ListItem>
-                <TouchableOpacity onPress={this._showTimePicker}>
-                  <Image
-                    style={styles.calendarIcon}
-                    source={require("../../assets/images/time.png")}
-                  />
-                  <Text style={styles.dateTimeText}>
-                    {this.cleanTime(this.state.startingTime)}
-                  </Text>
-                </TouchableOpacity>
-                <DateTimePicker
-                  isVisible={this.state.isTimePickerVisible}
-                  onConfirm={this._handleTimePicked}
-                  onCancel={this._hideTimePicker}
-                  minimumDate={new Date()}
-                  mode="time"
-                />
-              </ListItem>
+              <TouchableOpacity onPress={this._showTimePicker}>
+                <Icon active name="clock" />
+              </TouchableOpacity>
+              <Input
+                editable={false}
+                placeholder="Hora"
+                value={this.cleanDate(this.state.startingTime)}
+              />
+              <DateTimePicker
+                isVisible={this.state.isTimePickerVisible}
+                onConfirm={this._handleTimePicked}
+                onCancel={this._hideTimePicker}
+                minimumDate={new Date()}
+                mode="time"
+              />
             </Item>
             <Item last>
-              <ListItem>
-                <CheckBox
-                  checked={this.state.isPublic}
-                  onPress={() =>
-                    this.setState({ isPublic: !this.state.isPublic })
-                  }
-                />
-                <Body>
-                  <Text>Publico</Text>
-                </Body>
-              </ListItem>
+              <CheckBox
+                checked={this.state.isPublic}
+                onPress={() =>
+                  this.setState({ isPublic: !this.state.isPublic })
+                }
+              />
+              <Body>
+                <Text>Publico</Text>
+              </Body>
             </Item>
           </Form>
-
-          <Button
-            block
-            success
-            onPress={this.createAction}
-            disabled={!this.isReady()}
-          >
-            <Text>Crear</Text>
-          </Button>
+          <View style={styles.createButton}>
+            <Button
+              block
+              success
+              onPress={this.createAction}
+              disabled={!this.isReady()}
+            >
+              <Text>Crear</Text>
+            </Button>
+          </View>
         </Content>
       </Container>
     );
