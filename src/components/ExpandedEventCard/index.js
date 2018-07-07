@@ -15,13 +15,13 @@ export default class ExpandedEventCard extends Component {
     this.state = {
       item: {},
       coords: {},
-      token: null,
+      token: "",
       profileId: null
     };
     this.loadLocation = this.loadLocation.bind(this);
     this.getDistance = this.getDistance.bind(this);
     this.handlePress = this.handlePress.bind(this);
-    this.loadStorageItems()
+    this.loadStorageItems();
   }
 
   componentDidMount() {
@@ -85,14 +85,19 @@ export default class ExpandedEventCard extends Component {
     return false;
   }
   joinAction = () => {
-    console.log( JSON.stringify({
-      idProfile: this.state.profileId,
-      idEvent: this.item.ID
-    }))
+    console.log(
+      JSON.stringify({
+        idProfile: this.state.profileId,
+        idEvent: this.item.ID
+      })
+    );
     fetch(`${API_URI}/event/JoinEvent`, {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + this.state.token.replace(/"/g, ""),
+        Authorization:
+          "Bearer " + this.state.token
+            ? this.state.token.replace(/"/g, "")
+            : "",
         Accept: "application/json",
         "Content-Type": "application/json"
       },
@@ -117,6 +122,7 @@ export default class ExpandedEventCard extends Component {
       })
       .catch(error => {
         console.log(error);
+        throw error;
       });
   };
   render() {

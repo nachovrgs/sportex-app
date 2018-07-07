@@ -204,7 +204,10 @@ export default class CreateEvent_1 extends Component {
     fetch(`${API_URI}/event`, {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + this.state.token.replace(/"/g, ""),
+        Authorization:
+          "Bearer " + this.state.token
+            ? this.state.token.replace(/"/g, "")
+            : "",
         Accept: "application/json",
         "Content-Type": "application/json"
       },

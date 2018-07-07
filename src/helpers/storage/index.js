@@ -95,7 +95,9 @@ export async function getProfileIdForUsage() {
   try {
     const profileId = await AsyncStorage.getItem(PROFILE_ID_NAME_STORE);
     if (profileId == null) {
-      logError("Profile ID is null. Expected a not null profile ID. Something is wrong. Logging out");
+      logError(
+        "Profile ID is null. Expected a not null profile ID. Something is wrong. Logging out"
+      );
       logout();
       return null;
     } else {
@@ -161,6 +163,7 @@ export async function getProfileFromAccountId(accountId) {
     .catch(error => {
       logError(error);
       resetAndLogout();
+      throw error;
     });
 }
 export async function resetAndLogout() {
