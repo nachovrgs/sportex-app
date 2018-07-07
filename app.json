@@ -1,7 +1,4 @@
 {
   "name": "sportex",
-  "displayName": "sportex",
-  "assetBundlePatterns": [
-    "src/assets/images//**"
-  ]
+  "displayName": "sportex"
 }
