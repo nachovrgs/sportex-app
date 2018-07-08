@@ -70,14 +70,45 @@ export default class CreateEvent_1 extends Component {
       isError: false,
       error: ""
     };
-    this.getToken();
+    this.loadData();
   }
 
   //Helper methods
-  async getToken() {
+  async loadData() {
     this.state.token = await getTokenForUsage();
+    await loadGroups();
   }
-
+  async loadGroups() {
+    fetch(`${API_URI}/group`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.state.isLoading = false;
+          this.state.isError = true;
+          this.state.error = "Network response was not ok.";
+          this.state.token = "";
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        this.state.token = jsonResponse;
+      })
+      .catch(error => {
+        this.state.isLoading = false;
+        this.state.isError = true;
+        this.state.error = error.message;
+        this.state.token = "";
+        throw error;
+      });
+  }
   findLocation = query => {
     if (!query || query === "") {
       return [];
@@ -205,9 +236,8 @@ export default class CreateEvent_1 extends Component {
       method: "POST",
       headers: {
         Authorization:
-          "Bearer " + this.state.token
-            ? this.state.token.replace(/"/g, "")
-            : "",
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
         Accept: "application/json",
         "Content-Type": "application/json"
       },

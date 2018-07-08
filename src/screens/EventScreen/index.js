@@ -63,9 +63,8 @@ export default class EventScreen extends Component {
           method: "DELETE",
           headers: {
             Authorization:
-              "Bearer " + this.state.token
-                ? this.state.token.replace(/"/g, "")
-                : ""
+              "Bearer " +
+              (this.state.token ? this.state.token.replace(/"/g, "") : "")
           }
         })
           .then(response => {

@@ -71,9 +71,8 @@ export default class Groups extends Component {
         method: "GET",
         headers: {
           Authorization:
-            "Bearer " + this.state.token
-              ? this.state.token.replace(/"/g, "")
-              : ""
+            "Bearer " +
+            (this.state.token ? this.state.token.replace(/"/g, "") : "")
         }
       })
         .then(response => {

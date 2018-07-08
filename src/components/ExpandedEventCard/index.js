@@ -4,9 +4,11 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import geolib from "geolib";
 
 import { Icon, Button, Thumbnail } from "native-base";
+import { API_URI } from "../../constants";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { colors } from "../../styles";
 import styles from "./styles";
+import { screens } from "../../screens";
 
 // create a component
 export default class ExpandedEventCard extends Component {
@@ -85,25 +87,18 @@ export default class ExpandedEventCard extends Component {
     return false;
   }
   joinAction = () => {
-    console.log(
-      JSON.stringify({
-        idProfile: this.state.profileId,
-        idEvent: this.item.ID
-      })
-    );
     fetch(`${API_URI}/event/JoinEvent`, {
       method: "POST",
       headers: {
         Authorization:
-          "Bearer " + this.state.token
-            ? this.state.token.replace(/"/g, "")
-            : "",
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
         Accept: "application/json",
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         idProfile: this.state.profileId,
-        idEvent: this.item.ID
+        idEvent: this.state.item.id
       })
     })
       .then(response => {
@@ -181,7 +176,7 @@ export default class ExpandedEventCard extends Component {
               block
               success
               onPress={this.joinAction}
-              disabled={!this.canJoin}
+              disabled={!this.canJoin()}
             >
               <Text>Unirse</Text>
             </Button>

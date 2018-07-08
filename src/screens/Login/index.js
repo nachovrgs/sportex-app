@@ -95,11 +95,15 @@ export default class Login extends Component {
   };
 
   storeTokenAndLogin = async response => {
-    if (setTokenInfo(response.token, response.expires, response.accountId)) {
-      login();
-    } else {
-      this.resetValues();
-    }
+    Promise.all([
+      setTokenInfo(response.token, response.expires, response.accountId)
+    ]).then(([success]) => {
+      if (success) {
+        login();
+      } else {
+        this.resetValues();
+      }
+    });
   };
 
   registerAction = () => {

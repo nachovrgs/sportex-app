@@ -177,7 +177,7 @@ export default class RegisterScreen extends Component {
               style={styles.logo}
               source={require("../../assets/images/companylogo.png")}
             />
-            <Text style={styles.title}>Sign up and get started</Text>
+            <Text style={styles.title}>Registrate para empezar a jugar</Text>
           </View>
           <View style={styles.formContainer}>
             <View style={styles.input}>

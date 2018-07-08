@@ -79,9 +79,8 @@ export default class EventFeed extends Component {
         method: "GET",
         headers: {
           Authorization:
-            "Bearer " + this.state.token
-              ? this.state.token.replace(/"/g, "")
-              : ""
+            "Bearer " +
+            (this.state.token ? this.state.token.replace(/"/g, "") : "")
         }
       })
         .then(response => {
@@ -94,7 +93,7 @@ export default class EventFeed extends Component {
               error: "Network response was not ok.",
               token: ""
             });
-            return new Error("Network response was not ok.");
+            return new Error("cacacNetwork response was not ok.");
           }
         })
         .then(jsonResponse => {

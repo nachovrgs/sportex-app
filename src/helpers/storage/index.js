@@ -80,14 +80,15 @@ export async function getTokenForUsage() {
     const token = await AsyncStorage.getItem(TOKEN_NAME_STORE);
     if (token == null) {
       logError("Token is null. Expected a not null token");
-      logout();
+      resetAndLogout();
       return null;
     } else {
       return token;
     }
   } catch (error) {
+    logInfo("Estoy qui señor");
     logError(error);
-    logout();
+    resetAndLogout();
     return null;
   }
 }
@@ -98,14 +99,14 @@ export async function getProfileIdForUsage() {
       logError(
         "Profile ID is null. Expected a not null profile ID. Something is wrong. Logging out"
       );
-      logout();
+      resetAndLogout();
       return null;
     } else {
       return profileId;
     }
   } catch (error) {
     logError(error);
-    logout();
+    resetAndLogout();
     return null;
   }
 }
@@ -114,14 +115,14 @@ export async function getAccountIdForUsage() {
     const accountId = await AsyncStorage.getItem(ACCOUNT_ID_NAME_STORE);
     if (accountId == null) {
       logError("Account ID is null. Expected a not null account");
-      logout();
+      resetAndLogout();
       return null;
     } else {
       return accountId;
     }
   } catch (error) {
     logError(error);
-    logout();
+    resetAndLogout();
     return null;
   }
 }
@@ -130,7 +131,8 @@ export async function setTokenInfo(token, tokenExp, accountId) {
     setToken(JSON.stringify(token));
     setTokenExp(JSON.stringify(tokenExp));
     setAccountId(JSON.stringify(accountId));
-    setProfileId(getProfileFromAccountId(accountId));
+    var profileId = await getProfileFromAccountId(accountId);
+    setProfileId(profileId);
     return true;
   } catch (error) {
     logError(error);
@@ -141,34 +143,39 @@ export async function setTokenInfo(token, tokenExp, accountId) {
 //Extras
 
 export async function getProfileFromAccountId(accountId) {
-  fetch(`${API_URI}/standardProfile/account/${accountId}`, {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + getTokenForUsage().replace(/"/g, "")
-    }
-  })
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        logError(
-          "Response from server was not ok. Trying to get profile from accountId"
-        );
-        resetAndLogout();
-      }
-    })
-    .then(jsonResponse => {
-      return JSON.stringify(jsonResponse.ID);
-    })
-    .catch(error => {
-      logError(error);
-      resetAndLogout();
-      throw error;
+  return new Promise(resolve => {
+    getTokenForUsage().then(receivedToken => {
+      fetch(`${API_URI}/standardProfile/account/${accountId}`, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + receivedToken.replace(/"/g, "")
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            logError(
+              "Response from server was not ok. Trying to get profile from accountId"
+            );
+            resetAndLogout();
+          }
+        })
+        .then(jsonResponse => {
+          resolve(JSON.stringify(jsonResponse.id));
+        })
+        .catch(error => {
+          logError(error);
+          resetAndLogout();
+          throw error;
+        });
     });
+  });
 }
 export async function resetAndLogout() {
-  await AsyncStorage.clear();
-  logout();
+  AsyncStorage.clear().then(() => {
+    logout();
+  });
 }
 export function isLoggedIn() {
   return getToken() != null && getTokenExp() != null;
