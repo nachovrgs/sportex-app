@@ -25,7 +25,8 @@ import {
   Right,
   Title,
   DatePicker,
-  Icon
+  Icon,
+  Picker
 } from "native-base";
 import { logout } from "../../helpers/navigation";
 import { getTokenForUsage } from "../../helpers/storage";
@@ -52,16 +53,10 @@ export default class CreateEvent_1 extends Component {
       isDateTimePickerVisible: false,
       isTimePickerVisible: false,
       query: "",
-      locations: [
-        {
-          ID: 1,
-          Name: "Scuola",
-          CreatedOn: "2018-06-04 00:00:00",
-          Description: "Carrasco - Scuola",
-          LastUpdate: "2018-06-04 00:00:00",
-          Status: 1
-        }
-      ],
+      locations: [],
+      selectedLocation: null,
+      groups: [],
+      selectedGroup: null,
       isPublic: false,
       maxStarters: 15,
       maxSubs: 5,
@@ -70,14 +65,93 @@ export default class CreateEvent_1 extends Component {
       isError: false,
       error: ""
     };
-    this.getToken();
+    this.loadData();
   }
 
   //Helper methods
-  async getToken() {
+  async loadData() {
     this.state.token = await getTokenForUsage();
+    await this.loadGroups();
+    await this.loadLocations();
   }
-
+  async loadGroups() {
+    fetch(`${API_URI}/group/`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        this.setState({
+          groups: jsonResponse,
+          isLoading: false,
+          error: ""
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
+  }
+  async loadLocations() {
+    fetch(`${API_URI}/Location/`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        this.setState({
+          locations: jsonResponse,
+          isLoading: false,
+          error: ""
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
+  }
   findLocation = query => {
     if (!query || query === "") {
       return [];
@@ -204,7 +278,9 @@ export default class CreateEvent_1 extends Component {
     fetch(`${API_URI}/event`, {
       method: "POST",
       headers: {
-        Authorization: "Bearer " + this.state.token.replace(/"/g, ""),
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
         Accept: "application/json",
         "Content-Type": "application/json"
       },
@@ -256,8 +332,69 @@ export default class CreateEvent_1 extends Component {
         throw error;
       });
   };
+
+  onValueChangeGroups(value: string) {
+    this.setState({
+      selectedGroup: value
+    });
+  }
+  onValueChangeLocations(value: string) {
+    this.setState({
+      selectedLocation: value
+    });
+  }
+
   render() {
     const { name, description, isLoading } = this.state;
+    let groupOptionPicker;
+    if (this.state.groups.length > 0) {
+      groupOptionPicker = (
+        <Item picker>
+          <Picker
+            mode="dropdown"
+            iosIcon={<Icon name="ios-arrow-down-outline" />}
+            style={{ width: undefined }}
+            placeholder="Elegi el Grupo"
+            placeholderStyle={{ color: "#bfc6ea" }}
+            placeholderIconColor="#007aff"
+            selectedValue={this.state.selectedGroup}
+            onValueChange={this.onValueChangeGroups.bind(this)}
+          >
+            <Picker.Item label="A Group" value="key0" />
+            ) + this.state.groups.map(group => (
+            <Picker.Item label={group.name} value={group.id} />
+            )) + ({" "}
+          </Picker>
+        </Item>
+      );
+    }
+    console.log("The famous gropups" + JSON.stringify(this.state.groups));
+
+    let locationOptionPicker;
+    if (this.state.locations.length > 0) {
+      locationOptionPicker = (
+        <Item picker>
+          <Picker
+            mode="dropdown"
+            iosIcon={<Icon name="ios-arrow-down-outline" />}
+            style={{ width: undefined }}
+            placeholder="Elegi el Lugar"
+            placeholderStyle={{ color: "#bfc6ea" }}
+            placeholderIconColor="#007aff"
+            selectedValue={this.state.selectedLocaton}
+            onValueChange={this.onValueChangeLocations.bind(this)}
+          >
+            <Picker.Item label="A Location" value="key0" />
+            ) + this.state.locations.map(location => (
+            <Picker.Item label={location.name} value={location.id} />
+            )) + ({" "}
+          </Picker>
+        </Item>
+      );
+      console.log(
+        "The famous locations" + JSON.stringify(this.state.locations)
+      );
+    }
     return (
       <Container>
         <Header>
@@ -321,6 +458,8 @@ export default class CreateEvent_1 extends Component {
                 mode="time"
               />
             </Item>
+            {groupOptionPicker}
+            {locationOptionPicker}
             <Item last>
               <CheckBox
                 checked={this.state.isPublic}

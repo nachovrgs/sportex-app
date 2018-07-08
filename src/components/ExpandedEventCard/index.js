@@ -4,8 +4,11 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import geolib from "geolib";
 
 import { Icon, Button, Thumbnail } from "native-base";
+import { API_URI } from "../../constants";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { colors } from "../../styles";
 import styles from "./styles";
+import { screens } from "../../screens";
 
 // create a component
 export default class ExpandedEventCard extends Component {
@@ -13,11 +16,14 @@ export default class ExpandedEventCard extends Component {
     super(props);
     this.state = {
       item: {},
-      coords: {}
+      coords: {},
+      token: "",
+      profileId: null
     };
     this.loadLocation = this.loadLocation.bind(this);
     this.getDistance = this.getDistance.bind(this);
     this.handlePress = this.handlePress.bind(this);
+    this.loadStorageItems();
   }
 
   componentDidMount() {
@@ -46,6 +52,10 @@ export default class ExpandedEventCard extends Component {
         console.log(error);
       }
     );
+  }
+  async loadStorageItems() {
+    this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
   }
   getDistance() {
     if (
@@ -77,60 +87,38 @@ export default class ExpandedEventCard extends Component {
     return false;
   }
   joinAction = () => {
-    // fetch(`${API_URI}/event/join`, {
-    //   method: "POST",
-    //   headers: {
-    //     Authorization: "Bearer " + this.state.token.replace(/"/g, ""),
-    //     Accept: "application/json",
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({
-    //     StandardProfileID: 1,
-    //     EventName: this.state.name,
-    //     Description: this.state.description,
-    //     EventType: 1,
-    //     StartingTime:
-    //       this.cleanDate(this.state.startingDate) +
-    //       "T" +
-    //       this.cleanTime(this.state.startingTime),
-    //     LocationID: 1,
-    //     IsPublic: this.state.isPublic ? 1 : 0,
-    //     MaxStarters: this.state.maxStarters,
-    //     MasSubs: this.state.maxSubs
-    //   })
-    // })
-    //   .then(response => {
-    //     if (response.ok) {
-    //       console.log("Network response was ok.");
-    //       //Event created,oing to feed
-    //       this.props.navigator.push({
-    //         screen: screens.eventFeed.id,
-    //         title: screens.eventFeed.title,
-    //         animated: true,
-    //         animationType: "fade",
-    //         backButtonHidden: screens.eventFeed.backButtonHidden
-    //       });
-    //     } else {
-    //       console.log("Network response was not ok.");
-    //       this.setState({
-    //         isLoading: false,
-    //         isError: true,
-    //         error: "Network response was not ok.",
-    //         token: ""
-    //       });
-    //       return new Error("Network response was not ok.");
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //     this.setState({
-    //       isLoading: false,
-    //       isError: true,
-    //       error: error.message,
-    //       token: ""
-    //     });
-    //     throw error;
-    //   });
+    fetch(`${API_URI}/event/JoinEvent`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idProfile: this.state.profileId,
+        idEvent: this.state.item.id
+      })
+    })
+      .then(response => {
+        if (response.ok) {
+          //Event joined. Rereshing
+          this.props.navigator.push({
+            screen: screens.eventFeed.id,
+            title: screens.eventFeed.title,
+            animated: true,
+            animationType: "fade",
+            backButtonHidden: screens.eventFeed.backButtonHidden
+          });
+        } else {
+          console.log("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        throw error;
+      });
   };
   render() {
     const event = this.state.item;
@@ -188,7 +176,7 @@ export default class ExpandedEventCard extends Component {
               block
               success
               onPress={this.joinAction}
-              disabled={!this.canJoin}
+              disabled={!this.canJoin()}
             >
               <Text>Unirse</Text>
             </Button>

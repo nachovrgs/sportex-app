@@ -73,43 +73,47 @@ export default class EventFeed extends Component {
   );
 
   async loadData() {
-    this.state.token = await getTokenForUsage();
-    fetch(`${API_URI}/event/`, {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + this.state.token.replace(/"/g, "")
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
+    Promise.all([getTokenForUsage()]).then(([token]) => {
+      this.state.token = token;
+      fetch(`${API_URI}/event/`, {
+        method: "GET",
+        headers: {
+          Authorization:
+            "Bearer " +
+            (this.state.token ? this.state.token.replace(/"/g, "") : "")
+        }
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            this.setState({
+              isLoading: false,
+              isError: true,
+              error: "Network response was not ok.",
+              token: ""
+            });
+            return new Error("Network response was not ok.");
+          }
+        })
+        .then(jsonResponse => {
+          this.setState({
+            dataSource: jsonResponse,
+            isLoading: false,
+            error: "",
+            token: ""
+          });
+        })
+        .catch(error => {
           this.setState({
             isLoading: false,
             isError: true,
-            error: "Network response was not ok.",
+            error: error.message,
             token: ""
           });
-          return new Error("Network response was not ok.");
-        }
-      })
-      .then(jsonResponse => {
-        this.setState({
-          dataSource: jsonResponse,
-          isLoading: false,
-          error: "",
-          token: ""
+          throw error;
         });
-      })
-      .catch(error => {
-        this.setState({
-          isLoading: false,
-          isError: true,
-          error: error.message,
-          token: ""
-        });
-        throw error;
-      });
+    });
   }
   _refreshListView = () => {
     console.log("refreshing");
@@ -137,7 +141,7 @@ export default class EventFeed extends Component {
       </View>
     ) : this.state.dataSource.length == 0 ? (
       <View style={styles.container}>
-        <Text>No hay eventos</Text>
+        <Text>No hay eventos, crea uno!</Text>
       </View>
     ) : (
       <ScrollView style={styles.container}>

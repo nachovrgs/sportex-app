@@ -21,10 +21,7 @@ export default class EventCard extends Component {
 
   componentDidMount() {
     this._mounted = true;
-    this.setState({
-      item: this.props.eventItem,
-      coords: {}
-    });
+    this.state.item = this.props.eventItem;
     this.loadLocation();
     this.selectBackgroundColor();
   }
@@ -94,10 +91,10 @@ export default class EventCard extends Component {
               <Text style={styles.title}>{event.eventName}</Text>
             </View>
             <View style={styles.userContainer}>
-            {creator}
-            <Text style={styles.user}>
-              {event.creatorProfile.account.username}
-            </Text>
+              {creator}
+              <Text style={styles.user}>
+                {event.creatorProfile.account.username}
+              </Text>
             </View>
             <View style={styles.timeContainer}>
               <Icon name="time" style={styles.timeIcon} />
