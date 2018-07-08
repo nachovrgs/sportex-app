@@ -93,7 +93,7 @@ export default class EventFeed extends Component {
               error: "Network response was not ok.",
               token: ""
             });
-            return new Error("cacacNetwork response was not ok.");
+            return new Error("Network response was not ok.");
           }
         })
         .then(jsonResponse => {
@@ -141,7 +141,7 @@ export default class EventFeed extends Component {
       </View>
     ) : this.state.dataSource.length == 0 ? (
       <View style={styles.container}>
-        <Text>No hay eventos</Text>
+        <Text>No hay eventos, crea uno!</Text>
       </View>
     ) : (
       <ScrollView style={styles.container}>
