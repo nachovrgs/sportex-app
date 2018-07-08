@@ -4,6 +4,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import geolib from "geolib";
 
 import { Icon, Button, Thumbnail } from "native-base";
+import { Rating } from "react-native-elements";
 import { API_URI } from "../../constants";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { colors } from "../../styles";
@@ -11,7 +12,7 @@ import styles from "./styles";
 import { screens } from "../../screens";
 
 // create a component
-export default class ExpandedEventCard extends Component {
+export default class ExpandedPastEventCard extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -83,11 +84,11 @@ export default class ExpandedEventCard extends Component {
   handlePress() {
     this.props.onclick();
   }
-  canJoin() {
+  canEvaluate() {
     return true;
   }
-  joinAction = () => {
-    fetch(`${API_URI}/event/JoinEvent`, {
+  evaluateAction = rating => {
+    fetch(`${API_URI}/playerReview/ReviewAllEventParticipants`, {
       method: "POST",
       headers: {
         Authorization:
@@ -97,19 +98,22 @@ export default class ExpandedEventCard extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        idProfile: this.state.profileId,
-        idEvent: this.state.item.id
+        Rate: rating,
+        Message: "",
+        IdProfileReviews: this.state.profileId,
+        IdProfileReviewed: 0,
+        EventID: this.state.item.id
       })
     })
       .then(response => {
         if (response.ok) {
           //Event joined. Rereshing
           this.props.navigator.push({
-            screen: screens.eventFeed.id,
-            title: screens.eventFeed.title,
+            screen: screens.historyFeed.id,
+            title: screens.historyFeed.title,
             animated: true,
             animationType: "fade",
-            backButtonHidden: screens.eventFeed.backButtonHidden
+            backButtonHidden: screens.historyFeed.backButtonHidden
           });
         } else {
           console.log("Network response was not ok.");
@@ -121,6 +125,7 @@ export default class ExpandedEventCard extends Component {
       });
   };
   render() {
+    const RATING_IMAGE = require("../../assets/images/star.png");
     const event = this.state.item;
     if (JSON.stringify(event) != JSON.stringify({})) {
       let creator;
@@ -163,23 +168,19 @@ export default class ExpandedEventCard extends Component {
                 />
                 <Text style={styles.location}>{this.getDistance()} km</Text>
               </View>
-              <View style={styles.fillContainer}>
-                <Text style={styles.fill}>
-                  <Icon name="contacts" style={styles.fillIcon} />
-                  {event.countStarters} / {event.maxStarters}
-                </Text>
-              </View>
             </View>
           </TouchableOpacity>
           <View style={styles.button}>
-            <Button
-              block
-              success
-              onPress={this.joinAction}
-              disabled={!this.canJoin()}
-            >
-              <Text>Unirse</Text>
-            </Button>
+            <Rating
+              type="star"
+              ratingCount={5}
+              fractions={1}
+              startingValue={event.rating ? event.rating : 0}
+              imageSize={30}
+              showRating={event.rating ? true : false}
+              onFinishRating={this.evaluateAction}
+              style={{ paddingVertical: 10 }}
+            />
           </View>
         </View>
       );

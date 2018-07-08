@@ -29,14 +29,14 @@ import {
   Picker
 } from "native-base";
 import { logout } from "../../helpers/navigation";
-import { getTokenForUsage } from "../../helpers/storage";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import { screens } from "../../screens";
 import styles from "./styles";
 import { colors } from "../../styles";
 
 // create a component
-export default class CreateEvent_1 extends Component {
+export default class CreateEvent extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
@@ -61,6 +61,7 @@ export default class CreateEvent_1 extends Component {
       maxStarters: 15,
       maxSubs: 5,
       token: "",
+      profileId: null,
       isLoading: true,
       isError: false,
       error: ""
@@ -71,6 +72,7 @@ export default class CreateEvent_1 extends Component {
   //Helper methods
   async loadData() {
     this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
     await this.loadGroups();
     await this.loadLocations();
   }
@@ -285,7 +287,7 @@ export default class CreateEvent_1 extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        StandardProfileID: 1,
+        StandardProfileID: this.state.profileId,
         EventName: this.state.name,
         Description: this.state.description,
         EventType: 1,
@@ -361,8 +363,8 @@ export default class CreateEvent_1 extends Component {
             onValueChange={this.onValueChangeGroups.bind(this)}
           >
             <Picker.Item label="A Group" value="key0" />
-            ) + this.state.groups.map(group => (
-            <Picker.Item label={group.name} value={group.id} />
+            ) + this.state.groups.map(groupItem => (
+            <Picker.Item label={groupItem.name} value={groupItem.id} />
             )) + ({" "}
           </Picker>
         </Item>
@@ -385,8 +387,8 @@ export default class CreateEvent_1 extends Component {
             onValueChange={this.onValueChangeLocations.bind(this)}
           >
             <Picker.Item label="A Location" value="key0" />
-            ) + this.state.locations.map(location => (
-            <Picker.Item label={location.name} value={location.id} />
+            ) + this.state.locations.map(locationItem => (
+            <Picker.Item label={locationItem.name} value={locationItem.id} />
             )) + ({" "}
           </Picker>
         </Item>

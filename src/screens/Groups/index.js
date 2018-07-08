@@ -1,11 +1,21 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import { View, FlatList, ActivityIndicator, Image } from "react-native";
 
+import {
+  Container,
+  Header,
+  Content,
+  Toast,
+  Button,
+  Text,
+  Root
+} from "native-base";
 import { EventContainer } from "../../components";
 
 import { screens } from "../../screens";
 
+import { GroupContainer } from "../../components";
 import { getTokenForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
@@ -40,7 +50,9 @@ export default class Groups extends Component {
       isLoading: true,
       isError: false,
       error: "",
-      token: ""
+      token: "",
+      refreshing: false,
+      noEventsShowed: false
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.loadData();
@@ -51,11 +63,11 @@ export default class Groups extends Component {
     if (event.type == "NavBarButtonPress") {
       if (event.id == "add") {
         this.props.navigator.push({
-          screen: screens.createEvent1.id,
-          title: screens.createEvent1.title,
+          screen: screens.createGroup.id,
+          title: screens.createGroup.title,
           animated: true,
           animationType: "fade",
-          backButtonHidden: screens.createEvent1.backButtonHidden
+          backButtonHidden: screens.createGroup.backButtonHidden
         });
       }
     }
@@ -89,7 +101,13 @@ export default class Groups extends Component {
           }
         })
         .then(jsonResponse => {
-          console.log(jsonResponse);
+          if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
+            Toast.show({
+              text: "No hay grupos! Crea uno.",
+              buttonText: "Ok",
+              onClose: this.toggleNoEventsShowed
+            });
+          }
           this.setState({
             dataSource: jsonResponse,
             isLoading: false,
@@ -109,30 +127,58 @@ export default class Groups extends Component {
     });
   }
 
+  toggleNoEventsShowed = () => {
+    this.state.noEventsShowed = true;
+  };
+  _refreshListView = () => {
+    this.setState({ refreshing: true });
+    this.loadData().then(() => {
+      this.setState({ refreshing: false });
+    });
+  };
+  _refreshControl() {
+    return (
+      <RefreshControl
+        refreshing={this.state.refreshing}
+        onRefresh={() => this._refreshListView()}
+      />
+    );
+  }
   render() {
     return this.state.isLoading ? (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#ecf0f1" animating />
-      </View>
-    ) : this.state.isError ? (
-      <View style={styles.container}>
-        <Text>{this.state.error}</Text>
-      </View>
-    ) : this.state.dataSource.length == 0 ? (
-      <View style={styles.container}>
-        <View style={styles.noData}>
-          <Text style={styles.noDataText}>No hay grupos, crea alguno!</Text>
+      <Root>
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#ecf0f1" animating />
         </View>
-      </View>
+      </Root>
+    ) : this.state.isError ? (
+      <Root>
+        <View style={styles.container}>
+          <Text>{this.state.error}</Text>
+        </View>
+      </Root>
+    ) : this.state.dataSource.length == 0 ? (
+      <Root>
+        <View style={styles.noEventsContainer}>
+          <View style={styles.noEventsSubContainer}>
+            <Image
+              style={styles.noEventsImage}
+              source={require("../../assets/images/none.png")}
+            />
+          </View>
+        </View>
+      </Root>
     ) : (
-      <View style={styles.container}>
-        <FlatList
-          style={styles.eventList}
-          data={this.state.dataSource}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
-        />
-      </View>
+      <Root>
+        <View style={styles.container}>
+          <FlatList
+            style={styles.groupList}
+            data={this.state.dataSource}
+            keyExtractor={this._keyExtractor}
+            renderItem={this._renderItem}
+          />
+        </View>
+      </Root>
     );
   }
 }
