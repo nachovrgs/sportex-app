@@ -279,19 +279,8 @@ export default class CreateEvent extends Component {
       return hour + ":" + minute + ":" + second;
     }
   };
-  getEventParticipantsFromGroup = members => {
-    return members.map((member, index) => {
-      return {
-        StandardProfileID: member.standardProfileID,
-        Type: 0,
-        Order: index
-      };
-    });
-  };
+
   createAction = () => {
-    console.log(
-      JSON.stringify(this.state.groups[this.state.selectedGroup - 1])
-    );
     fetch(`${API_URI}/event`, {
       method: "POST",
       headers: {
@@ -311,19 +300,26 @@ export default class CreateEvent extends Component {
           "T" +
           this.cleanTime(this.state.startingTime),
         LocationID: this.state.selectedLocation.id,
-        Location: this.state.selectedLocation,
         IsPublic: this.state.isPublic ? 1 : 0,
         MaxStarters: this.state.maxStarters,
         MasSubs: this.state.maxSubs,
-        ListStarters: this.getEventParticipantsFromGroup(
-          this.state.groups[this.state.selectedGroup - 1].listMembers
-        )
+        ListStarters: {
+          StandardProfileID: this.state.profileId,
+          Type: 0,
+          Order: 0
+        }
       })
     })
       .then(response => {
         if (response.ok) {
-          console.log("Network response was ok.");
-          //Event created,oing to feed
+          var invites = this.state.groups[this.state.selectedGroup - 1]
+            .listMembers;
+          console.log("Invites: " + JSON.stringify(invites));
+          invites.forEach(function(invite) {
+            //MIising eventID
+            this.inviteAction(invite, 1);
+          });
+          //Event created, invitations sent, going to feed
           this.props.navigator.push({
             screen: screens.eventFeed.id,
             title: screens.eventFeed.title,
@@ -353,7 +349,47 @@ export default class CreateEvent extends Component {
         throw error;
       });
   };
-
+  inviteAction = (invite, eventId) => {
+    fetch(`${API_URI}/eventInvitation`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        Type: 0,
+        Message: "Unite a mi evento",
+        IdProfileInvites: this.state.profileId,
+        IdProfileInvited: invite.id,
+        EventID: eventId
+      })
+    })
+      .then(response => {
+        if (!response.ok) {
+          console.log("Network response was not ok.");
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
+  };
   onValueChangeGroups(value: string) {
     this.setState({
       selectedGroup: value
@@ -469,7 +505,8 @@ export default class CreateEvent extends Component {
                   mode="dropdown"
                   iosIcon={<Icon name="ios-arrow-down-outline" />}
                   style={{ width: undefined }}
-                  placeholder="Elegi el Lugar"
+                  placeholder="Grupo"
+                  enabled={!this.state.isPublic}
                   placeholderStyle={{ color: "#bfc6ea" }}
                   placeholderIconColor="#007aff"
                   selectedValue={this.state.selectedGroup}
@@ -483,7 +520,7 @@ export default class CreateEvent extends Component {
                   mode="dropdown"
                   iosIcon={<Icon name="ios-arrow-down-outline" />}
                   style={{ width: undefined }}
-                  placeholder="Elegi el Lugar"
+                  placeholder="Lugar"
                   placeholderStyle={{ color: "#bfc6ea" }}
                   placeholderIconColor="#007aff"
                   selectedValue={this.state.selectedLocation}

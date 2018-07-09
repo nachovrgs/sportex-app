@@ -17,7 +17,7 @@ import {
   Text,
   Root
 } from "native-base";
-import { EventContainer } from "../../components";
+import { CurrentEventContainer } from "../../components";
 
 import { screens } from "../../screens";
 
@@ -44,6 +44,15 @@ export default class CurrentEventFeed extends Component {
         buttonFontSize: 20,
         buttonFontWeight: "600"
       }
+    ],
+    leftButtons: [
+      {
+        icon: require("../../assets/images/bell.png"),
+        id: "notifications",
+        buttonColor: "#ecf0f1",
+        buttonFontSize: 20,
+        buttonFontWeight: "600"
+      }
     ]
   };
   _keyExtractor = (item, index) => item.id.toString();
@@ -56,6 +65,7 @@ export default class CurrentEventFeed extends Component {
       isError: false,
       error: "",
       token: "",
+      profileId: "",
       refreshing: false,
       noEventsShowed: false
     };
@@ -74,18 +84,27 @@ export default class CurrentEventFeed extends Component {
           animationType: "fade",
           backButtonHidden: screens.createEvent.backButtonHidden
         });
+      } else if (event.id == "notifications") {
+        this.props.navigator.push({
+          screen: screens.notificationFeed.id,
+          title: screens.notificationFeed.title,
+          animated: true,
+          animationType: "fade",
+          backButtonHidden: screens.notificationFeed.backButtonHidden
+        });
       }
     }
   }
   _renderItem = ({ item }) => (
-    <EventContainer eventItem={item} navigator={this.props.navigator} />
+    <CurrentEventContainer eventItem={item} navigator={this.props.navigator} />
   );
 
   async loadData() {
     Promise.all([getTokenForUsage(), getProfileIdForUsage()]).then(
       ([token, profileId]) => {
         this.state.token = token;
-        fetch(`${API_URI}/event/mine/${profileId}`, {
+        this.state.profileId = profileId;
+        fetch(`${API_URI}/event/joined/${this.state.profileId}`, {
           method: "GET",
           headers: {
             Authorization:
@@ -109,7 +128,7 @@ export default class CurrentEventFeed extends Component {
           .then(jsonResponse => {
             if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
               Toast.show({
-                text: "No hay eventos! Inscribite a uno.",
+                text: "No hay partidos! Inscribite a uno.",
                 buttonText: "Ok",
                 onClose: this.toggleNoEventsShowed
               });
