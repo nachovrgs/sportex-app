@@ -5,9 +5,9 @@ import {
   FlatList,
   ActivityIndicator,
   ScrollView,
-  RefreshControl
+  RefreshControl,
+  Image
 } from "react-native";
-
 import {
   Container,
   Header,
@@ -21,13 +21,13 @@ import { EventContainer } from "../../components";
 
 import { screens } from "../../screens";
 
-import { getTokenForUsage } from "../../helpers/storage";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
 
 // create a component
-export default class EventFeed extends Component {
+export default class CurrentEventFeed extends Component {
   //Navigation
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
@@ -82,55 +82,57 @@ export default class EventFeed extends Component {
   );
 
   async loadData() {
-    Promise.all([getTokenForUsage()]).then(([token]) => {
-      this.state.token = token;
-      fetch(`${API_URI}/event/`, {
-        method: "GET",
-        headers: {
-          Authorization:
-            "Bearer " +
-            (this.state.token ? this.state.token.replace(/"/g, "") : "")
-        }
-      })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
+    Promise.all([getTokenForUsage(), getProfileIdForUsage()]).then(
+      ([token, profileId]) => {
+        this.state.token = token;
+        fetch(`${API_URI}/event/mine/${profileId}`, {
+          method: "GET",
+          headers: {
+            Authorization:
+              "Bearer " +
+              (this.state.token ? this.state.token.replace(/"/g, "") : "")
+          }
+        })
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              this.setState({
+                isLoading: false,
+                isError: true,
+                error: "Network response was not ok.",
+                token: ""
+              });
+              return new Error("Network response was not ok.");
+            }
+          })
+          .then(jsonResponse => {
+            if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
+              Toast.show({
+                text: "No hay eventos! Inscribite a uno.",
+                buttonText: "Ok",
+                onClose: this.toggleNoEventsShowed
+              });
+            }
+            this.setState({
+              dataSource: jsonResponse,
+              isLoading: false,
+              error: "",
+              token: ""
+            });
+            this._refreshListView();
+          })
+          .catch(error => {
             this.setState({
               isLoading: false,
               isError: true,
-              error: "Network response was not ok.",
+              error: error.message,
               token: ""
             });
-            return new Error("Network response was not ok.");
-          }
-        })
-        .then(jsonResponse => {
-          if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
-            Toast.show({
-              text: "No hay eventos! Inscribite a uno.",
-              buttonText: "Ok",
-              onClose: this.toggleNoEventsShowed
-            });
-          }
-          this.setState({
-            dataSource: jsonResponse,
-            isLoading: false,
-            error: "",
-            token: ""
+            throw error;
           });
-          this._refreshListView();
-        })
-        .catch(error => {
-          this.setState({
-            isLoading: false,
-            isError: true,
-            error: error.message,
-            token: ""
-          });
-          throw error;
-        });
-    });
+      }
+    );
   }
   toggleNoEventsShowed = () => {
     this.state.noEventsShowed = true;

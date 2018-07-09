@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   TextInput,
-  ScrollView
+  ScrollView,
+  Platform,
+  ActivityIndicator
 } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import {
@@ -26,17 +28,18 @@ import {
   Title,
   DatePicker,
   Icon,
-  Picker
+  Picker,
+  Root
 } from "native-base";
 import { logout } from "../../helpers/navigation";
-import { getTokenForUsage } from "../../helpers/storage";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import { screens } from "../../screens";
 import styles from "./styles";
 import { colors } from "../../styles";
 
 // create a component
-export default class CreateEvent_1 extends Component {
+export default class CreateEvent extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
@@ -61,6 +64,7 @@ export default class CreateEvent_1 extends Component {
       maxStarters: 15,
       maxSubs: 5,
       token: "",
+      profileId: null,
       isLoading: true,
       isError: false,
       error: ""
@@ -71,6 +75,7 @@ export default class CreateEvent_1 extends Component {
   //Helper methods
   async loadData() {
     this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
     await this.loadGroups();
     await this.loadLocations();
   }
@@ -99,8 +104,7 @@ export default class CreateEvent_1 extends Component {
       .then(jsonResponse => {
         this.setState({
           groups: jsonResponse,
-          isLoading: false,
-          error: ""
+          isLoading: false
         });
       })
       .catch(error => {
@@ -152,6 +156,7 @@ export default class CreateEvent_1 extends Component {
         throw error;
       });
   }
+
   findLocation = query => {
     if (!query || query === "") {
       return [];
@@ -274,7 +279,19 @@ export default class CreateEvent_1 extends Component {
       return hour + ":" + minute + ":" + second;
     }
   };
+  getEventParticipantsFromGroup = members => {
+    return members.map((member, index) => {
+      return {
+        StandardProfileID: member.standardProfileID,
+        Type: 0,
+        Order: index
+      };
+    });
+  };
   createAction = () => {
+    console.log(
+      JSON.stringify(this.state.groups[this.state.selectedGroup - 1])
+    );
     fetch(`${API_URI}/event`, {
       method: "POST",
       headers: {
@@ -285,7 +302,7 @@ export default class CreateEvent_1 extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        StandardProfileID: 1,
+        StandardProfileID: this.state.profileId,
         EventName: this.state.name,
         Description: this.state.description,
         EventType: 1,
@@ -293,10 +310,14 @@ export default class CreateEvent_1 extends Component {
           this.cleanDate(this.state.startingDate) +
           "T" +
           this.cleanTime(this.state.startingTime),
-        LocationID: 1,
+        LocationID: this.state.selectedLocation.id,
+        Location: this.state.selectedLocation,
         IsPublic: this.state.isPublic ? 1 : 0,
         MaxStarters: this.state.maxStarters,
-        MasSubs: this.state.maxSubs
+        MasSubs: this.state.maxSubs,
+        ListStarters: this.getEventParticipantsFromGroup(
+          this.state.groups[this.state.selectedGroup - 1].listMembers
+        )
       })
     })
       .then(response => {
@@ -343,147 +364,159 @@ export default class CreateEvent_1 extends Component {
       selectedLocation: value
     });
   }
-
+  _renderGroupOptionItem = list => {
+    d = list.map((data, i) => {
+      return <Picker.Item label={data.groupName} value={data.id} />;
+    });
+    // i did this because no need in ios :P
+    if (Platform.OS === "android") {
+      d.unshift(<Picker.Item label="Select" />);
+    }
+    return d;
+    //and that's how you are ready to go, because this issue isn't fixed yet (checked on 28-Dec-2017)
+  };
+  _renderLocationOptionItem = list => {
+    d = list.map((data, i) => {
+      return <Picker.Item label={data.name} value={data.id} />;
+    });
+    // i did this because no need in ios :P
+    if (Platform.OS === "android") {
+      d.unshift(<Picker.Item label="Select" />);
+    }
+    return d;
+    //and that's how you are ready to go, because this issue isn't fixed yet (checked on 28-Dec-2017)
+  };
   render() {
-    const { name, description, isLoading } = this.state;
-    let groupOptionPicker;
-    if (this.state.groups.length > 0) {
-      groupOptionPicker = (
-        <Item picker>
-          <Picker
-            mode="dropdown"
-            iosIcon={<Icon name="ios-arrow-down-outline" />}
-            style={{ width: undefined }}
-            placeholder="Elegi el Grupo"
-            placeholderStyle={{ color: "#bfc6ea" }}
-            placeholderIconColor="#007aff"
-            selectedValue={this.state.selectedGroup}
-            onValueChange={this.onValueChangeGroups.bind(this)}
-          >
-            <Picker.Item label="A Group" value="key0" />
-            ) + this.state.groups.map(group => (
-            <Picker.Item label={group.name} value={group.id} />
-            )) + ({" "}
-          </Picker>
-        </Item>
-      );
-    }
-    console.log("The famous gropups" + JSON.stringify(this.state.groups));
-
-    let locationOptionPicker;
-    if (this.state.locations.length > 0) {
-      locationOptionPicker = (
-        <Item picker>
-          <Picker
-            mode="dropdown"
-            iosIcon={<Icon name="ios-arrow-down-outline" />}
-            style={{ width: undefined }}
-            placeholder="Elegi el Lugar"
-            placeholderStyle={{ color: "#bfc6ea" }}
-            placeholderIconColor="#007aff"
-            selectedValue={this.state.selectedLocaton}
-            onValueChange={this.onValueChangeLocations.bind(this)}
-          >
-            <Picker.Item label="A Location" value="key0" />
-            ) + this.state.locations.map(location => (
-            <Picker.Item label={location.name} value={location.id} />
-            )) + ({" "}
-          </Picker>
-        </Item>
-      );
-      console.log(
-        "The famous locations" + JSON.stringify(this.state.locations)
-      );
-    }
-    return (
-      <Container>
-        <Header>
-          <Left />
-          <Body>
-            <Title>Nuevo partido</Title>
-          </Body>
-          <Right />
-        </Header>
-        <Content>
-          <Form>
-            <Item fixedLabel>
-              <Label>Nombre</Label>
-              <Input
-                returnKeyType="next"
-                value={name}
-                onChangeText={this.onNameChanged}
-                autoCorrect={true}
-              />
-            </Item>
-            <Item fixedLabel>
-              <Label>Descripción</Label>
-              <Input
-                value={description}
-                autoCorrect={true}
-                onChangeText={this.onDescriptionChanged}
-                ref={input => (this.descriptionInput = input)}
-              />
-            </Item>
-            <Item>
-              <TouchableOpacity onPress={this._showDateTimePicker}>
-                <Icon active name="calendar" />
-              </TouchableOpacity>
-              <Input
-                editable={false}
-                placeholder="Fecha"
-                value={this.cleanDate(this.state.startingDate)}
-              />
-              <DateTimePicker
-                isVisible={this.state.isDateTimePickerVisible}
-                onConfirm={this._handleDatePicked}
-                onCancel={this._hideDateTimePicker}
-                minimumDate={new Date()}
-                // maximumDate={new Date().setMonth((new Date().getMonth()+1))}
-              />
-            </Item>
-            <Item>
-              <TouchableOpacity onPress={this._showTimePicker}>
-                <Icon active name="clock" />
-              </TouchableOpacity>
-              <Input
-                editable={false}
-                placeholder="Hora"
-                value={this.cleanDate(this.state.startingTime)}
-              />
-              <DateTimePicker
-                isVisible={this.state.isTimePickerVisible}
-                onConfirm={this._handleTimePicked}
-                onCancel={this._hideTimePicker}
-                minimumDate={new Date()}
-                mode="time"
-              />
-            </Item>
-            {groupOptionPicker}
-            {locationOptionPicker}
-            <Item last>
-              <CheckBox
-                checked={this.state.isPublic}
-                onPress={() =>
-                  this.setState({ isPublic: !this.state.isPublic })
-                }
-              />
-              <Body>
-                <Text>Publico</Text>
-              </Body>
-            </Item>
-          </Form>
-          <View style={styles.createButton}>
-            <Button
-              block
-              success
-              onPress={this.createAction}
-              disabled={!this.isReady()}
-            >
-              <Text>Crear</Text>
-            </Button>
-          </View>
-        </Content>
-      </Container>
+    const { name, description, isLoading, groups, locations } = this.state;
+    return this.state.isLoading ? (
+      <Root>
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#ecf0f1" animating />
+        </View>
+      </Root>
+    ) : this.state.isError ? (
+      <Root>
+        <View style={styles.container}>
+          <Text>{this.state.error}</Text>
+        </View>
+      </Root>
+    ) : (
+      <Root>
+        <Container>
+          <Header>
+            <Left />
+            <Body>
+              <Title>Nuevo partido</Title>
+            </Body>
+            <Right />
+          </Header>
+          <Content>
+            <Form>
+              <Item fixedLabel>
+                <Label>Nombre</Label>
+                <Input
+                  returnKeyType="next"
+                  value={name}
+                  onChangeText={this.onNameChanged}
+                  autoCorrect={true}
+                />
+              </Item>
+              <Item fixedLabel>
+                <Label>Descripción</Label>
+                <Input
+                  value={description}
+                  autoCorrect={true}
+                  onChangeText={this.onDescriptionChanged}
+                  ref={input => (this.descriptionInput = input)}
+                />
+              </Item>
+              <Item>
+                <TouchableOpacity onPress={this._showDateTimePicker}>
+                  <Icon active name="calendar" />
+                </TouchableOpacity>
+                <Input
+                  editable={false}
+                  placeholder="Fecha"
+                  value={this.cleanDate(this.state.startingDate)}
+                />
+                <DateTimePicker
+                  isVisible={this.state.isDateTimePickerVisible}
+                  onConfirm={this._handleDatePicked}
+                  onCancel={this._hideDateTimePicker}
+                  minimumDate={new Date()}
+                  // maximumDate={new Date().setMonth((new Date().getMonth()+1))}
+                />
+              </Item>
+              <Item>
+                <TouchableOpacity onPress={this._showTimePicker}>
+                  <Icon active name="clock" />
+                </TouchableOpacity>
+                <Input
+                  editable={false}
+                  placeholder="Hora"
+                  value={this.cleanTime(this.state.startingTime)}
+                />
+                <DateTimePicker
+                  isVisible={this.state.isTimePickerVisible}
+                  onConfirm={this._handleTimePicked}
+                  onCancel={this._hideTimePicker}
+                  minimumDate={new Date()}
+                  mode="time"
+                />
+              </Item>
+              <Item picker>
+                <Picker
+                  mode="dropdown"
+                  iosIcon={<Icon name="ios-arrow-down-outline" />}
+                  style={{ width: undefined }}
+                  placeholder="Elegi el Lugar"
+                  placeholderStyle={{ color: "#bfc6ea" }}
+                  placeholderIconColor="#007aff"
+                  selectedValue={this.state.selectedGroup}
+                  onValueChange={this.onValueChangeGroups.bind(this)}
+                >
+                  {this._renderGroupOptionItem(groups)}
+                </Picker>
+              </Item>
+              <Item picker>
+                <Picker
+                  mode="dropdown"
+                  iosIcon={<Icon name="ios-arrow-down-outline" />}
+                  style={{ width: undefined }}
+                  placeholder="Elegi el Lugar"
+                  placeholderStyle={{ color: "#bfc6ea" }}
+                  placeholderIconColor="#007aff"
+                  selectedValue={this.state.selectedLocation}
+                  onValueChange={this.onValueChangeLocations.bind(this)}
+                >
+                  {this._renderLocationOptionItem(locations)}
+                </Picker>
+              </Item>
+              <Item last>
+                <CheckBox
+                  checked={this.state.isPublic}
+                  onPress={() =>
+                    this.setState({ isPublic: !this.state.isPublic })
+                  }
+                />
+                <Body>
+                  <Text>Publico</Text>
+                </Body>
+              </Item>
+            </Form>
+            <View style={styles.createButton}>
+              <Button
+                block
+                success
+                onPress={this.createAction}
+                disabled={!this.isReady()}
+              >
+                <Text>Crear</Text>
+              </Button>
+            </View>
+          </Content>
+        </Container>
+      </Root>
     );
   }
 }

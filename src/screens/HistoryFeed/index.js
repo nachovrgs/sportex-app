@@ -2,22 +2,14 @@
 import React, { Component } from "react";
 import {
   View,
+  Text,
   FlatList,
   ActivityIndicator,
   ScrollView,
   RefreshControl
 } from "react-native";
-
-import {
-  Container,
-  Header,
-  Content,
-  Toast,
-  Button,
-  Text,
-  Root
-} from "native-base";
-import { EventContainer } from "../../components";
+import { Container, Header, Content, Toast, Button, Root } from "native-base";
+import { PastEventContainer } from "../../components";
 
 import { screens } from "../../screens";
 
@@ -27,24 +19,13 @@ import styles from "./styles";
 import { colors } from "../../styles";
 
 // create a component
-export default class EventFeed extends Component {
+export default class HistoryFeed extends Component {
   //Navigation
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"
-  };
-  static navigatorButtons = {
-    rightButtons: [
-      {
-        icon: require("../../assets/images/add.png"),
-        id: "add",
-        buttonColor: "#ecf0f1",
-        buttonFontSize: 20,
-        buttonFontWeight: "600"
-      }
-    ]
   };
   _keyExtractor = (item, index) => item.id.toString();
 
@@ -59,26 +40,10 @@ export default class EventFeed extends Component {
       refreshing: false,
       noEventsShowed: false
     };
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.loadData();
   }
-
-  // Handle nav bar navigation
-  onNavigatorEvent(event) {
-    if (event.type == "NavBarButtonPress") {
-      if (event.id == "add") {
-        this.props.navigator.push({
-          screen: screens.createEvent.id,
-          title: screens.createEvent.title,
-          animated: true,
-          animationType: "fade",
-          backButtonHidden: screens.createEvent.backButtonHidden
-        });
-      }
-    }
-  }
   _renderItem = ({ item }) => (
-    <EventContainer eventItem={item} navigator={this.props.navigator} />
+    <PastEventContainer eventItem={item} navigator={this.props.navigator} />
   );
 
   async loadData() {

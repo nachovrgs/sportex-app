@@ -10,5 +10,7 @@ export default {
   selections: "#e74c3c",
   bar_rank_1: "#c0392b",
   bar_rank_2: "#f1c40f",
-  bar_rank_3: "#27ae60"
+  bar_rank_3: "#27ae60",
+  rating_gold: "#f1c40f",
+  rating_back: "#ecf0f1"
 };
