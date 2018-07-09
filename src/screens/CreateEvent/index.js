@@ -300,7 +300,6 @@ export default class CreateEvent extends Component {
           "T" +
           this.cleanTime(this.state.startingTime),
         LocationID: this.state.selectedLocation.id,
-        Location: this.state.selectedLocation,
         IsPublic: this.state.isPublic ? 1 : 0,
         MaxStarters: this.state.maxStarters,
         MasSubs: this.state.maxSubs,
@@ -315,6 +314,7 @@ export default class CreateEvent extends Component {
         if (response.ok) {
           var invites = this.state.groups[this.state.selectedGroup - 1]
             .listMembers;
+          console.log("Invites: " + JSON.stringify(invites));
           invites.forEach(function(invite) {
             //MIising eventID
             this.inviteAction(invite, 1);
@@ -505,7 +505,8 @@ export default class CreateEvent extends Component {
                   mode="dropdown"
                   iosIcon={<Icon name="ios-arrow-down-outline" />}
                   style={{ width: undefined }}
-                  placeholder="Elegi el Lugar"
+                  placeholder="Grupo"
+                  enabled={!this.state.isPublic}
                   placeholderStyle={{ color: "#bfc6ea" }}
                   placeholderIconColor="#007aff"
                   selectedValue={this.state.selectedGroup}
@@ -519,7 +520,7 @@ export default class CreateEvent extends Component {
                   mode="dropdown"
                   iosIcon={<Icon name="ios-arrow-down-outline" />}
                   style={{ width: undefined }}
-                  placeholder="Elegi el Lugar"
+                  placeholder="Lugar"
                   placeholderStyle={{ color: "#bfc6ea" }}
                   placeholderIconColor="#007aff"
                   selectedValue={this.state.selectedLocation}
