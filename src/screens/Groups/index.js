@@ -39,6 +39,15 @@ export default class Groups extends Component {
         buttonFontSize: 20,
         buttonFontWeight: "600"
       }
+    ],
+    leftButtons: [
+      {
+        icon: require("../../assets/images/bell.png"),
+        id: "notifications",
+        buttonColor: "#ecf0f1",
+        buttonFontSize: 20,
+        buttonFontWeight: "600"
+      }
     ]
   };
   _keyExtractor = (item, index) => item.id.toString();
@@ -68,6 +77,14 @@ export default class Groups extends Component {
           animated: true,
           animationType: "fade",
           backButtonHidden: screens.createGroup.backButtonHidden
+        });
+      } else if (event.id == "notifications") {
+        this.props.navigator.push({
+          screen: screens.notificationFeed.id,
+          title: screens.notificationFeed.title,
+          animated: true,
+          animationType: "fade",
+          backButtonHidden: screens.notificationFeed.backButtonHidden
         });
       }
     }

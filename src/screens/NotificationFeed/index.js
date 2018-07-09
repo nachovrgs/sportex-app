@@ -2,41 +2,40 @@
 import React, { Component } from "react";
 import {
   View,
-  Text,
   FlatList,
   ActivityIndicator,
   ScrollView,
-  RefreshControl
+  RefreshControl,
+  Image
 } from "react-native";
-import { Container, Header, Content, Toast, Button, Root } from "native-base";
-import { PastEventContainer } from "../../components";
+
+import {
+  Container,
+  Header,
+  Content,
+  Toast,
+  Button,
+  Text,
+  Root
+} from "native-base";
+import { NotificationContainer } from "../../components";
 
 import { screens } from "../../screens";
 
-import { getTokenForUsage } from "../../helpers/storage";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
 
 // create a component
-export default class HistoryFeed extends Component {
+export default class NotificationFeed extends Component {
   //Navigation
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
+    tabBarHidden: true,
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"
-  };
-  static navigatorButtons = {
-    leftButtons: [
-      {
-        icon: require("../../assets/images/bell.png"),
-        id: "notifications",
-        buttonColor: "#ecf0f1",
-        buttonFontSize: 20,
-        buttonFontWeight: "600"
-      }
-    ]
   };
   _keyExtractor = (item, index) => item.id.toString();
 
@@ -48,30 +47,17 @@ export default class HistoryFeed extends Component {
       isError: false,
       error: "",
       token: "",
-      profileId: "",
       refreshing: false,
-      noEventsShowed: false
+      noNotificationsShowed: false
     };
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.loadData();
   }
 
-  // Handle nav bar navigation
-  onNavigatorEvent(event) {
-    if (event.type == "NavBarButtonPress") {
-      if (event.id == "notifications") {
-        this.props.navigator.push({
-          screen: screens.notificationFeed.id,
-          title: screens.notificationFeed.title,
-          animated: true,
-          animationType: "fade",
-          backButtonHidden: screens.notificationFeed.backButtonHidden
-        });
-      }
-    }
-  }
   _renderItem = ({ item }) => (
-    <PastEventContainer eventItem={item} navigator={this.props.navigator} />
+    <NotificationContainer
+      notificationItem={item}
+      navigator={this.props.navigator}
+    />
   );
 
   async loadData() {
@@ -79,14 +65,19 @@ export default class HistoryFeed extends Component {
       ([token, profileId]) => {
         this.state.token = token;
         this.state.profileId = profileId;
-        fetch(`${API_URI}/event/past/${this.state.profileId}`, {
-          method: "GET",
-          headers: {
-            Authorization:
-              "Bearer " +
-              (this.state.token ? this.state.token.replace(/"/g, "") : "")
+        fetch(
+          `${API_URI}/eventInvitation/GetEventInvitationsReceived/${
+            this.state.profileId
+          }`,
+          {
+            method: "GET",
+            headers: {
+              Authorization:
+                "Bearer " +
+                (this.state.token ? this.state.token.replace(/"/g, "") : "")
+            }
           }
-        })
+        )
           .then(response => {
             if (response.ok) {
               return response.json();
@@ -101,11 +92,11 @@ export default class HistoryFeed extends Component {
             }
           })
           .then(jsonResponse => {
-            if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
+            if (jsonResponse.length == 0 && !this.state.noNotificationsShowed) {
               Toast.show({
-                text: "No jugaste ningun partido! Inscribite a uno.",
+                text: "No hay notificaciones.",
                 buttonText: "Ok",
-                onClose: this.toggleNoEventsShowed
+                onClose: this.toggleNoNotificationsShowed
               });
             }
             this.setState({
@@ -128,8 +119,8 @@ export default class HistoryFeed extends Component {
       }
     );
   }
-  toggleNoEventsShowed = () => {
-    this.state.noEventsShowed = true;
+  toggleNoNotificationsShowed = () => {
+    this.state.noNotificationsShowed = true;
   };
   _refreshListView = () => {
     this.setState({ refreshing: true });
@@ -164,7 +155,7 @@ export default class HistoryFeed extends Component {
           <View style={styles.noEventsSubContainer}>
             <Image
               style={styles.noEventsImage}
-              source={require("../../assets/images/none.png")}
+              source={require("../../assets/images/ok.png")}
             />
           </View>
         </View>

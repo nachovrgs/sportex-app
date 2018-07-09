@@ -10,6 +10,7 @@ import UserProfile from "./UserProfile";
 import EventScreen from "./EventScreen";
 import Groups from "./Groups";
 import CreateGroup from "./CreateGroup";
+import NotificationFeed from "./NotificationFeed";
 
 // Add ALL screens here for easy use all over project
 export const screens = {
@@ -62,6 +63,11 @@ export const screens = {
     id: "sportex.CurrentEventFeed",
     title: "Sportex",
     backButtonHidden: true
+  },
+  notificationFeed: {
+    id: "sportex.NotificationFeed",
+    title: "Notificaciones",
+    backButtonHidden: false
   }
 };
 
@@ -79,5 +85,9 @@ export function registerScreens() {
   Navigation.registerComponent(
     screens.currentEventFeed.id,
     () => CurrentEventFeed
+  );
+  Navigation.registerComponent(
+    screens.notificationFeed.id,
+    () => NotificationFeed
   );
 }

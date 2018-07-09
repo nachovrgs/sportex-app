@@ -44,6 +44,15 @@ export default class EventFeed extends Component {
         buttonFontSize: 20,
         buttonFontWeight: "600"
       }
+    ],
+    leftButtons: [
+      {
+        icon: require("../../assets/images/bell.png"),
+        id: "notifications",
+        buttonColor: "#ecf0f1",
+        buttonFontSize: 20,
+        buttonFontWeight: "600"
+      }
     ]
   };
   _keyExtractor = (item, index) => item.id.toString();
@@ -73,6 +82,14 @@ export default class EventFeed extends Component {
           animated: true,
           animationType: "fade",
           backButtonHidden: screens.createEvent.backButtonHidden
+        });
+      } else if (event.id == "notifications") {
+        this.props.navigator.push({
+          screen: screens.notificationFeed.id,
+          title: screens.notificationFeed.title,
+          animated: true,
+          animationType: "fade",
+          backButtonHidden: screens.notificationFeed.backButtonHidden
         });
       }
     }
@@ -108,7 +125,7 @@ export default class EventFeed extends Component {
         .then(jsonResponse => {
           if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
             Toast.show({
-              text: "No hay eventos! Inscribite a uno.",
+              text: "No hay partidos! Crea uno.",
               buttonText: "Ok",
               onClose: this.toggleNoEventsShowed
             });
