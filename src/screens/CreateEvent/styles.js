@@ -1,13 +1,19 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
-import { colors, sizes } from '../../styles';
+import { colors, sizes } from "../../styles";
 
 export default StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.background
-    },
-    createButton: {
-        marginTop: 280,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: colors.background
+  },
+  createButton: {
+    marginTop: 280
+  },
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+    justifyContent: "center",
+    alignItems: "center"
+  }
 });
