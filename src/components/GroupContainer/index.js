@@ -32,14 +32,15 @@ class GroupContainer extends Component {
 
   //Helpers
   handlePress() {
+    var group = this.state.item;
     this.props.navigator.push({
-      screen: screens.event.id,
-      title: screens.event.title,
+      screen: screens.groupScreen.id,
+      title: screens.groupScreen.title,
       animated: true,
       animationType: "fade",
-      backButtonHidden: screens.event.backButtonHidden,
+      backButtonHidden: screens.groupScreen.backButtonHidden,
       passProps: {
-        eventItem: this.state.item
+        eventItem: group
       }
     });
   }

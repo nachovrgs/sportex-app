@@ -1,57 +1,67 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text } from "react-native";
-
-import { resetAndLogout } from "../../helpers/storage";
-import { screens } from "../../screens";
+import { View, Text, Image, AsyncStorage } from "react-native";
+import geolib from "geolib";
 
 import { Avatar } from "react-native-elements";
-import { getTokenForUsage, getAccountIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
+import { screens } from "../../screens";
 import styles from "./styles";
+import { getTokenForUsage } from "../../helpers/storage";
+
+import { logInfo, logError } from "../../helpers/logger";
 import { colors } from "../../styles";
 
 // create a component
-export default class UserProfile extends Component {
-  //Navigation
+export default class GroupScreen extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center",
-    navBarTextAlignment: "center"
+    tabBarHidden: true
   };
   static navigatorButtons = {
-    leftButtons: [
+    rightButtons: [
       {
-        icon: require("../../assets/images/logout.png"),
-        id: "logout",
+        icon: require("../../assets/images/trash.png"),
+        id: "delete",
         buttonColor: "#ecf0f1",
-        buttonFontSize: 50,
-        buttonFontWeight: "900"
+        buttonFontSize: 20,
+        buttonFontWeight: "600"
       }
     ]
   };
   constructor(props) {
     super(props);
     this.state = {
-      profile: {},
-      isLoading: true,
+      item: {},
+      coords: {},
+      isLoading: false,
       isError: false,
       error: "",
-      token: "",
-      accountID: ""
+      token: ""
     };
+
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.loadData();
   }
-
   async loadData() {
-    Promise.all([getTokenForUsage(), getAccountIdForUsage()]).then(
-      ([token, accountId]) => {
-        this.state.token = token;
-        this.state.accountID = accountId;
-        fetch(`${API_URI}/standardProfile/account/${this.state.accountID}`, {
-          method: "GET",
+    this.state.token = await getTokenForUsage();
+  }
+  componentDidMount() {
+    this._mounted = true;
+    this.setState({
+      item: this.props.eventItem
+    });
+    this.loadLocation();
+  }
+
+  // Handle nav bar navigation
+  onNavigatorEvent(event) {
+    if (event.type == "NavBarButtonPress") {
+      if (event.id == "delete") {
+        fetch(`${API_URI}/group/${this.state.item.id}`, {
+          method: "DELETE",
           headers: {
             Authorization:
               "Bearer " +
@@ -60,7 +70,14 @@ export default class UserProfile extends Component {
         })
           .then(response => {
             if (response.ok) {
-              return response.json();
+              //Event deleted, going to feed
+              this.props.navigator.push({
+                screen: screens.groups.id,
+                title: screens.groups.title,
+                animated: true,
+                animationType: "fade",
+                backButtonHidden: screens.groups.backButtonHidden
+              });
             } else {
               this.setState({
                 isLoading: false,
@@ -70,14 +87,6 @@ export default class UserProfile extends Component {
               });
               return new Error("Network response was not ok.");
             }
-          })
-          .then(jsonResponse => {
-            this.setState({
-              profile: jsonResponse,
-              isLoading: false,
-              error: "",
-              token: ""
-            });
           })
           .catch(error => {
             this.setState({
@@ -89,27 +98,43 @@ export default class UserProfile extends Component {
             throw error;
           });
       }
-    );
-  }
-
-  // Handle nav bar navigation
-  onNavigatorEvent(event) {
-    if (event.type == "NavBarButtonPress") {
-      if (event.id == "add") {
-        this.props.navigator.push({
-          screen: screens.createEvent.id,
-          title: screens.createEvent.title,
-          animated: true,
-          animationType: "fade",
-          backButtonHidden: screens.createEvent.backButtonHidden
-        });
-      } else if (event.id == "logout") {
-        resetAndLogout();
-      }
     }
   }
+
+  componentWillUnmount() {
+    this._mounted = false;
+  }
+
+  //Helpers
+  loadLocation() {
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({
+          item: this.state.item,
+          coords: position.coords
+        });
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+  getDistance() {
+    if (
+      this._mounted &&
+      this.state.coords.longitude &&
+      this.state.item.location != null
+    ) {
+      var distance = geolib.getDistance(this.state.coords, {
+        latitude: this.state.item.latitude,
+        longitude: this.state.item.longitude
+      });
+      return parseFloat((distance * 0.00001).toFixed(0));
+    }
+  }
+
   render() {
-    const profile = this.state.profile;
+    const group = this.state.item;
     return (
       <View style={styles.background}>
         <View style={styles.container}>
@@ -119,21 +144,20 @@ export default class UserProfile extends Component {
                 large
                 rounded
                 source={{
-                  uri: profile.picturePath
-                    ? profile.picturePath
+                  uri: group.picturePath
+                    ? group.picturePath
                     : "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg"
                 }}
                 activeOpacity={0.7}
               />
             </View>
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>{profile.firstName}</Text>
+              <Text style={styles.title}>{group.groupName}</Text>
             </View>
           </View>
           <View style={styles.body}>
             <View style={styles.descriptionContainer}>
-              <Text style={styles.title}>{profile.lastName}</Text>
-              <Text style={styles.title}>{profile.mailAddress}</Text>
+              <Text style={styles.title}>{group.groupDescription}</Text>
             </View>
           </View>
         </View>
