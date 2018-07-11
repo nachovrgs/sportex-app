@@ -9,7 +9,8 @@ import { logInfo } from "./helpers/logger";
 // call from index.js
 async function init() {
   logInfo("Initializing app");
-  if (isLoggedIn()) {
+  var isLogged = await isLoggedIn();
+  if (isLogged) {
     startMainApp();
   } else {
     startLogin();

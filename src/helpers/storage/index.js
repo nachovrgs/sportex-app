@@ -73,7 +73,14 @@ export async function getToken() {
     return null;
   }
 }
-
+export async function getAllKeys() {
+  try {
+    return await AsyncStorage.getAllKeys();
+  } catch (error) {
+    logError(error);
+    return null;
+  }
+}
 //Helper functions
 export async function getTokenForUsage() {
   try {
@@ -86,12 +93,12 @@ export async function getTokenForUsage() {
       return token;
     }
   } catch (error) {
-    logInfo("Estoy qui señor");
     logError(error);
     resetAndLogout();
     return null;
   }
 }
+
 export async function getProfileIdForUsage() {
   try {
     const profileId = await AsyncStorage.getItem(PROFILE_ID_NAME_STORE);
@@ -110,6 +117,7 @@ export async function getProfileIdForUsage() {
     return null;
   }
 }
+
 export async function getAccountIdForUsage() {
   try {
     const accountId = await AsyncStorage.getItem(ACCOUNT_ID_NAME_STORE);
@@ -126,6 +134,7 @@ export async function getAccountIdForUsage() {
     return null;
   }
 }
+
 export async function setTokenInfo(token, tokenExp, accountId) {
   try {
     setToken(JSON.stringify(token));
@@ -174,9 +183,12 @@ export async function getProfileFromAccountId(accountId) {
 }
 export async function resetAndLogout() {
   AsyncStorage.clear().then(() => {
-    logout();
+    AsyncStorage.flushGetRequests().then(() => {
+      logout();
+    });
   });
 }
-export function isLoggedIn() {
-  return getToken() != null && getTokenExp() != null;
+export async function isLoggedIn() {
+  var token = await getToken();
+  return token != null;
 }

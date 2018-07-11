@@ -228,7 +228,6 @@ export default class CreateEvent extends Component {
   _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
   _handleDatePicked = date => {
-    console.log(date);
     this.setState({
       startingDate: date,
       startingTime: this.state.startingTime
@@ -299,34 +298,15 @@ export default class CreateEvent extends Component {
           this.cleanDate(this.state.startingDate) +
           "T" +
           this.cleanTime(this.state.startingTime),
-        LocationID: this.state.selectedLocation.id,
-        IsPublic: this.state.isPublic ? 1 : 0,
+        LocationID: this.state.selectedLocation,
+        IsPublic: this.state.isPublic,
         MaxStarters: this.state.maxStarters,
-        MasSubs: this.state.maxSubs,
-        ListStarters: {
-          StandardProfileID: this.state.profileId,
-          Type: 0,
-          Order: 0
-        }
+        MaxSubs: this.state.maxSubs
       })
     })
       .then(response => {
         if (response.ok) {
-          var invites = this.state.groups[this.state.selectedGroup - 1]
-            .listMembers;
-          console.log("Invites: " + JSON.stringify(invites));
-          invites.forEach(function(invite) {
-            //MIising eventID
-            this.inviteAction(invite, 1);
-          });
-          //Event created, invitations sent, going to feed
-          this.props.navigator.push({
-            screen: screens.eventFeed.id,
-            title: screens.eventFeed.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.eventFeed.backButtonHidden
-          });
+          return response.json();
         } else {
           console.log("Network response was not ok.");
           this.setState({
@@ -336,6 +316,20 @@ export default class CreateEvent extends Component {
             token: ""
           });
           return new Error("Network response was not ok.");
+        }
+      })
+      .then(textResponse => {
+        if (!this.state.isPublic) {
+          this.inviteGroupAction(JSON.stringify(textResponse));
+        } else {
+          //Event created, invitations not sent, going to feed
+          this.props.navigator.push({
+            screen: screens.eventFeed.id,
+            title: screens.eventFeed.title,
+            animated: true,
+            animationType: "fade",
+            backButtonHidden: screens.eventFeed.backButtonHidden
+          });
         }
       })
       .catch(error => {
@@ -349,8 +343,8 @@ export default class CreateEvent extends Component {
         throw error;
       });
   };
-  inviteAction = (invite, eventId) => {
-    fetch(`${API_URI}/eventInvitation`, {
+  inviteGroupAction = eventId => {
+    fetch(`${API_URI}/eventInvitation/InviteWholeGroup`, {
       method: "POST",
       headers: {
         Authorization:
@@ -360,15 +354,23 @@ export default class CreateEvent extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        Type: 0,
-        Message: "Unite a mi evento",
-        IdProfileInvites: this.state.profileId,
-        IdProfileInvited: invite.id,
-        EventID: eventId
+        idProfileReceived: this.state.profileId,
+        idProfileSent: this.state.profileId,
+        idEvent: eventId,
+        idGroup: this.state.selectedGroup
       })
     })
       .then(response => {
-        if (!response.ok) {
+        if (response.ok) {
+          //Event created, invitations not sent, going to feed
+          this.props.navigator.push({
+            screen: screens.eventFeed.id,
+            title: screens.eventFeed.title,
+            animated: true,
+            animationType: "fade",
+            backButtonHidden: screens.eventFeed.backButtonHidden
+          });
+        } else {
           console.log("Network response was not ok.");
           this.setState({
             isLoading: false,

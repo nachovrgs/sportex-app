@@ -100,58 +100,54 @@ export default class CurrentEventFeed extends Component {
   );
 
   async loadData() {
-    Promise.all([getTokenForUsage(), getProfileIdForUsage()]).then(
-      ([token, profileId]) => {
-        this.state.token = token;
-        this.state.profileId = profileId;
-        fetch(`${API_URI}/event/joined/${this.state.profileId}`, {
-          method: "GET",
-          headers: {
-            Authorization:
-              "Bearer " +
-              (this.state.token ? this.state.token.replace(/"/g, "") : "")
-          }
-        })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              this.setState({
-                isLoading: false,
-                isError: true,
-                error: "Network response was not ok.",
-                token: ""
-              });
-              return new Error("Network response was not ok.");
-            }
-          })
-          .then(jsonResponse => {
-            if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
-              Toast.show({
-                text: "No hay partidos! Inscribite a uno.",
-                buttonText: "Ok",
-                onClose: this.toggleNoEventsShowed
-              });
-            }
-            this.setState({
-              dataSource: jsonResponse,
-              isLoading: false,
-              error: "",
-              token: ""
-            });
-            this._refreshListView();
-          })
-          .catch(error => {
-            this.setState({
-              isLoading: false,
-              isError: true,
-              error: error.message,
-              token: ""
-            });
-            throw error;
-          });
+    this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
+    fetch(`${API_URI}/event/joined/${this.state.profileId}`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
       }
-    );
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
+          Toast.show({
+            text: "No hay partidos! Inscribite a uno.",
+            buttonText: "Ok",
+            onClose: this.toggleNoEventsShowed
+          });
+        }
+        this.setState({
+          dataSource: jsonResponse,
+          isLoading: false,
+          error: "",
+          token: ""
+        });
+        this._refreshListView();
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
   }
   toggleNoEventsShowed = () => {
     this.state.noEventsShowed = true;

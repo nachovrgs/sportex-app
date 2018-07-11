@@ -1,12 +1,18 @@
-import { startLogin, startMainApp } from '../../App'
+import { startLogin, startMainApp } from "../../App";
+import { Navigation } from "react-native-navigation";
+import { screens } from "../../screens";
 
+var IS_LOGGED = false;
 // Handle login logic
-export function login() {
+export async function login() {
+  IS_LOGGED = true;
   startMainApp();
 }
 
 // handle logout logic
-export function logout() {
-  // remove user data
-  startLogin();
+export async function logout() {
+  if (IS_LOGGED) {
+    IS_LOGGED = false;
+    startLogin();
+  }
 }
