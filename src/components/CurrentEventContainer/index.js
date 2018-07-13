@@ -45,26 +45,35 @@ class CurrentEventContainer extends Component {
       return backColors[Math.floor(Math.random() * backColors.length)];
     }
   }
-  handlePress() {
+  handlePress = () => {
     this.state.expanded = !this.state.expanded;
+    console.log("Forcing update.");
     this.forceUpdate();
-  }
-
+  };
+  _renderComponent = () => {
+    return (
+      <CurrentEventCard
+        eventItem={this.state.item}
+        navigator={this.props.navigator}
+        onclick={this.handlePress}
+      />
+    );
+  };
+  _renderExandedComponent = () => {
+    return (
+      <ExpandedCurrentEventCard
+        eventItem={this.state.item}
+        navigator={this.props.navigator}
+        onclick={this.handlePress}
+      />
+    );
+  };
   render() {
+    console.log("Expanded: " + this.state.expanded);
     if (JSON.stringify(this.state.item) != JSON.stringify({})) {
-      return this.state.expanded ? (
-        <ExpandedCurrentEventCard
-          eventItem={this.state.item}
-          navigator={this.props.navigator}
-          onclick={this.handlePress}
-        />
-      ) : (
-        <CurrentEventCard
-          eventItem={this.state.item}
-          navigator={this.props.navigator}
-          onclick={this.handlePress}
-        />
-      );
+      return this.state.expanded
+        ? this._renderExandedComponent()
+        : this._renderComponent();
     } else {
       return null;
     }

@@ -1,4 +1,4 @@
-import { Navigation, ScreenVisibilityListener } from "react-native-navigation";
+import { Navigation } from "react-native-navigation";
 
 import Login from "./Login";
 import RegisterScreen from "./RegisterScreen";

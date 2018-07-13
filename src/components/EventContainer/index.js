@@ -45,22 +45,23 @@ class EventContainer extends Component {
       return backColors[Math.floor(Math.random() * backColors.length)];
     }
   }
-  handlePress() {
-    this.state.expanded = !this.state.expanded;
+  handlePress = () => {
+    this.setState({ expanded: this.state.expanded ? false : true });
     this.forceUpdate();
-  }
+  };
 
   render() {
-    if (JSON.stringify(this.state.item) != JSON.stringify({})) {
+    const item = this.state.item;
+    if (JSON.stringify(item) != JSON.stringify({})) {
       return this.state.expanded ? (
         <ExpandedEventCard
-          eventItem={this.state.item}
+          eventItem={item}
           navigator={this.props.navigator}
           onclick={this.handlePress}
         />
       ) : (
         <EventCard
-          eventItem={this.state.item}
+          eventItem={item}
           navigator={this.props.navigator}
           onclick={this.handlePress}
         />

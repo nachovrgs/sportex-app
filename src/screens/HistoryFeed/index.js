@@ -13,7 +13,7 @@ import { PastEventContainer } from "../../components";
 
 import { screens } from "../../screens";
 
-import { getTokenForUsage } from "../../helpers/storage";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
@@ -50,7 +50,8 @@ export default class HistoryFeed extends Component {
       token: "",
       profileId: "",
       refreshing: false,
-      noEventsShowed: false
+      noEventsShowed: false,
+      initial: true
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.loadData();
@@ -75,58 +76,57 @@ export default class HistoryFeed extends Component {
   );
 
   async loadData() {
-    Promise.all([getTokenForUsage(), getProfileIdForUsage()]).then(
-      ([token, profileId]) => {
-        this.state.token = token;
-        this.state.profileId = profileId;
-        fetch(`${API_URI}/event/past/${this.state.profileId}`, {
-          method: "GET",
-          headers: {
-            Authorization:
-              "Bearer " +
-              (this.state.token ? this.state.token.replace(/"/g, "") : "")
-          }
-        })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              this.setState({
-                isLoading: false,
-                isError: true,
-                error: "Network response was not ok.",
-                token: ""
-              });
-              return new Error("Network response was not ok.");
-            }
-          })
-          .then(jsonResponse => {
-            if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
-              Toast.show({
-                text: "No jugaste ningun partido! Inscribite a uno.",
-                buttonText: "Ok",
-                onClose: this.toggleNoEventsShowed
-              });
-            }
-            this.setState({
-              dataSource: jsonResponse,
-              isLoading: false,
-              error: "",
-              token: ""
-            });
-            this._refreshListView();
-          })
-          .catch(error => {
-            this.setState({
-              isLoading: false,
-              isError: true,
-              error: error.message,
-              token: ""
-            });
-            throw error;
-          });
+    this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
+    fetch(`${API_URI}/event/past/${this.state.profileId}`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
       }
-    );
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
+          Toast.show({
+            text: "No jugaste ningun partido! Inscribite a uno.",
+            buttonText: "Ok",
+            onClose: this.toggleNoEventsShowed
+          });
+        }
+        this.setState({
+          dataSource: jsonResponse,
+          isLoading: false,
+          error: "",
+          token: ""
+        });
+        if (this.state.initial) {
+          this.setState({ initial: false });
+          this._refreshListView();
+        }
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
   }
   toggleNoEventsShowed = () => {
     this.state.noEventsShowed = true;
