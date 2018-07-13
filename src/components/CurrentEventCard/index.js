@@ -71,13 +71,26 @@ export default class CurrentEventCard extends Component {
   }
   render() {
     const event = this.state.item;
-    if (JSON.stringify(event) != JSON.stringify({})) {
+    console.log(
+      "Pre-Rendering sub Component. Valuation: " +
+        (JSON.stringify(this.state.item) != JSON.stringify({}))
+    );
+    if (JSON.stringify(this.state.item) != JSON.stringify({})) {
+      console.log("Rendering sub Component. Item: " + this.state.item);
       let creator;
-      if (event.creatorProfile.picturePath == "") {
-        creator = <Icon name="contact" />;
+      if (this.state.item.creatorProfile.picturePath == "") {
+        creator = (
+          <Thumbnail
+            source={require("../../assets/images/profile.png")}
+            style={styles.profilePic}
+          />
+        );
       } else {
         creator = (
-          <Thumbnail source={{ uri: event.creatorProfile.picturePath }} />
+          <Thumbnail
+            source={{ uri: this.state.item.creatorProfile.picturePath }}
+            style={styles.profilePic}
+          />
         );
       }
       return (
@@ -88,18 +101,18 @@ export default class CurrentEventCard extends Component {
           <View style={styles.sidebar} />
           <View style={styles.mainInfo}>
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>{event.eventName}</Text>
+              <Text style={styles.title}>{this.state.item.eventName}</Text>
             </View>
             <View style={styles.userContainer}>
               {creator}
               <Text style={styles.user}>
-                {event.creatorProfile.account.username}
+                {this.state.item.creatorProfile.account.username}
               </Text>
             </View>
             <View style={styles.timeContainer}>
               <Icon name="time" style={styles.timeIcon} />
               <Text style={styles.time}>
-                {event.startingTime.split("T")[1]}
+                {this.state.item.startingTime.split("T")[1]}
               </Text>
             </View>
           </View>
@@ -114,7 +127,7 @@ export default class CurrentEventCard extends Component {
             <View style={styles.fillContainer}>
               <Text style={styles.fill}>
                 <Icon name="contacts" style={styles.fillIcon} />
-                {event.countStarters} / {event.maxStarters}
+                {this.state.item.countStarters} / {this.state.item.maxStarters}
               </Text>
             </View>
           </View>

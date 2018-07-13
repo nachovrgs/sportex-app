@@ -67,7 +67,8 @@ export default class CurrentEventFeed extends Component {
       token: "",
       profileId: "",
       refreshing: false,
-      noEventsShowed: false
+      noEventsShowed: false,
+      initial: true
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.loadData();
@@ -137,7 +138,10 @@ export default class CurrentEventFeed extends Component {
           error: "",
           token: ""
         });
-        this._refreshListView();
+        if (this.state.initial) {
+          this.setState({ initial: false });
+          this._refreshListView();
+        }
       })
       .catch(error => {
         this.setState({
@@ -175,8 +179,16 @@ export default class CurrentEventFeed extends Component {
       </Root>
     ) : this.state.isError ? (
       <Root>
-        <View style={styles.container}>
-          <Text>{this.state.error}</Text>
+        <View style={styles.noEventsContainer}>
+          <View style={styles.noEventsSubContainer}>
+            <Image
+              style={styles.noEventsImage}
+              source={require("../../assets/images/no_internet.png")}
+            />
+            <Text style={styles.noEventsText}>
+              No tienes conexion a internet.
+            </Text>
+          </View>
         </View>
       </Root>
     ) : this.state.dataSource.length == 0 ? (

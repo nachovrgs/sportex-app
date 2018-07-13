@@ -69,15 +69,24 @@ export default class EventCard extends Component {
   handlePress() {
     this.props.onclick();
   }
+
   render() {
     const event = this.state.item;
     if (JSON.stringify(event) != JSON.stringify({})) {
       let creator;
       if (event.creatorProfile.picturePath == "") {
-        creator = <Icon name="contact" />;
+        creator = (
+          <Thumbnail
+            source={require("../../assets/images/profile.png")}
+            style={styles.profilePic}
+          />
+        );
       } else {
         creator = (
-          <Thumbnail source={{ uri: event.creatorProfile.picturePath }} />
+          <Thumbnail
+            source={{ uri: event.creatorProfile.picturePath }}
+            style={styles.profilePic}
+          />
         );
       }
       return (
