@@ -6,9 +6,11 @@ import {
   Image,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ActivityIndicator,
   TextInput,
   ScrollView
 } from "react-native";
+import Autocomplete from "react-native-autocomplete-input";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import {
   Container,
@@ -25,8 +27,12 @@ import {
   Right,
   Title,
   DatePicker,
+  Thumbnail,
   Icon,
-  Picker
+  Picker,
+  Root,
+  List,
+  ListItem
 } from "native-base";
 import { logout } from "../../helpers/navigation";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
@@ -53,7 +59,10 @@ export default class CreateGroup extends Component {
       profileId: null,
       isLoading: true,
       isError: false,
-      error: ""
+      error: "",
+      users: [],
+      query: "",
+      selectedUsers: []
     };
     this.loadData();
   }
@@ -62,15 +71,64 @@ export default class CreateGroup extends Component {
   async loadData() {
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();
+    fetch(`${API_URI}/standardProfile`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        this.setState({
+          users: jsonResponse,
+          isLoading: false,
+          error: ""
+        });
+        if (this.state.initial) {
+          this.setState({ initial: false });
+          this._refreshListView();
+        }
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
   }
+  renderUser(user) {
+    const { mailAddress } = user;
 
+    return (
+      <View>
+        <Text style={styles.titleText}>{mailAddress}</Text>
+      </View>
+    );
+  }
   findLocation = query => {
     if (!query || query === "") {
       return [];
     }
-    const { locations } = this.state.locations;
+    const { users } = this.state.users;
     const regex = new RegExp(`${query.trim()}`, "i");
-    return locations.filter(location => location.Name.search(regex) >= 0);
+    return users.filter(user => user.Name.search(regex) >= 0);
   };
 
   onNameChanged = name => {
@@ -84,6 +142,24 @@ export default class CreateGroup extends Component {
     });
   };
 
+  insertUser(user) {
+    this.state.selectedUsers.push(user);
+    this.setState({
+      selectedUsers: this.state.selectedUsers,
+      query: ""
+    });
+  }
+
+  findUser(query) {
+    if (query === "") {
+      return [];
+    }
+
+    const { users } = this.state;
+    const regex = new RegExp(`${query.trim()}`, "i");
+    return users.filter(user => user.mailAddress.search(regex) >= 0);
+  }
+
   isReady = () => {
     return (
       this.state.name &&
@@ -94,6 +170,7 @@ export default class CreateGroup extends Component {
   };
 
   createAction = () => {
+    const memberList = this.state.selectedUsers;
     fetch(`${API_URI}/group`, {
       method: "POST",
       headers: {
@@ -152,49 +229,134 @@ export default class CreateGroup extends Component {
   };
 
   render() {
-    const { name, description, isLoading } = this.state;
-    return (
-      <Container>
-        <Header>
-          <Left />
-          <Body>
-            <Title>Nuevo grupo</Title>
-          </Body>
-          <Right />
-        </Header>
-        <Content>
-          <Form>
-            <Item fixedLabel>
-              <Label>Nombre</Label>
-              <Input
-                returnKeyType="next"
-                value={name}
-                onChangeText={this.onNameChanged}
-                autoCorrect={true}
-              />
-            </Item>
-            <Item fixedLabel>
-              <Label>Descripción</Label>
-              <Input
-                value={description}
-                autoCorrect={true}
-                onChangeText={this.onDescriptionChanged}
-                ref={input => (this.descriptionInput = input)}
-              />
-            </Item>
-          </Form>
-          <View style={styles.createButton}>
-            <Button
-              block
-              success
-              onPress={this.createAction}
-              disabled={!this.isReady()}
-            >
-              <Text>Crear</Text>
-            </Button>
+    const { name, description, isLoading, query } = this.state;
+    const users = this.findUser(query);
+    const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
+    return this.state.isLoading ? (
+      <Root>
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#ecf0f1" animating />
+        </View>
+      </Root>
+    ) : this.state.isError ? (
+      <Root>
+        <View style={styles.noEventsContainer}>
+          <View style={styles.noEventsSubContainer}>
+            <Image
+              style={styles.noEventsImage}
+              source={require("../../assets/images/no_internet.png")}
+            />
+            <Text style={styles.noEventsText}>
+              No tienes conexion a internet.
+            </Text>
           </View>
-        </Content>
-      </Container>
+        </View>
+      </Root>
+    ) : (
+      <Root>
+        <Container>
+          <Header>
+            <Left />
+            <Body>
+              <Title>Nuevo grupo</Title>
+            </Body>
+            <Right />
+          </Header>
+          <Content>
+            <Form>
+              <Item fixedLabel>
+                <Label>Nombre</Label>
+                <Input
+                  returnKeyType="next"
+                  value={name}
+                  onChangeText={this.onNameChanged}
+                  autoCorrect={true}
+                />
+              </Item>
+              <Item fixedLabel>
+                <Label>Descripción</Label>
+                <Input
+                  value={description}
+                  autoCorrect={true}
+                  onChangeText={this.onDescriptionChanged}
+                  ref={input => (this.descriptionInput = input)}
+                />
+              </Item>
+              <Item>
+                <Autocomplete
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  containerStyle={styles.autocompleteContainer}
+                  data={
+                    users.length === 1 && comp(query, users[0].mailAddress)
+                      ? []
+                      : users
+                  }
+                  defaultValue={query}
+                  onChangeText={text => this.setState({ query: text })}
+                  placeholder="Agrega integrantes"
+                  renderItem={({ mailAddress }) => (
+                    <TouchableOpacity
+                      onPress={() => this.setState({ query: mailAddress })}
+                    >
+                      <Text style={styles.itemText}>{mailAddress}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              </Item>
+              <Item>
+                <TouchableOpacity onPress={() => this.insertUser(users[0])}>
+                  <Label>Agregar integrante : </Label>
+                  <View style={styles.descriptionContainer}>
+                    {users.length > 0 ? (
+                      this.renderUser(users[0])
+                    ) : (
+                      <Text style={styles.infoText}>
+                        Ingresar el nombre del usuario
+                      </Text>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              </Item>
+              <Item>
+                <ScrollView style={styles.userList}>
+                  <List>
+                    {this.state.selectedUsers.map((member, i) => (
+                      <ListItem avatar>
+                        <Left>
+                          <Thumbnail
+                            style={styles.participantIcon}
+                            source={{
+                              uri: member.picturePath
+                                ? member.picturePath
+                                : "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
+                            }}
+                          />
+                        </Left>
+                        <Body>
+                          <Text style={styles.participantName}>
+                            {member.account.username}
+                          </Text>
+                        </Body>
+                      </ListItem>
+                    ))}
+                  </List>
+                </ScrollView>
+              </Item>
+            </Form>
+            <View style={styles.createButton}>
+              <Button
+                block
+                success
+                onPress={this.createAction}
+                disabled={!this.isReady()}
+              >
+                <Text>Crear</Text>
+              </Button>
+            </View>
+          </Content>
+        </Container>
+      </Root>
     );
   }
 }

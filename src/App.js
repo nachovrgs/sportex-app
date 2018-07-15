@@ -36,23 +36,9 @@ export function startMainApp() {
     tabs: [
       {
         label: "",
-        screen: screens.userProfile.id,
-        icon: require("./assets/images/profile.png"),
-        selectedIcon: require("./assets/images/profile.png"),
-        title: screens.userProfile.title
-      },
-      {
-        label: "",
-        screen: screens.currentEventFeed.id,
-        icon: require("./assets/images/currentEvents.png"),
-        selectedIcon: require("./assets/images/currentEvents.png"),
-        title: screens.currentEventFeed.title
-      },
-      {
-        label: "",
         screen: screens.eventFeed.id,
-        icon: require("./assets/images/events.png"),
-        selectedIcon: require("./assets/images/events_s.png"),
+        icon: require("./assets/images/home.png"),
+        selectedIcon: require("./assets/images/home.png"),
         title: screens.eventFeed.title
       },
       {
@@ -68,19 +54,33 @@ export function startMainApp() {
         icon: require("./assets/images/history.png"),
         selectedIcon: require("./assets/images/history.png"),
         title: screens.historyFeed.title
+      },
+      {
+        label: "",
+        screen: screens.currentEventFeed.id,
+        icon: require("./assets/images/currentEvents.png"),
+        selectedIcon: require("./assets/images/currentEvents.png"),
+        title: screens.currentEventFeed.title
+      },
+      {
+        label: "",
+        screen: screens.userProfile.id,
+        icon: require("./assets/images/profile.png"),
+        selectedIcon: require("./assets/images/profile.png"),
+        title: screens.userProfile.title
       }
     ],
     tabsStyle: {
       tabBarButtonColor: "#ecf0f1",
       tabBarSelectedButtonColor: "#e74c3c",
       tabBarBackgroundColor: "#2c3e50",
-      initialTabIndex: 1 // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
+      initialTabIndex: 0 // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
     },
     appStyle: {
       tabBarButtonColor: "#ecf0f1",
       tabBarSelectedButtonColor: "#e74c3c",
       tabBarBackgroundColor: "#2c3e50",
-      initialTabIndex: 1 // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
+      initialTabIndex: 0 // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
     },
     animationType: "slide-down" // optional, add transition animation to root change: 'none', 'slide-down', 'fade'
   });

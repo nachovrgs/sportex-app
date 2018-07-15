@@ -16,6 +16,11 @@ export default StyleSheet.create({
     width: 40,
     height: 40
   },
+  noEventsText: {
+    color: colors.text,
+    fontSize: 20,
+    fontWeight: "bold"
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background

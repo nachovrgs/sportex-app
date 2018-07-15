@@ -170,19 +170,31 @@ export default class Groups extends Component {
       </Root>
     ) : this.state.isError ? (
       <Root>
-        <View style={styles.container}>
-          <Text>{this.state.error}</Text>
+        <View style={styles.noEventsContainer}>
+          <View style={styles.noEventsSubContainer}>
+            <Image
+              style={styles.noEventsImage}
+              source={require("../../assets/images/no_internet.png")}
+            />
+            <Text style={styles.noEventsText}>
+              No tienes conexion a internet.
+            </Text>
+          </View>
         </View>
       </Root>
     ) : this.state.dataSource.length == 0 ? (
       <Root>
         <View style={styles.noEventsContainer}>
-          <View style={styles.noEventsSubContainer}>
+          <TouchableOpacity
+            style={styles.noEventsSubContainer}
+            onPress={() => this._refreshListView()}
+          >
             <Image
               style={styles.noEventsImage}
               source={require("../../assets/images/none.png")}
             />
-          </View>
+            <Text style={styles.noEventsText}>Refrescar</Text>
+          </TouchableOpacity>
         </View>
       </Root>
     ) : (

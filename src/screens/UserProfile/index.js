@@ -46,50 +46,46 @@ export default class UserProfile extends Component {
   }
 
   async loadData() {
-    Promise.all([getTokenForUsage(), getAccountIdForUsage()]).then(
-      ([token, accountId]) => {
-        this.state.token = token;
-        this.state.accountID = accountId;
-        fetch(`${API_URI}/standardProfile/account/${this.state.accountID}`, {
-          method: "GET",
-          headers: {
-            Authorization:
-              "Bearer " +
-              (this.state.token ? this.state.token.replace(/"/g, "") : "")
-          }
-        })
-          .then(response => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              this.setState({
-                isLoading: false,
-                isError: true,
-                error: "Network response was not ok.",
-                token: ""
-              });
-              return new Error("Network response was not ok.");
-            }
-          })
-          .then(jsonResponse => {
-            this.setState({
-              profile: jsonResponse,
-              isLoading: false,
-              error: "",
-              token: ""
-            });
-          })
-          .catch(error => {
-            this.setState({
-              isLoading: false,
-              isError: true,
-              error: error.message,
-              token: ""
-            });
-            throw error;
-          });
+    this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
+    fetch(`${API_URI}/standardProfile/account/${this.state.accountID}`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
       }
-    );
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        this.setState({
+          profile: jsonResponse,
+          isLoading: false,
+          error: "",
+          token: ""
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
   }
 
   // Handle nav bar navigation

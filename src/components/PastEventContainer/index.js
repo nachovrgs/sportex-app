@@ -2,10 +2,14 @@
 import React, { Component } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import geolib from "geolib";
-
-import { PastEventCard, ExpandedPastEventCard } from "../../components";
+import { Icon, Button, Thumbnail } from "native-base";
+import { CurrentEventCard, ExpandedCurrentEventCard } from "../../components";
 import { screens } from "../../screens";
 import { navigate } from "../../helpers/navigation";
+import { API_URI } from "../../constants";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
+
+import { Rating } from "react-native-elements";
 
 import { colors } from "../../styles";
 import styles from "./styles";
@@ -17,9 +21,17 @@ class PastEventContainer extends Component {
     this.state = {
       item: {},
       coords: {},
-      expanded: false
+      expanded: false,
+      token: "",
+      profileId: null,
+      containerHeight: 120
     };
     this.handlePress = this.handlePress.bind(this);
+    this.selectBackgroundColor = this.selectBackgroundColor.bind(this);
+    this.loadStorageItems = this.loadStorageItems.bind(this);
+
+    //Load Stuff
+    this.loadStorageItems();
   }
 
   componentDidMount() {
@@ -35,6 +47,12 @@ class PastEventContainer extends Component {
   }
 
   //Helpers
+
+  async loadStorageItems() {
+    this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
+  }
+
   selectBackgroundColor() {
     if (this._mounted) {
       var backColors = [
@@ -45,25 +63,118 @@ class PastEventContainer extends Component {
       return backColors[Math.floor(Math.random() * backColors.length)];
     }
   }
-  handlePress() {
-    this.state.expanded = !this.state.expanded;
-    this.forceUpdate();
-  }
 
+  getContainerHeight = () => {
+    return this.state.containerHeight == 220 ? 120 : 220;
+  };
+  handlePress = () => {
+    this.setState({
+      containerHeight: this.getContainerHeight(),
+      expanded: !this.state.expanded
+    });
+  };
+  canEvaluate() {
+    return true;
+  }
+  evaluateAction = rating => {
+    fetch(`${API_URI}/playerReview/ReviewAllEventParticipants`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        Rate: rating,
+        Message: "",
+        IdProfileReviews: this.state.profileId,
+        IdProfileReviewed: 0,
+        EventID: this.state.item.id
+      })
+    })
+      .then(response => {
+        if (response.ok) {
+          //Event joined. Rereshing
+          this.props.navigator.push({
+            screen: screens.historyFeed.id,
+            title: screens.historyFeed.title,
+            animated: true,
+            animationType: "fade",
+            backButtonHidden: screens.historyFeed.backButtonHidden
+          });
+        } else {
+          console.log("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        throw error;
+      });
+  };
   render() {
-    if (JSON.stringify(this.state.item) != JSON.stringify({})) {
-      return this.state.expanded ? (
-        <ExpandedPastEventCard
-          eventItem={this.state.item}
-          navigator={this.props.navigator}
-          onclick={this.handlePress}
-        />
-      ) : (
-        <PastEventCard
-          eventItem={this.state.item}
-          navigator={this.props.navigator}
-          onclick={this.handlePress}
-        />
+    const event = this.state.item;
+    if (JSON.stringify(event) != JSON.stringify({})) {
+      let creator;
+      if (event.creatorProfile.picturePath == "") {
+        creator = (
+          <Thumbnail
+            source={require("../../assets/images/profile.png")}
+            style={styles.profilePic}
+          />
+        );
+      } else {
+        creator = (
+          <Thumbnail
+            source={{ uri: event.creatorProfile.picturePath }}
+            style={styles.profilePic}
+          />
+        );
+      }
+      return (
+        <View
+          style={[styles.container, { height: this.state.containerHeight }]}
+        >
+          <TouchableOpacity
+            style={styles.allContainer}
+            onPress={() => this.handlePress()}
+          >
+            <View style={styles.sidebar} />
+            <View style={styles.mainInfo}>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{event.eventName}</Text>
+              </View>
+              <View style={styles.userContainer}>
+                {creator}
+                <Text style={styles.user}>
+                  {event.creatorProfile.account.username}
+                </Text>
+              </View>
+              <View style={styles.timeContainer}>
+                <Icon name="time" style={styles.timeIcon} />
+                <Text style={styles.time}>
+                  {event.startingTime.split("T")[1]}
+                </Text>
+              </View>
+            </View>
+            <View styles={styles.map} />
+          </TouchableOpacity>
+          {this.state.expanded && (
+            <View style={styles.button}>
+              <Rating
+                type="star"
+                ratingCount={5}
+                fractions={1}
+                startingValue={event.rating ? event.rating : 0}
+                imageSize={30}
+                showRating={event.rating ? true : false}
+                onFinishRating={this.evaluateAction}
+                style={{ paddingVertical: 10 }}
+              />
+            </View>
+          )}
+        </View>
       );
     } else {
       return null;

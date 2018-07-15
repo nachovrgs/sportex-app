@@ -4,6 +4,7 @@ export default {
   white: "#ecf0f1",
   borders: "#2c3e50",
   text: "#2c3e50",
+  text_blue: "rgb(36, 57, 131)",
   button: "#34495e",
   main: "#bdc3c7",
   text_orange: "rgb(255, 87, 34)",

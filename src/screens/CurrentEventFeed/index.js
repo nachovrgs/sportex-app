@@ -6,7 +6,8 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
-  Image
+  Image,
+  TouchableOpacity
 } from "react-native";
 import {
   Container,
@@ -194,12 +195,16 @@ export default class CurrentEventFeed extends Component {
     ) : this.state.dataSource.length == 0 ? (
       <Root>
         <View style={styles.noEventsContainer}>
-          <View style={styles.noEventsSubContainer}>
+          <TouchableOpacity
+            style={styles.noEventsSubContainer}
+            onPress={() => this._refreshListView()}
+          >
             <Image
               style={styles.noEventsImage}
               source={require("../../assets/images/none.png")}
             />
-          </View>
+            <Text style={styles.noEventsText}>Refrescar</Text>
+          </TouchableOpacity>
         </View>
       </Root>
     ) : (

@@ -94,13 +94,13 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = false
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.1"
+  compileSdkVersion 27
+  buildToolsVersion "27.0.3"
 
     defaultConfig {
         applicationId "com.sportex"
-        minSdkVersion 16
-        targetSdkVersion 22
+        minSdkVersion 26
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         ndk {
@@ -121,6 +121,10 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_1_8
+      targetCompatibility JavaVersion.VERSION_1_8
+      }
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -137,11 +141,13 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: "libs", include: ["*.jar"])
-     compile "com.android.support:appcompat-v7:23.0.1"
-     compile "com.facebook.react:react-native:+"
-     compile project(':react-native-navigation')
-     compile project(':react-native-vector-icons')
+  implementation fileTree(dir: "libs", include: ["*.jar"])
+  implementation "com.android.support:appcompat-v7:23.0.1"
+  implementation "com.facebook.react:react-native:+"
+
+  implementation project(':react-native-navigation')
+  implementation project(':react-native-vector-icons')
+  implementation project(':mapbox-react-native-mapbox-gl')
 }
 
 // Run this once to be able to run the application with BUCK
