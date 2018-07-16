@@ -67,7 +67,7 @@ export const screens = {
   },
   currentEventFeed: {
     id: "sportex.CurrentEventFeed",
-    title: "Sportex",
+    title: "Agenda",
     backButtonHidden: true
   },
   notificationFeed: {

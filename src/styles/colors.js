@@ -5,6 +5,8 @@ export default {
   borders: "#2c3e50",
   text: "#2c3e50",
   text_blue: "rgb(36, 57, 131)",
+  text_light_blue: "rgb(50, 95, 255)",
+  text_grey: "rgb(141, 141, 143)",
   button: "#34495e",
   main: "#bdc3c7",
   text_orange: "rgb(255, 87, 34)",

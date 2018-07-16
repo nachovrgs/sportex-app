@@ -44,8 +44,12 @@ export default StyleSheet.create({
   title: {
     flex: 1,
     fontSize: sizes.medium,
-    color: colors.background,
+    color: colors.text_blue,
     fontWeight: "bold"
+  },
+  name: {
+    flex: 1,
+    fontSize: sizes.medium
   },
   userContainer: {
     flex: 2,
@@ -75,13 +79,14 @@ export default StyleSheet.create({
     color: colors.text,
     marginLeft: 10
   },
-  location: {
+  hour: {
     flex: 1,
-    fontSize: sizes.small,
-    color: colors.text
+    fontSize: sizes.medium,
+    color: colors.text_grey,
+    fontWeight: "bold"
   },
-  locationContainer: {
-    flex: 1,
+  hourContainer: {
+    flex: 2,
     alignItems: "flex-end"
   },
   fill: {
@@ -90,7 +95,7 @@ export default StyleSheet.create({
     color: colors.text
   },
   fillContainer: {
-    flex: 2,
+    flex: 1,
     marginTop: 30,
     alignItems: "flex-end"
   },
