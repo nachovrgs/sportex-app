@@ -35,7 +35,7 @@ export default class EventFeed extends Component {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center",
-    navBarTextAlignment: "center"
+    navBarTextAlignment: "center",
   };
   static navigatorButtons = {
     rightButtons: [
@@ -44,7 +44,7 @@ export default class EventFeed extends Component {
         id: "add",
         buttonColor: "#ecf0f1",
         buttonFontSize: 20,
-        buttonFontWeight: "600"
+        buttonFontWeight: "600",
       }
     ],
     leftButtons: [

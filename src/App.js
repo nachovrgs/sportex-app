@@ -38,6 +38,7 @@ export function startMainApp() {
         label: "",
         screen: screens.eventFeed.id,
         icon: require("./assets/images/home.png"),
+        iconInsets: {top: 5,bottom: -5},
         selectedIcon: require("./assets/images/home.png"),
         title: screens.eventFeed.title
       },
@@ -45,6 +46,7 @@ export function startMainApp() {
         label: "",
         screen: screens.groups.id,
         icon: require("./assets/images/groups.png"),
+        iconInsets: {top: 5,bottom: -5},
         selectedIcon: require("./assets/images/groups.png"),
         title: screens.groups.title
       },
@@ -52,20 +54,23 @@ export function startMainApp() {
         label: "",
         screen: screens.historyFeed.id,
         icon: require("./assets/images/history.png"),
+        iconInsets: {top: 5,bottom: -5},
         selectedIcon: require("./assets/images/history.png"),
         title: screens.historyFeed.title
       },
       {
         label: "",
         screen: screens.currentEventFeed.id,
-        icon: require("./assets/images/currentEvents.png"),
-        selectedIcon: require("./assets/images/currentEvents.png"),
+        icon: require("./assets/images/calendar.png"),
+        iconInsets: {top: 5,bottom: -5},
+        selectedIcon: require("./assets/images/calendar.png"),
         title: screens.currentEventFeed.title
       },
       {
         label: "",
         screen: screens.userProfile.id,
         icon: require("./assets/images/profile.png"),
+        iconInsets: {top: 5,bottom: -5},
         selectedIcon: require("./assets/images/profile.png"),
         title: screens.userProfile.title
       }
@@ -74,13 +79,15 @@ export function startMainApp() {
       tabBarButtonColor: "#ecf0f1",
       tabBarSelectedButtonColor: "#e74c3c",
       tabBarBackgroundColor: "#2c3e50",
-      initialTabIndex: 0 // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
+      initialTabIndex: 0, // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
+      drawUnderTabBar: true, // draw the screen content under the tab bar (the tab bar is always translucent)
+      
     },
     appStyle: {
       tabBarButtonColor: "#ecf0f1",
       tabBarSelectedButtonColor: "#e74c3c",
       tabBarBackgroundColor: "#2c3e50",
-      initialTabIndex: 0 // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
+      initialTabIndex: 0,
     },
     animationType: "slide-down" // optional, add transition animation to root change: 'none', 'slide-down', 'fade'
   });

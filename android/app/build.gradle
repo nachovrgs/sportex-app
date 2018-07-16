@@ -159,6 +159,9 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-spinkit')
+    compile project(':react-native-vector-icons')
+    compile project(':react-native-navigation')
   implementation fileTree(dir: "libs", include: ["*.jar"])
   implementation "com.android.support:appcompat-v7:23.0.1"
   implementation "com.facebook.react:react-native:+"

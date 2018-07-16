@@ -2,11 +2,10 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
 
-import { resetAndLogout } from "../../helpers/storage";
 import { screens } from "../../screens";
 
 import { Avatar } from "react-native-elements";
-import { getTokenForUsage, getAccountIdForUsage } from "../../helpers/storage";
+import { getTokenForUsage, getAccountIdForUsage, resetAndLogout } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
@@ -91,15 +90,7 @@ export default class UserProfile extends Component {
   // Handle nav bar navigation
   onNavigatorEvent(event) {
     if (event.type == "NavBarButtonPress") {
-      if (event.id == "add") {
-        this.props.navigator.push({
-          screen: screens.createEvent.id,
-          title: screens.createEvent.title,
-          animated: true,
-          animationType: "fade",
-          backButtonHidden: screens.createEvent.backButtonHidden
-        });
-      } else if (event.id == "logout") {
+      if (event.id == "logout") {
         resetAndLogout();
       }
     }

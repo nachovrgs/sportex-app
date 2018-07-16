@@ -288,7 +288,7 @@ export default class EventScreen extends Component {
                 onPress={this.exitAction}
                 disabled={!this.canExit()}
               >
-                <Text>Unirse</Text>
+                <Text>Salir</Text>
               </Button>
             </View>
           </View>
