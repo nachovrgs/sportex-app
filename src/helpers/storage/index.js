@@ -182,11 +182,9 @@ export async function getProfileFromAccountId(accountId) {
   });
 }
 export async function resetAndLogout() {
-  AsyncStorage.clear().then(() => {
-    AsyncStorage.flushGetRequests().then(() => {
-      logout();
-    });
-  });
+  await AsyncStorage.clear();
+  await AsyncStorage.flushGetRequests();
+  logout();
 }
 export async function isLoggedIn() {
   var token = await getToken();

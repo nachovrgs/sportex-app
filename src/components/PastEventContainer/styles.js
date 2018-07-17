@@ -105,7 +105,16 @@ export default StyleSheet.create({
   map: {
     flex: 10
   },
+  ratingContainer: {
+    flexDirection: "row"
+  },
+  rating: {
+    flex: 3
+  },
+  buttonContainer: {
+    flex: 1
+  },
   button: {
-    flex: 2
+    width: 100
   }
 });

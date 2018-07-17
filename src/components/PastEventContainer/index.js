@@ -2,7 +2,8 @@
 import React, { Component } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import geolib from "geolib";
-import { Icon, Button, Thumbnail } from "native-base";
+import { Icon, Thumbnail } from "native-base";
+import { Button } from "react-native-elements";
 import { CurrentEventCard, ExpandedCurrentEventCard } from "../../components";
 import { screens } from "../../screens";
 import { navigate } from "../../helpers/navigation";
@@ -24,7 +25,8 @@ class PastEventContainer extends Component {
       expanded: false,
       token: "",
       profileId: null,
-      containerHeight: 120
+      containerHeight: 120,
+      evaluation: 0
     };
     this.handlePress = this.handlePress.bind(this);
     this.selectBackgroundColor = this.selectBackgroundColor.bind(this);
@@ -76,7 +78,12 @@ class PastEventContainer extends Component {
   canEvaluate() {
     return true;
   }
-  evaluateAction = rating => {
+  storeEvaluation = rating => {
+    this.setState({
+      evaluation: rating
+    });
+  };
+  evaluateAction = () => {
     fetch(`${API_URI}/playerReview/ReviewAllEventParticipants`, {
       method: "POST",
       headers: {
@@ -87,7 +94,7 @@ class PastEventContainer extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        Rate: rating,
+        Rate: this.state.evaluation,
         Message: "",
         IdProfileReviews: this.state.profileId,
         IdProfileReviewed: 0,
@@ -96,7 +103,6 @@ class PastEventContainer extends Component {
     })
       .then(response => {
         if (response.ok) {
-          //Event joined. Rereshing
           this.props.navigator.push({
             screen: screens.historyFeed.id,
             title: screens.historyFeed.title,
@@ -140,7 +146,6 @@ class PastEventContainer extends Component {
             style={styles.allContainer}
             onPress={() => this.handlePress()}
           >
-            <View style={styles.sidebar} />
             <View style={styles.mainInfo}>
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{event.eventName}</Text>
@@ -161,17 +166,27 @@ class PastEventContainer extends Component {
             <View styles={styles.map} />
           </TouchableOpacity>
           {this.state.expanded && (
-            <View style={styles.button}>
-              <Rating
-                type="star"
-                ratingCount={5}
-                fractions={1}
-                startingValue={event.rating ? event.rating : 0}
-                imageSize={30}
-                showRating={event.rating ? true : false}
-                onFinishRating={this.evaluateAction}
-                style={{ paddingVertical: 10 }}
-              />
+            <View style={styles.ratingContainer}>
+              <View style={styles.rating}>
+                <Rating
+                  type="star"
+                  ratingCount={5}
+                  fractions={0}
+                  startingValue={event.rating ? event.rating : 0}
+                  imageSize={30}
+                  onFinishRating={this.storeEvaluation}
+                  showRating={event.rating ? true : false}
+                  style={{ paddingVertical: 10 }}
+                />
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button
+                  style={styles.button}
+                  success
+                  onPress={this.evaluateAction}
+                  title="Evaluar"
+                />
+              </View>
             </View>
           )}
         </View>

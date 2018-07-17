@@ -56,7 +56,7 @@ class CurrentEventContainer extends Component {
       animationType: "fade",
       backButtonHidden: screens.event.backButtonHidden,
       passProps: {
-        eventItem: event
+        eventItemId: event.id
       }
     });
   };

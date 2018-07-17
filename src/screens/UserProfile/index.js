@@ -5,7 +5,11 @@ import { View, Text } from "react-native";
 import { screens } from "../../screens";
 
 import { Avatar } from "react-native-elements";
-import { getTokenForUsage, getAccountIdForUsage, resetAndLogout } from "../../helpers/storage";
+import {
+  getTokenForUsage,
+  getAccountIdForUsage,
+  resetAndLogout
+} from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
@@ -46,7 +50,7 @@ export default class UserProfile extends Component {
 
   async loadData() {
     this.state.token = await getTokenForUsage();
-    this.state.profileId = await getProfileIdForUsage();
+    this.state.accountID = await getAccountIdForUsage();
     fetch(`${API_URI}/standardProfile/account/${this.state.accountID}`, {
       method: "GET",
       headers: {
@@ -72,8 +76,7 @@ export default class UserProfile extends Component {
         this.setState({
           profile: jsonResponse,
           isLoading: false,
-          error: "",
-          token: ""
+          error: ""
         });
       })
       .catch(error => {

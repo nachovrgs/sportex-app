@@ -12,6 +12,7 @@ import Groups from "./Groups";
 import GroupScreen from "./GroupScreen";
 import CreateGroup from "./CreateGroup";
 import NotificationFeed from "./NotificationFeed";
+import ProfileScreen from "./ProfileScreen";
 
 // Add ALL screens here for easy use all over project
 export const screens = {
@@ -74,6 +75,11 @@ export const screens = {
     id: "sportex.NotificationFeed",
     title: "Notificaciones",
     backButtonHidden: false
+  },
+  profileScreen: {
+    id: "sportex.ProfileScreen",
+    title: "Sportex",
+    backButtonHidden: false
   }
 };
 
@@ -97,4 +103,5 @@ export function registerScreens() {
     screens.notificationFeed.id,
     () => NotificationFeed
   );
+  Navigation.registerComponent(screens.profileScreen.id, () => ProfileScreen);
 }

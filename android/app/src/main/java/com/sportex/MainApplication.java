@@ -11,7 +11,8 @@ import com.reactnativenavigation.NavigationApplication;
 import com.oblador.vectoricons.VectorIconsPackage;
 import java.util.Arrays;
 import java.util.List;
-import com.mapbox.rctmgl.RCTMGLPackage;
+import com.react.rnspinkit.RNSpinkitPackage;
+
 public class MainApplication extends NavigationApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -25,10 +26,7 @@ public class MainApplication extends NavigationApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new RNSpinkitPackage(),
-            new VectorIconsPackage(),
-            new NavigationReactPackage(),
-          new VectorIconsPackage(),
-          new RCTMGLPackage()
+            new VectorIconsPackage()
       );
     }
   };

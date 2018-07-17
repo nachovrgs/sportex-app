@@ -94,6 +94,13 @@ export default StyleSheet.create({
   participantName: {
     fontSize: sizes.small
   },
+  swiper: {
+    height: 180
+  },
+  swiperCard: {
+    height: 180,
+    elevation: 3
+  },
   button: {
     flex: 1
   }

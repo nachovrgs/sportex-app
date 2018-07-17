@@ -9,7 +9,17 @@ import {
   ScrollView
 } from "react-native";
 import geolib from "geolib";
-import { Thumbnail, List, ListItem, Left, Body, Button } from "native-base";
+import {
+  Thumbnail,
+  List,
+  ListItem,
+  Left,
+  Body,
+  Button,
+  DeckSwiper,
+  Card,
+  CardItem
+} from "native-base";
 import { screens } from "../../screens";
 import styles from "./styles";
 
@@ -41,6 +51,7 @@ export default class EventScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      itemId: null,
       item: {},
       coords: {},
       isLoading: false,
@@ -48,19 +59,16 @@ export default class EventScreen extends Component {
       error: "",
       token: ""
     };
-
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    this.loadData();
+    this.exitAction = this.exitAction.bind(this);
   }
-  async loadData() {
-    this.state.token = await getTokenForUsage();
-    this.state.profileId = await getProfileIdForUsage();
-  }
+
   componentDidMount() {
     this._mounted = true;
     this.setState({
-      item: this.props.eventItem
+      itemId: this.props.eventItemId
     });
+    this.loadEvent();
   }
 
   // Handle nav bar navigation
@@ -113,6 +121,47 @@ export default class EventScreen extends Component {
   }
 
   //Helpers
+  async loadEvent() {
+    this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
+    fetch(`${API_URI}/event/${this.state.itemId}`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        this.setState({
+          item: jsonResponse,
+          isLoading: false,
+          error: ""
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
+  }
   returnBack() {
     this.props.navigator.push({
       screen: screens.currentEventFeed.id,
@@ -126,6 +175,7 @@ export default class EventScreen extends Component {
     return true;
   }
   exitAction = () => {
+    console.log(this.state.token);
     fetch(`${API_URI}/event/LeaveEvent`, {
       method: "POST",
       headers: {
@@ -162,60 +212,16 @@ export default class EventScreen extends Component {
   render() {
     const event = this.state.item;
     if (JSON.stringify(event) != JSON.stringify({})) {
-      const list =
-        event.listStarters.length == 0
-          ? [
-              {
-                account: {
-                  username: "Amy Farha"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg"
-              },
-              {
-                account: {
-                  username: "Chris Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Juan Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Pedro Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Carlos Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Marcos Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Esteban Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              }
-            ]
-          : event.listStarters;
+      const cards = [
+        {
+          type: 1
+        },
+        {
+          type: 2
+        }
+      ];
+      const starters = event.listStarters;
+      const substitutes = event.listSubstitutes;
       const date = new Date(event.startingTime.split("T")[0]).toDateString();
       return (
         <View style={styles.container}>
@@ -261,25 +267,73 @@ export default class EventScreen extends Component {
               <Text style={styles.footerTitle}>Jugadores</Text>
             </View>
             <View style={styles.playersContainer}>
-              <ScrollView>
-                <List>
-                  {list.map((participant, i) => (
-                    <ListItem avatar>
-                      <Left>
-                        <Thumbnail
-                          style={styles.participantIcon}
-                          source={{ uri: participant.picturePath }}
-                        />
-                      </Left>
-                      <Body>
-                        <Text style={styles.participantName}>
-                          {participant.account.username}
-                        </Text>
-                      </Body>
-                    </ListItem>
-                  ))}
-                </List>
-              </ScrollView>
+              <DeckSwiper
+                dataSource={cards}
+                style={styles.swiper}
+                renderItem={item => (
+                  <Card style={styles.swiperCard}>
+                    {item.type == 1 && (
+                      <ScrollView>
+                        <List>
+                          {starters.map((participant, i) => (
+                            <ListItem avatar>
+                              <Left>
+                                <Thumbnail
+                                  style={styles.participantIcon}
+                                  source={{
+                                    uri:
+                                      participant.profileParticipant.picturePath
+                                  }}
+                                />
+                              </Left>
+                              <Body>
+                                <Text style={styles.participantName}>
+                                  {
+                                    participant.profileParticipant.account
+                                      .username
+                                  }
+                                </Text>
+                              </Body>
+                            </ListItem>
+                          ))}
+                        </List>
+                      </ScrollView>
+                    )}
+                    {item.type == 2 && (
+                      <ScrollView>
+                        <List>
+                          {substitutes.map((participant, i) => (
+                            <ListItem avatar>
+                              <Left>
+                                <Thumbnail
+                                  style={styles.participantIcon}
+                                  source={{
+                                    uri:
+                                      participant.profileParticipant.picturePath
+                                  }}
+                                />
+                              </Left>
+                              <Body>
+                                <Text style={styles.participantName}>
+                                  {
+                                    participant.profileParticipant.account
+                                      .username
+                                  }
+                                </Text>
+                              </Body>
+                            </ListItem>
+                          ))}
+                        </List>
+                      </ScrollView>
+                    )}
+                    {item.type == 3 && (
+                      <Text style={styles.eventDescription}>
+                        {event.description}
+                      </Text>
+                    )}
+                  </Card>
+                )}
+              />
             </View>
             <View style={styles.button}>
               <Button

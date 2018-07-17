@@ -14,10 +14,8 @@ import {
   Left,
   Body
 } from "native-base";
-// import { ListItem } from "react-native-elements";
 import { CurrentEventCard, ExpandedCurrentEventCard } from "../../components";
 import { screens } from "../../screens";
-//import MapboxGL from "@mapbox/react-native-mapbox-gl";
 import { navigate } from "../../helpers/navigation";
 import { API_URI } from "../../constants";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
@@ -37,7 +35,6 @@ class EventContainer extends Component {
       containerHeight: sizes.itemCard
     };
     this.handlePress = this.handlePress.bind(this);
-
     //Load Stuff
     this.loadStorageItems();
   }
@@ -45,7 +42,7 @@ class EventContainer extends Component {
   componentDidMount() {
     this._mounted = true;
     this.setState({
-      item: this.props.eventItem,
+      item: this.props.eventItem ? this.props.eventItem : this.state.item,
       coords: {}
     });
     this.selectBackgroundColor();
@@ -115,6 +112,18 @@ class EventContainer extends Component {
         throw error;
       });
   };
+  goToProfile(profile) {
+    this.props.navigator.push({
+      screen: screens.profileScreen.id,
+      title: screens.profileScreen.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.profileScreen.backButtonHidden,
+      passProps: {
+        eventItemId: profile
+      }
+    });
+  }
   getContainerHeight = () => {
     return this.state.containerHeight == sizes.itemCardExpanded
       ? sizes.itemCard
@@ -122,6 +131,7 @@ class EventContainer extends Component {
   };
 
   render() {
+    console.log("Render");
     const event = this.state.item;
     if (JSON.stringify(event) != JSON.stringify({})) {
       const cards = [
@@ -135,60 +145,7 @@ class EventContainer extends Component {
           type: 3
         }
       ];
-      const list =
-        event.listStarters.length == 0
-          ? [
-              {
-                account: {
-                  username: "Amy Farha"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg"
-              },
-              {
-                account: {
-                  username: "Chris Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Juan Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Pedro Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Carlos Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Marcos Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              },
-              {
-                account: {
-                  username: "Esteban Jackson"
-                },
-                picturePath:
-                  "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-              }
-            ]
-          : event.listStarters;
+      const list = event.listStarters;
       let creator;
       if (event.creatorProfile.picturePath == "") {
         creator = (
@@ -258,12 +215,16 @@ class EventContainer extends Component {
                         <List>
                           {list.map((participant, i) => (
                             <ListItem avatar>
-                              <Left>
-                                <Thumbnail
-                                  style={styles.participantIcon}
-                                  source={{ uri: participant.picturePath }}
-                                />
-                              </Left>
+                              <TouchableOpacity
+                                onPress={() => this.goToProfile(participant)}
+                              >
+                                <Left>
+                                  <Thumbnail
+                                    style={styles.participantIcon}
+                                    source={{ uri: participant.picturePath }}
+                                  />
+                                </Left>
+                              </TouchableOpacity>
                               <Body>
                                 <Text style={styles.participantName}>
                                   {participant.account.username}
