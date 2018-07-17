@@ -1434,7 +1434,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sportex;
+				PRODUCT_BUNDLE_IDENTIFIER = org.sportex;
 				PRODUCT_NAME = sportex;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1459,7 +1459,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.sportex;
+				PRODUCT_BUNDLE_IDENTIFIER = org.sportex;
 				PRODUCT_NAME = sportex;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
