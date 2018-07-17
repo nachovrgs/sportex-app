@@ -24,6 +24,9 @@ public class MainApplication extends NavigationApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSpinkitPackage(),
+            new VectorIconsPackage(),
+            new NavigationReactPackage(),
           new VectorIconsPackage(),
           new RCTMGLPackage()
       );
