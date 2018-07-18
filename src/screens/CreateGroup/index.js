@@ -157,7 +157,14 @@ export default class CreateGroup extends Component {
 
     const { users } = this.state;
     const regex = new RegExp(`${query.trim()}`, "i");
-    return users.filter(user => user.mailAddress.search(regex) >= 0);
+    return users
+      .filter(
+        user =>
+          !this.state.selectedUsers.includes(user) &&
+          user.id != this.state.profileId
+      )
+      .filter(user => user.mailAddress.search(regex) >= 0)
+      .slice(0, 5);
   }
 
   isReady = () => {
@@ -194,10 +201,73 @@ export default class CreateGroup extends Component {
         MemberCount: 1
       })
     })
+      .then(textResponse => {
+        if (this.state.selectedUsers.length > 0) {
+          console.log(
+            JSON.stringify("LA API DEVOLVIO: " + JSON.stringify(textResponse))
+          );
+          this.invitarMiembros(JSON.stringify(textResponse));
+        } else {
+          console.log("Network response was ok.");
+          //Event created going to feed
+          this.props.navigator.push({
+            screen: screens.groups.id,
+            title: screens.groups.title,
+            animated: true,
+            animationType: "fade",
+            backButtonHidden: screens.groups.backButtonHidden
+          });
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          console.log("Network response was not ok.");
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
+  };
+  invitarMiembros(groupId) {
+    console.log("se invita gente!");
+    console.log(
+      JSON.stringify(this.state.selectedUsers.map((member, i) => member.id))
+    );
+    fetch(`${API_URI}/group/InsertManyMembers/`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idProfile: this.state.profileId,
+        idGroup: groupId,
+        listIdProfiles: this.state.selectedUsers.map((member, i) => member.id)
+      })
+    })
       .then(response => {
         if (response.ok) {
           console.log("Network response was ok.");
-          //Event created,oing to feed
+          //Event created going to feed
           this.props.navigator.push({
             screen: screens.groups.id,
             title: screens.groups.title,
@@ -226,8 +296,7 @@ export default class CreateGroup extends Component {
         });
         throw error;
       });
-  };
-
+  }
   render() {
     const { name, description, isLoading, query } = this.state;
     const users = this.findUser(query);
@@ -263,7 +332,7 @@ export default class CreateGroup extends Component {
             <Right />
           </Header>
           <Content>
-            <Form>
+            <Form style={styles.groupForm}>
               <Item fixedLabel>
                 <Label>Nombre</Label>
                 <Input
@@ -283,26 +352,36 @@ export default class CreateGroup extends Component {
                 />
               </Item>
               <Item>
-                <Autocomplete
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  containerStyle={styles.autocompleteContainer}
-                  data={
-                    users.length === 1 && comp(query, users[0].mailAddress)
-                      ? []
-                      : users
-                  }
-                  defaultValue={query}
-                  onChangeText={text => this.setState({ query: text })}
-                  placeholder="Agrega integrantes"
-                  renderItem={({ mailAddress }) => (
-                    <TouchableOpacity
-                      onPress={() => this.setState({ query: mailAddress })}
-                    >
-                      <Text style={styles.itemText}>{mailAddress}</Text>
-                    </TouchableOpacity>
-                  )}
-                />
+                <ScrollView style={styles.userList}>
+                  <List>
+                    {this.state.selectedUsers.length == 0 && (
+                      <View style={styles.noUsers}>
+                        <Text>Agrega usuarios!</Text>
+                      </View>
+                    )}
+                    {this.state.selectedUsers.length > 0 &&
+                      this.state.selectedUsers.map((member, i) => (
+                        <ListItem avatar>
+                          <Left>
+                            <Thumbnail
+                              style={styles.participantIcon}
+                              source={{
+                                uri:
+                                  member.picturePath && member.picturePath != ""
+                                    ? member.picturePath
+                                    : "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
+                              }}
+                            />
+                          </Left>
+                          <Body>
+                            <Text style={styles.participantName}>
+                              {member.account.username}
+                            </Text>
+                          </Body>
+                        </ListItem>
+                      ))}
+                  </List>
+                </ScrollView>
               </Item>
               <Item>
                 <TouchableOpacity onPress={() => this.insertUser(users[0])}>
@@ -319,42 +398,41 @@ export default class CreateGroup extends Component {
                 </TouchableOpacity>
               </Item>
               <Item>
-                <ScrollView style={styles.userList}>
-                  <List>
-                    {this.state.selectedUsers.map((member, i) => (
-                      <ListItem avatar>
-                        <Left>
-                          <Thumbnail
-                            style={styles.participantIcon}
-                            source={{
-                              uri: member.picturePath
-                                ? member.picturePath
-                                : "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-                            }}
-                          />
-                        </Left>
-                        <Body>
-                          <Text style={styles.participantName}>
-                            {member.account.username}
-                          </Text>
-                        </Body>
-                      </ListItem>
-                    ))}
-                  </List>
-                </ScrollView>
+                <Autocomplete
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  containerStyle={styles.autocompleteContainer}
+                  data={
+                    users.length === 1 && comp(query, users[0].mailAddress)
+                      ? []
+                      : users
+                  }
+                  defaultValue={query}
+                  onChangeText={text => this.setState({ query: text })}
+                  placeholder="Agrega integrantes"
+                  listContainerStyle={styles.queryResultContainer}
+                  listStyle={styles.queryResultItem}
+                  renderItem={({ mailAddress }) => (
+                    <TouchableOpacity
+                      onPress={() => this.setState({ query: mailAddress })}
+                    >
+                      <Text style={styles.itemText}>{mailAddress}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
               </Item>
             </Form>
-            <View style={styles.createButton}>
-              <Button
-                block
-                success
-                onPress={this.createAction}
-                disabled={!this.isReady()}
-              >
-                <Text>Crear</Text>
-              </Button>
-            </View>
           </Content>
+          <View style={styles.createButton}>
+            <Button
+              block
+              success
+              onPress={this.createAction}
+              disabled={!this.isReady()}
+            >
+              <Text>Crear</Text>
+            </Button>
+          </View>
         </Container>
       </Root>
     );

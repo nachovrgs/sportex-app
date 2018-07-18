@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { colors } from "../../styles";
+import { colors, sizes } from "../../styles";
 
 export default StyleSheet.create({
   background: {
@@ -13,6 +13,7 @@ export default StyleSheet.create({
     marginTop: 40,
     marginBottom: 40,
     marginRight: 25,
+    padding: 10,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.borders,
@@ -20,25 +21,65 @@ export default StyleSheet.create({
     backgroundColor: colors.white
   },
   head: {
-    marginTop: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    flex: 1
+    marginTop: 20,
+    flex: 1,
+    flexDirection: "row"
+  },
+  avatar: {
+    height: sizes.xlarge,
+    width: sizes.xlarge
   },
   imageContainer: {
-    flex: 3
-  },
-  titleContainer: {
-    flex: 1
-  },
-  title: {
-    fontSize: 20,
-    color: colors.text
-  },
-  body: {
-    flex: 2,
+    flex: 3,
     justifyContent: "center",
     alignItems: "center"
   },
-  descriptionContainer: { flex: 1 }
+  titleContainer: {
+    flex: 7
+  },
+  title: {
+    fontSize: sizes.large,
+    color: colors.text_blue
+  },
+  description: {
+    fontSize: sizes.medium,
+    color: colors.text_grey
+  },
+  body: {
+    flex: 10,
+    marginTop: 20
+  },
+  infoContainer: { flex: 1 },
+  ownerDesc: {
+    fontSize: sizes.medium,
+    color: colors.text
+  },
+  owner: {
+    fontSize: sizes.medium,
+    color: colors.text_grey
+  },
+  membersContainer: {
+    flex: 2,
+    marginTop: 10
+  },
+  participantIcon: {
+    height: 15,
+    width: 15
+  },
+  participantName: {
+    fontSize: sizes.small
+  },
+  addMemberContainer: {
+    flex: 1
+  },
+  autocompleteContainer: {
+    width: 300
+  },
+  queryResultContainer: {
+    flex: 1
+  },
+  queryResultItem: {
+    opacity: 1,
+    color: colors.text
+  },
 });

@@ -106,7 +106,8 @@ export default StyleSheet.create({
     flex: 10
   },
   ratingContainer: {
-    flexDirection: "row"
+    flexDirection: "row",
+    width: 300
   },
   rating: {
     flex: 3

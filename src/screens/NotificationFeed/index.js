@@ -37,7 +37,7 @@ export default class NotificationFeed extends Component {
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"
   };
-  _keyExtractor = (item, index) => item.id.toString();
+  _keyExtractor = (item, index) => item.eventID.toString();
 
   constructor(props) {
     super(props);
@@ -103,7 +103,6 @@ export default class NotificationFeed extends Component {
           error: "",
           token: ""
         });
-        this._refreshListView();
       })
       .catch(error => {
         this.setState({

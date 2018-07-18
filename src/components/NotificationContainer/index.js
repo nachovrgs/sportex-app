@@ -31,7 +31,19 @@ class NotificationContainer extends Component {
   }
 
   //Helpers
-  handlePress() {}
+  handlePress() {
+    this.props.navigator.push({
+      screen: screens.invitationEvent.id,
+      title: screens.invitationEvent.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.invitationEvent.backButtonHidden,
+      passProps: {
+        item: this.state.item.eventInvited,
+        eventInvitation: this.state.item
+      }
+    });
+  }
   render() {
     const notification = this.state.item;
     if (JSON.stringify(notification) != JSON.stringify({})) {
@@ -42,7 +54,7 @@ class NotificationContainer extends Component {
         >
           <View style={styles.head}>
             <View style={styles.titleContainer}>
-              <Text style={styles.title}>{notification.Message}</Text>
+              <Text style={styles.title}>{notification.message}</Text>
             </View>
           </View>
         </TouchableOpacity>

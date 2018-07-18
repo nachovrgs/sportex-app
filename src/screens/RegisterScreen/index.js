@@ -8,8 +8,8 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
-import { Button, Input } from "native-base";
 
+import { Input, Button } from "react-native-elements";
 import { screens } from "../../screens";
 import { logout } from "../../helpers/navigation";
 import { API_URI } from "../../constants";
@@ -110,7 +110,8 @@ export default class RegisterScreen extends Component {
   };
 
   registerAction = () => {
-    fetch(`${API_URI}/StandardProfile/`, {
+    this.setState({ isLoading: true });
+    fetch(`${API_URI}/standardProfile/postapp`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -119,7 +120,8 @@ export default class RegisterScreen extends Component {
       body: JSON.stringify({
         Account: {
           username: this.state.username,
-          password: this.state.password
+          password: this.state.password,
+          Token: ""
         },
         MailAddress: this.state.email,
         FirstName: this.state.firstname,
@@ -161,17 +163,25 @@ export default class RegisterScreen extends Component {
   };
 
   render() {
-    return this.state.isLoading ? (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#ecf0f1" animating />
-      </View>
-    ) : this.state.isError ? (
-      <View style={styles.container}>
-        <Text>{this.state.error}</Text>
+    return this.state.isError ? (
+      <View style={styles.background}>
+        <View behavior="padding" style={styles.container}>
+          <View style={styles.noEventsContainer}>
+            <View style={styles.noEventsSubContainer}>
+              <Image
+                style={styles.noEventsImage}
+                source={require("../../assets/images/no_internet.png")}
+              />
+              <Text style={styles.noEventsText}>
+                No tienes conexion a internet.
+              </Text>
+            </View>
+          </View>
+        </View>
       </View>
     ) : (
       <View style={styles.background}>
-        <KeyboardAvoidingView behavior="padding" style={styles.container}>
+        <View behavior="padding" style={styles.container}>
           <View style={styles.logoContainer}>
             <Image
               style={styles.logo}
@@ -180,51 +190,42 @@ export default class RegisterScreen extends Component {
             <Text style={styles.title}>Registrate para empezar a jugar</Text>
           </View>
           <View style={styles.formContainer}>
-            <View style={styles.input}>
-              <Input
-                placeholder="Usuario"
-                shake={true}
-                errorStyle={{ color: "red" }}
-                errorMessage="Required"
-                onChangeText={this.onUsernameChanged}
-              />
-            </View>
-            <View style={styles.input}>
-              <Input
-                placeholder="Contraseña"
-                shake={true}
-                errorStyle={{ color: "red" }}
-                errorMessage="Required"
-                onChangeText={this.onPasswordChanged}
-              />
-            </View>
-            <View style={styles.input}>
-              <Input
-                placeholder="Email"
-                shake={true}
-                errorStyle={{ color: "red" }}
-                errorMessage="Required"
-                onChangeText={this.onEmailChanged}
-              />
-            </View>
-            <View style={styles.input}>
-              <Input
-                placeholder="Nombre"
-                shake={true}
-                errorStyle={{ color: "red" }}
-                errorMessage="Required"
-                onChangeText={this.onFirstnameChanged}
-              />
-            </View>
-            <View style={styles.input}>
-              <Input
-                placeholder="Apellido"
-                shake={true}
-                errorStyle={{ color: "red" }}
-                errorMessage="Required"
-                onChangeText={this.onLastNameChanged}
-              />
-            </View>
+            <Input
+              placeholder="Usuario"
+              shake={true}
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={this.onUsernameChanged}
+              inputContainerStyle={styles.loginInput}
+            />
+            <Input
+              placeholder="Contraseña"
+              shake={true}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry
+              onChangeText={this.onPasswordChanged}
+              inputContainerStyle={styles.loginInput}
+            />
+            <Input
+              placeholder="Email"
+              shake={true}
+              onChangeText={this.onEmailChanged}
+              autoCapitalize="none"
+              inputContainerStyle={styles.loginInput}
+            />
+            <Input
+              placeholder="Nombre"
+              shake={true}
+              onChangeText={this.onFirstnameChanged}
+              inputContainerStyle={styles.loginInput}
+            />
+            <Input
+              placeholder="Apellido"
+              shake={true}
+              onChangeText={this.onLastNameChanged}
+              inputContainerStyle={styles.loginInput}
+            />
             <View style={styles.dateInput}>
               <TouchableOpacity onPress={this._showDateTimePicker}>
                 <Image
@@ -245,13 +246,16 @@ export default class RegisterScreen extends Component {
           </View>
           <View style={styles.buttonContainer}>
             <Button
-              large
               title="Siguiente"
               onPress={this.registerAction}
               disabled={!this.isReady()}
+              loading={this.state.isLoading}
+              loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
+              titleStyle={{ fontWeight: "700" }}
+              buttonStyle={styles.button}
             />
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </View>
     );
   }

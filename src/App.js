@@ -73,7 +73,7 @@ export function startMainApp() {
         iconInsets: {top: 5,bottom: -5},
         selectedIcon: require("./assets/images/profile.png"),
         title: screens.userProfile.title
-      }
+      },
     ],
     tabsStyle: {
       tabBarButtonColor: "#ecf0f1",

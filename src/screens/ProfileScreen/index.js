@@ -23,49 +23,68 @@ export default class ProfileScreen extends Component {
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"
   };
-  static navigatorButtons = {
-    leftButtons: [
-      {
-        icon: require("../../assets/images/logout.png"),
-        id: "logout",
-        buttonColor: "#ecf0f1",
-        buttonFontSize: 50,
-        buttonFontWeight: "900"
-      }
-    ]
-  };
+
   constructor(props) {
     super(props);
     this.state = {
       profile: {},
+      profileId: null,
       isLoading: true,
       isError: false,
       error: "",
       token: "",
       accountID: ""
     };
-    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    this.loadData();
   }
 
   componentDidMount() {
     this.setState({
-      profile: this.props.profile
+      profileId: this.props.profileId
     });
+    this.loadData();    
   }
+
 
   async loadData() {
     this.state.token = await getTokenForUsage();
-    this.state.profileId = await getProfileIdForUsage();
-  }
-
-  // Handle nav bar navigation
-  onNavigatorEvent(event) {
-    if (event.type == "NavBarButtonPress") {
-      if (event.id == "logout") {
-        resetAndLogout();
+    this.state.accountID = await getAccountIdForUsage();
+    fetch(`${API_URI}/StandardProfile/${this.state.profileId}`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
       }
-    }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        this.setState({
+          profile: jsonResponse,
+          isLoading: false,
+          error: ""
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
   }
   render() {
     const profile = this.state.profile;

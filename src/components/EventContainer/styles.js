@@ -23,7 +23,8 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bar_rank_1,
     borderBottomLeftRadius: 0,
-    borderTopLeftRadius: 10
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10
   },
   mainInfo: {
     flex: 10,
@@ -103,8 +104,15 @@ export default StyleSheet.create({
     width: 25
   },
   //Expanded
+  mapRegion: {
+    height: 190,
+    flex: 1,
+  },
+  mapContainer: {
+    height: 190,
+  },
   map: {
-    height: 190
+    height: 190,
   },
   swiper: {
     height: 190

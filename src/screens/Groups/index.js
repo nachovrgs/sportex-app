@@ -16,7 +16,7 @@ import { EventContainer } from "../../components";
 import { screens } from "../../screens";
 
 import { GroupContainer } from "../../components";
-import { getTokenForUsage } from "../../helpers/storage";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
@@ -94,54 +94,53 @@ export default class Groups extends Component {
   );
 
   async loadData() {
-    Promise.all([getTokenForUsage()]).then(([token]) => {
-      this.state.token = token;
-      fetch(`${API_URI}/group/`, {
-        method: "GET",
-        headers: {
-          Authorization:
-            "Bearer " +
-            (this.state.token ? this.state.token.replace(/"/g, "") : "")
-        }
-      })
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            this.setState({
-              isLoading: false,
-              isError: true,
-              error: "Network response was not ok.",
-              token: ""
-            });
-            return new Error("Network response was not ok.");
-          }
-        })
-        .then(jsonResponse => {
-          if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
-            Toast.show({
-              text: "No hay grupos! Crea uno.",
-              buttonText: "Ok",
-              onClose: this.toggleNoEventsShowed
-            });
-          }
-          this.setState({
-            dataSource: jsonResponse,
-            isLoading: false,
-            error: "",
-            token: ""
-          });
-        })
-        .catch(error => {
+    this.state.token = await getTokenForUsage();
+    this.state.profileId = await getProfileIdForUsage();
+    fetch(`${API_URI}/group/Joined/${this.state.profileId}`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
           this.setState({
             isLoading: false,
             isError: true,
-            error: error.message,
+            error: "Network response was not ok.",
             token: ""
           });
-          throw error;
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
+          Toast.show({
+            text: "No hay grupos! Crea uno.",
+            buttonText: "Ok",
+            onClose: this.toggleNoEventsShowed
+          });
+        }
+        this.setState({
+          dataSource: jsonResponse,
+          isLoading: false,
+          error: "",
+          token: ""
         });
-    });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
   }
 
   toggleNoEventsShowed = () => {

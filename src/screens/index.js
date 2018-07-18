@@ -8,6 +8,7 @@ import HistoryFeed from "./HistoryFeed";
 import CreateEvent from "./CreateEvent";
 import UserProfile from "./UserProfile";
 import EventScreen from "./EventScreen";
+import InvitationEventScreen from "./InvitationEventScreen";
 import Groups from "./Groups";
 import GroupScreen from "./GroupScreen";
 import CreateGroup from "./CreateGroup";
@@ -46,6 +47,11 @@ export const screens = {
     title: "Sportex",
     backButtonHidden: false
   },
+  invitationEvent: {
+    id: "sportex.InvitationEventScreen",
+    title: "Sportex",
+    backButtonHidden: false
+  },
   groups: {
     id: "sportex.Groups",
     title: "Sportex",
@@ -59,7 +65,7 @@ export const screens = {
   createGroup: {
     id: "sportex.CreateGroup",
     title: "Sportex",
-    backButtonHidden: true
+    backButtonHidden: false
   },
   historyFeed: {
     id: "sportex.HistoryFeed",
@@ -91,6 +97,7 @@ export function registerScreens() {
   Navigation.registerComponent(screens.createEvent.id, () => CreateEvent);
   Navigation.registerComponent(screens.userProfile.id, () => UserProfile);
   Navigation.registerComponent(screens.event.id, () => EventScreen);
+  Navigation.registerComponent(screens.invitationEvent.id, () => InvitationEventScreen);
   Navigation.registerComponent(screens.groups.id, () => Groups);
   Navigation.registerComponent(screens.createGroup.id, () => CreateGroup);
   Navigation.registerComponent(screens.groupScreen.id, () => GroupScreen);

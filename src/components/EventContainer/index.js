@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import geolib from "geolib";
+import MapView from "react-native-maps";
 import {
   DeckSwiper,
   Card,
@@ -112,7 +113,7 @@ class EventContainer extends Component {
         throw error;
       });
   };
-  goToProfile(profile) {
+  goToProfile(profileId) {
     this.props.navigator.push({
       screen: screens.profileScreen.id,
       title: screens.profileScreen.title,
@@ -120,7 +121,7 @@ class EventContainer extends Component {
       animationType: "fade",
       backButtonHidden: screens.profileScreen.backButtonHidden,
       passProps: {
-        eventItemId: profile
+        profileId: profileId
       }
     });
   }
@@ -131,7 +132,6 @@ class EventContainer extends Component {
   };
 
   render() {
-    console.log("Render");
     const event = this.state.item;
     if (JSON.stringify(event) != JSON.stringify({})) {
       const cards = [
@@ -146,6 +146,10 @@ class EventContainer extends Component {
         }
       ];
       const list = event.listStarters;
+      let marker = {
+        latitude: event.location.latitude ? event.location.latitude : 37.78825,
+        longitude: event.location.longitude ? event.location.longitude : -37.78825
+      }
       let creator;
       if (event.creatorProfile.picturePath == "") {
         creator = (
@@ -198,41 +202,53 @@ class EventContainer extends Component {
             </View>
           </TouchableOpacity>
           {this.state.expanded && (
-            <View style={styles.map}>
+            <View style={styles.mapRegion}>
               <DeckSwiper
                 dataSource={cards}
                 style={styles.swiper}
                 renderItem={item => (
                   <Card style={styles.swiperCard}>
                     {item.type == 1 && (
-                      <Image
-                        style={styles.mapImage}
-                        source={require("../../assets/images/maps.png")}
-                      />
+                      <View style={styles.mapContainer}>
+                        <MapView
+                          initialRegion={{
+                            latitude: event.location.latitude ? event.location.latitude : 37.78825,
+                            longitude: event.location.longitude ? event.location.longitude : -37.78825,
+                            latitudeDelta: 0.0922,
+                            longitudeDelta: 0.0421
+                          }}
+                          scrollEnabled={false}
+                          liteMode={true}
+                          style={styles.map}
+                        />
+                      </View>
                     )}
                     {item.type == 2 && (
                       <ScrollView>
-                        <List>
+                        {list.length > 0 && (<List>
                           {list.map((participant, i) => (
                             <ListItem avatar>
                               <TouchableOpacity
-                                onPress={() => this.goToProfile(participant)}
+                                onPress={() => this.goToProfile(participant.standardProfileID)}
                               >
                                 <Left>
                                   <Thumbnail
                                     style={styles.participantIcon}
-                                    source={{ uri: participant.picturePath }}
+                                    source={{ uri: participant.profileParticipant.picturePath }}
                                   />
                                 </Left>
                               </TouchableOpacity>
                               <Body>
                                 <Text style={styles.participantName}>
-                                  {participant.account.username}
+                                  {participant.profileParticipant.account.username}
                                 </Text>
                               </Body>
                             </ListItem>
                           ))}
-                        </List>
+                        </List>)}
+                        {list.length == 0 && (
+                          <Text>No hay jugadores</Text>
+                        )}
                       </ScrollView>
                     )}
                     {item.type == 3 && (

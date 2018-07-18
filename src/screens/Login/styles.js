@@ -9,11 +9,11 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginLeft: 25,
-    marginTop: 40,
-    marginBottom: 40,
-    marginRight: 25,
-    borderRadius: 10,
+    marginLeft: 12,
+    marginTop: 45,
+    marginBottom: 22,
+    marginRight: 12,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: colors.borders,
     elevation: 1,
@@ -38,12 +38,13 @@ export default StyleSheet.create({
     opacity: 0.9,
     color: colors.text
   },
-  input: {
-    height: 40,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    marginBottom: 10,
-    color: colors.text,
-    paddingHorizontal: 20
+  loginInput: {
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    elevation: 1,
+    marginBottom: 15,
+    marginLeft: 15,
   },
   buttonContainer: {
     marginTop: 10,
@@ -58,5 +59,17 @@ export default StyleSheet.create({
   register: {
     margin: 15,
     textAlign: "center"
-  }
+  },
+  button: {
+    width: 260,
+    height: 45,
+    marginLeft: 15,
+    marginTop: 15,
+    borderColor: "transparent",
+    borderWidth: 0,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    backgroundColor: colors.background
+  },
 });

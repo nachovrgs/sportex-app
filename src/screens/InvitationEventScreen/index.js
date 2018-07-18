@@ -29,7 +29,7 @@ import { logInfo, logError } from "../../helpers/logger";
 import { colors } from "../../styles";
 
 // create a component
-export default class EventScreen extends Component {
+export default class InvitationEventScreen extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
@@ -49,24 +49,25 @@ export default class EventScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      itemId: null,
       item: {},
       coords: {},
       isLoading: false,
       isError: false,
       error: "",
-      token: ""
+      token: "",
+      eventInvitation: {}
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    this.exitAction = this.exitAction.bind(this);
+    this.acceptAction = this.acceptAction.bind(this);
   }
 
   componentDidMount() {
     this._mounted = true;
     this.setState({
-      itemId: this.props.eventItemId
+      item: this.props.item,
+      eventInvitation: this.props.eventInvitation
     });
-    this.loadEvent();
+    this.loadState()
   }
 
   // Handle nav bar navigation
@@ -117,49 +118,11 @@ export default class EventScreen extends Component {
   componentWillUnmount() {
     this._mounted = false;
   }
-
-  //Helpers
-  async loadEvent() {
+  async loadState() {
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();
-    fetch(`${API_URI}/event/${this.state.itemId}`, {
-      method: "GET",
-      headers: {
-        Authorization:
-          "Bearer " +
-          (this.state.token ? this.state.token.replace(/"/g, "") : "")
-      }
-    })
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          this.setState({
-            isLoading: false,
-            isError: true,
-            error: "Network response was not ok.",
-            token: ""
-          });
-          return new Error("Network response was not ok.");
-        }
-      })
-      .then(jsonResponse => {
-        this.setState({
-          item: jsonResponse,
-          isLoading: false,
-          error: ""
-        });
-      })
-      .catch(error => {
-        this.setState({
-          isLoading: false,
-          isError: true,
-          error: error.message,
-          token: ""
-        });
-        throw error;
-      });
   }
+  //Helpers
   returnBack() {
     this.props.navigator.push({
       screen: screens.currentEventFeed.id,
@@ -172,8 +135,14 @@ export default class EventScreen extends Component {
   canExit() {
     return true;
   }
-  exitAction = () => {
-    fetch(`${API_URI}/event/LeaveEvent`, {
+  acceptAction = () => {
+    console.log(JSON.stringify({
+      idProfileReceived: this.state.profileId,
+      idProfileSent: this.state.eventInvitation.idProfileInvites,
+      idEvent: this.state.eventInvitation.eventID,
+      idGroup: 0
+    }))
+    fetch(`${API_URI}/eventInvitation/AcceptEventInvitation`, {
       method: "POST",
       headers: {
         Authorization:
@@ -183,11 +152,14 @@ export default class EventScreen extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        idProfile: this.state.profileId,
-        idEvent: this.state.item.id
+        idProfileReceived: this.state.profileId,
+        idProfileSent: this.state.eventInvitation.idProfileInvites,
+        idEvent: this.state.eventInvitation.eventID,
+        idGroup: 0
       })
     })
       .then(response => {
+        console.log(JSON.stringify(response))
         if (response.ok) {
           //Event joined. Rereshing
           this.props.navigator.push({
@@ -325,10 +297,10 @@ export default class EventScreen extends Component {
               <Button
                 block
                 success
-                onPress={this.exitAction}
+                onPress={this.acceptAction}
                 disabled={!this.canExit()}
               >
-                <Text>Salir</Text>
+                <Text>Unirme</Text>
               </Button>
             </View>
           </View>
