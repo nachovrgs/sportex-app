@@ -40,7 +40,7 @@ class GroupContainer extends Component {
       animationType: "fade",
       backButtonHidden: screens.groupScreen.backButtonHidden,
       passProps: {
-        eventItem: group
+        groupId: group.id
       }
     });
   }

@@ -11,7 +11,8 @@ import {
   AsyncStorage,
   ActivityIndicator
 } from "react-native";
-
+import { Input, Button} from "react-native-elements";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { login } from "../../helpers/navigation";
 import { logInfo, logError } from "../../helpers/logger";
 
@@ -105,7 +106,14 @@ export default class Login extends Component {
       }
     });
   };
-
+  isReady = () => {
+    return (
+      this.state.username &&
+      this.state.password &&
+      this.state.username != "" &&
+      this.state.password != ""
+    );
+  };
   registerAction = () => {
     this.props.navigator.push({
       screen: screens.register.id,
@@ -143,36 +151,43 @@ export default class Login extends Component {
             <Text style={styles.title}>Sportex</Text>
           </View>
           <View style={styles.formContainer}>
-            <TextInput
+            <Input
               placeholder="Username"
+              leftIcon={<Icon name="user" size={20} color="black" />}
               returnKeyType="next"
               value={username}
               onChangeText={this.onUsernameChanged}
               onSubmitEditing={() => this.passwordInput.focus()}
               autoCapitalize="none"
               autoCorrect={false}
-              placeholderTextColor="rgba(255,255,255,0.7)"
-              style={styles.input}
+              inputContainerStyle={styles.loginInput}
             />
-            <TextInput
+            <Input
               placeholder="Contraseña"
+              leftIcon={<Icon name="lock" size={20} color="black" />}
+              returnKeyType="next"
               secureTextEntry
               value={password}
               onChangeText={this.onPasswordChanged}
               returnKeyType="go"
               ref={input => (this.passwordInput = input)}
-              placeholderTextColor="rgba(255,255,255,0.7)"
-              style={styles.input}
+              autoCapitalize="none"
+              autoCorrect={false}
+              inputContainerStyle={styles.loginInput}
             />
             <TouchableOpacity onPress={this.registerAction}>
               <Text style={styles.register}>Registrate</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.buttonContainer}
+            
+            <Button
+              title="Ingresar"
               onPress={this.loginAction}
-            >
-              <Text style={styles.loginButton}>Ingresar</Text>
-            </TouchableOpacity>
+              loading={this.state.isLoading}
+              disabled={!this.isReady()}
+              loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
+              titleStyle={{ fontWeight: "700" }}
+              buttonStyle={styles.button}
+            />
           </View>
         </KeyboardAvoidingView>
       </View>

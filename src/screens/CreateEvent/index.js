@@ -44,7 +44,6 @@ export default class CreateEvent extends Component {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center",
-    tabBarHidden: true
   };
   constructor(props) {
     super(props);
@@ -80,7 +79,7 @@ export default class CreateEvent extends Component {
     await this.loadLocations();
   }
   async loadGroups() {
-    fetch(`${API_URI}/group/`, {
+    fetch(`${API_URI}/group/Joined/${this.state.profileId}`, {
       method: "GET",
       headers: {
         Authorization:
@@ -344,6 +343,7 @@ export default class CreateEvent extends Component {
       });
   };
   inviteGroupAction = eventId => {
+    
     fetch(`${API_URI}/eventInvitation/InviteWholeGroup`, {
       method: "POST",
       headers: {
@@ -392,12 +392,12 @@ export default class CreateEvent extends Component {
         throw error;
       });
   };
-  onValueChangeGroups(value: string) {
+  onValueChangeGroups(value) {
     this.setState({
       selectedGroup: value
     });
   }
-  onValueChangeLocations(value: string) {
+  onValueChangeLocations(value) {
     this.setState({
       selectedLocation: value
     });

@@ -31,18 +31,34 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center"
   },
+  autocompleteContainer: {
+    width: 300
+  },
+  queryResultContainer: {
+    flex: 1
+  },
+  queryResultItem: {
+    opacity: 1,
+    color: colors.text
+  },
   userList: {
-    flex: 1,
+    height: 300,
     marginTop: 20
   },
   participantIcon: {
-    height: 20,
-    width: 20
+    height: sizes.small,
+    width: sizes.small
   },
   participantName: {
     fontSize: sizes.medium
   },
+  groupForm: {
+    flex: 10
+  },
   createButton: {
-    marginTop: 280
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right:0
   }
 });

@@ -34,8 +34,6 @@ export default class EventScreen extends Component {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center",
-    tabBarHidden: true,
-    navBarHidden: true
   };
   static navigatorButtons = {
     rightButtons: [
@@ -175,7 +173,6 @@ export default class EventScreen extends Component {
     return true;
   }
   exitAction = () => {
-    console.log(this.state.token);
     fetch(`${API_URI}/event/LeaveEvent`, {
       method: "POST",
       headers: {
@@ -238,17 +235,6 @@ export default class EventScreen extends Component {
                   | {event.startingTime.split("T")[1].split(":")[0]} hs
                 </Text>
               </View>
-            </View>
-            <View style={styles.headOptions}>
-              <TouchableOpacity
-                style={styles.exitIconContainer}
-                onPress={() => this.returnBack()}
-              >
-                <Image
-                  style={styles.exitIcon}
-                  source={require("../../assets/images/exit.png")}
-                />
-              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.content}>
