@@ -4,7 +4,7 @@ import { View, Text } from "react-native";
 
 import { screens } from "../../screens";
 
-import { Avatar } from "react-native-elements";
+import { Thumbnail } from "native-base";
 import {
   getTokenForUsage,
   getAccountIdForUsage,
@@ -100,34 +100,45 @@ export default class UserProfile extends Component {
   }
   render() {
     const profile = this.state.profile;
-    return (
-      <View style={styles.background}>
-        <View style={styles.container}>
-          <View style={styles.head}>
-            <View style={styles.imageContainer}>
-              <Avatar
-                large
-                rounded
-                source={{
-                  uri: profile.picturePath
-                    ? profile.picturePath
-                    : "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg"
-                }}
-                activeOpacity={0.7}
-              />
+    if (JSON.stringify(profile) != JSON.stringify({})) {
+      let image;
+      if (profile.picturePath == "") {
+        image = (
+          <Thumbnail
+            source={require("../../assets/images/profile.png")}
+            style={styles.avatar}
+          />
+        );
+      } else {
+        image = (
+          <Thumbnail
+            source={{ uri: profile.picturePath }}
+            style={styles.avatar}
+          />
+        );
+      }
+      return (
+        <View style={styles.background}>
+          <View style={styles.container}>
+            <View style={styles.head}>
+              <View style={styles.imageContainer}>
+                {image}
+              </View>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{profile.firstName}</Text>
+              </View>
             </View>
-            <View style={styles.titleContainer}>
-              <Text style={styles.title}>{profile.firstName}</Text>
-            </View>
-          </View>
-          <View style={styles.body}>
-            <View style={styles.descriptionContainer}>
-              <Text style={styles.title}>{profile.lastName}</Text>
-              <Text style={styles.title}>{profile.mailAddress}</Text>
+            <View style={styles.body}>
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.title}>{profile.lastName}</Text>
+                <Text style={styles.title}>{profile.mailAddress}</Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-    );
+      );
+    } else {
+      return null;
+    }
   }
 }

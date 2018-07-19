@@ -142,12 +142,15 @@ export default class CreateGroup extends Component {
     });
   };
 
-  insertUser(user) {
-    this.state.selectedUsers.push(user);
-    this.setState({
-      selectedUsers: this.state.selectedUsers,
-      query: ""
-    });
+  insertUser(users) {
+    let member = users && users.length == 1 ? users[0] : null;
+    if (member != null) {
+      this.state.selectedUsers.push(member);
+      this.setState({
+        selectedUsers: this.state.selectedUsers,
+        query: ""
+      });
+    }
   }
 
   findUser(query) {
@@ -201,24 +204,6 @@ export default class CreateGroup extends Component {
         MemberCount: 1
       })
     })
-      .then(textResponse => {
-        if (this.state.selectedUsers.length > 0) {
-          console.log(
-            JSON.stringify("LA API DEVOLVIO: " + JSON.stringify(textResponse))
-          );
-          this.invitarMiembros(JSON.stringify(textResponse));
-        } else {
-          console.log("Network response was ok.");
-          //Event created going to feed
-          this.props.navigator.push({
-            screen: screens.groups.id,
-            title: screens.groups.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.groups.backButtonHidden
-          });
-        }
-      })
       .then(response => {
         if (response.ok) {
           return response.json();
@@ -233,6 +218,21 @@ export default class CreateGroup extends Component {
           return new Error("Network response was not ok.");
         }
       })
+      .then(textResponse => {
+        if (this.state.selectedUsers.length > 0) {
+          this.invitarMiembros(JSON.stringify(textResponse));
+        } else {
+          console.log("Network response was ok.");
+          //Event created going to feed
+          this.props.navigator.push({
+            screen: screens.groups.id,
+            title: screens.groups.title,
+            animated: true,
+            animationType: "fade",
+            backButtonHidden: screens.groups.backButtonHidden
+          });
+        }
+      })
       .catch(error => {
         console.log(error);
         this.setState({
@@ -245,10 +245,6 @@ export default class CreateGroup extends Component {
       });
   };
   invitarMiembros(groupId) {
-    console.log("se invita gente!");
-    console.log(
-      JSON.stringify(this.state.selectedUsers.map((member, i) => member.id))
-    );
     fetch(`${API_URI}/group/InsertManyMembers/`, {
       method: "POST",
       headers: {
@@ -383,7 +379,7 @@ export default class CreateGroup extends Component {
                   </List>
                 </ScrollView>
               </Item>
-              <Item>
+              {/* <Item>
                 <TouchableOpacity onPress={() => this.insertUser(users[0])}>
                   <Label>Agregar integrante : </Label>
                   <View style={styles.descriptionContainer}>
@@ -396,30 +392,43 @@ export default class CreateGroup extends Component {
                     )}
                   </View>
                 </TouchableOpacity>
-              </Item>
+              </Item> */}
               <Item>
-                <Autocomplete
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  containerStyle={styles.autocompleteContainer}
-                  data={
-                    users.length === 1 && comp(query, users[0].mailAddress)
-                      ? []
-                      : users
-                  }
-                  defaultValue={query}
-                  onChangeText={text => this.setState({ query: text })}
-                  placeholder="Agrega integrantes"
-                  listContainerStyle={styles.queryResultContainer}
-                  listStyle={styles.queryResultItem}
-                  renderItem={({ mailAddress }) => (
-                    <TouchableOpacity
-                      onPress={() => this.setState({ query: mailAddress })}
-                    >
-                      <Text style={styles.itemText}>{mailAddress}</Text>
-                    </TouchableOpacity>
-                  )}
-                />
+                <View style={styles.addMemberContainer}>
+                  <Autocomplete
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    containerStyle={styles.autocompleteContainer}
+                    data={
+                      users.length === 1 && comp(query, users[0].mailAddress)
+                        ? []
+                        : users
+                    }
+                    defaultValue={query}
+                    onChangeText={text => this.setState({ query: text })}
+                    placeholder="Agrega integrantes"
+                    listContainerStyle={styles.queryResultContainer}
+                    listStyle={styles.queryResultItem}
+                    renderItem={({ mailAddress }) => (
+                      <TouchableOpacity
+                        onPress={() => this.setState({ query: mailAddress })}
+                      >
+                        <Text style={styles.itemText}>{mailAddress}</Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      title="+"
+                      onPress={this.insertUser(users)}
+                      disabled={users.length != 1}
+                      // loading={this.state.isLoading}
+                      // loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
+                      titleStyle={{ fontWeight: "700" }}
+                      buttonStyle={styles.button}
+                    />
+                  </View>
+                </View>
               </Item>
             </Form>
           </Content>

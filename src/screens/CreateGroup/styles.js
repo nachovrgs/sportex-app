@@ -34,12 +34,27 @@ export default StyleSheet.create({
   autocompleteContainer: {
     width: 300
   },
-  queryResultContainer: {
-    flex: 1
+  addMemberContainer: {
+    flex: 1,
+    flexDirection: "row"
   },
-  queryResultItem: {
-    opacity: 1,
-    color: colors.text
+  autocompleteContainer: {
+    flex: 5
+  },
+  buttonContainer: {
+    flex: 1,
+    alignSelf: "center",
+    marginLeft: 5
+  },
+  button: {
+    width: 40,
+    height: 40,
+    borderColor: "transparent",
+    borderWidth: 0,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    backgroundColor: colors.background
   },
   userList: {
     height: 300,

@@ -9,6 +9,7 @@ import {
   ScrollView
 } from "react-native";
 import geolib from "geolib";
+import MapView from "react-native-maps";
 import {
   Thumbnail,
   List,
@@ -33,17 +34,17 @@ export default class EventScreen extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
-    navBarComponentAlignment: "center",
+    navBarComponentAlignment: "center"
   };
   static navigatorButtons = {
     rightButtons: [
-      {
-        icon: require("../../assets/images/trash.png"),
-        id: "delete",
-        buttonColor: "#ecf0f1",
-        buttonFontSize: 20,
-        buttonFontWeight: "600"
-      }
+      // {
+      //   icon: require("../../assets/images/trash.png"),
+      //   id: "delete",
+      //   buttonColor: "#ecf0f1",
+      //   buttonFontSize: 20,
+      //   buttonFontWeight: "600"
+      // }
     ]
   };
   constructor(props) {
@@ -206,6 +207,20 @@ export default class EventScreen extends Component {
         throw error;
       });
   };
+
+  goToProfile(profile) {
+    this.props.navigator.push({
+      screen: screens.profileScreen.id,
+      title: screens.profileScreen.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.profileScreen.backButtonHidden,
+      passProps: {
+        profileId: profile.standardProfileID
+      }
+    });
+  }
+
   render() {
     const event = this.state.item;
     if (JSON.stringify(event) != JSON.stringify({})) {
@@ -228,20 +243,35 @@ export default class EventScreen extends Component {
                 <Text style={styles.title}>{event.eventName}</Text>
               </View>
               <View style={styles.subTitleContainer}>
-                <Text style={styles.subtitle}>{date}</Text>
-                <Text style={styles.splitter}>|</Text>
-                <Text style={styles.hour}>
-                  {" "}
-                  | {event.startingTime.split("T")[1].split(":")[0]} hs
-                </Text>
+                <View style={styles.subtitle}>
+                  <Text style={styles.date}>{date}</Text>
+                  <Text style={styles.hour}>
+                    {" "}
+                    | {event.startingTime.split("T")[1].split(":")[0]} hs
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
           <View style={styles.content}>
-            <View style={styles.map}>
-              <Image
-                style={styles.mapImage}
-                source={require("../../assets/images/maps.png")}
+            <View style={styles.locationContainer}>
+              <Text style={styles.location}>{event.location.name}</Text>
+            </View>
+            <View style={styles.mapContainer}>
+              <MapView
+                initialRegion={{
+                  latitude: event.location.latitude
+                    ? event.location.latitude
+                    : 37.78825,
+                  longitude: event.location.longitude
+                    ? event.location.longitude
+                    : -37.78825,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421
+                }}
+                scrollEnabled={false}
+                liteMode={true}
+                style={styles.map}
               />
             </View>
             <View style={styles.descriptionContainer}>
@@ -260,29 +290,24 @@ export default class EventScreen extends Component {
                   <Card style={styles.swiperCard}>
                     {item.type == 1 && (
                       <ScrollView>
-                        <List>
-                          {starters.map((participant, i) => (
-                            <ListItem avatar>
-                              <Left>
-                                <Thumbnail
-                                  style={styles.participantIcon}
-                                  source={{
-                                    uri:
-                                      participant.profileParticipant.picturePath
-                                  }}
-                                />
-                              </Left>
-                              <Body>
-                                <Text style={styles.participantName}>
-                                  {
-                                    participant.profileParticipant.account
-                                      .username
-                                  }
-                                </Text>
-                              </Body>
-                            </ListItem>
-                          ))}
-                        </List>
+                        {starters.map((participant, i) => (
+                          <View style={styles.memberListItem}>
+                            <TouchableOpacity
+                              style={styles.participantIconContainer}
+                              onPress={() => this.goToProfile(participant)}
+                            >
+                              <Image
+                                style={styles.participantIcon}
+                                source={require("../../assets/images/profile.png")}
+                              />
+                            </TouchableOpacity>
+                            <View style={styles.participantNameContainer}>
+                              <Text style={styles.participantName}>
+                                {participant.profileParticipant.account.username}
+                              </Text>
+                            </View>
+                          </View>
+                        ))}
                       </ScrollView>
                     )}
                     {item.type == 2 && (

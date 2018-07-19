@@ -11,38 +11,49 @@ export default StyleSheet.create({
     borderBottomColor: colors.borders,
     borderBottomWidth: StyleSheet.hairlineWidth
   },
+  //Level 1
   head: {
     flex: 1,
     flexDirection: "row"
   },
+  content: {
+    flex: 4,
+    marginTop: 20,
+    flexDirection: "column"
+  },
+  footer: {
+    flex: 4
+  },
+  //Level 2
   headInfo: {
     flex: 5,
     flexDirection: "column",
-    marginTop: 20
+    marginTop: 5
   },
   titleContainer: {
     flex: 3
+  },
+  subTitleContainer: {
+    flex: 2
   },
   title: {
     flex: 1,
     fontSize: sizes.xlarge,
     color: colors.text_blue
   },
-  subTitleContainer: {
-    flex: 2,
-    flexDirection: "row"
-  },
   subtitle: {
     flex: 1,
+    flexDirection: "row"
+  },
+  date: {
     fontSize: sizes.large,
     color: colors.text_light_blue
   },
-  splitter: { flex: 1 },
   hour: {
-    flex: 1,
     fontSize: sizes.medium,
     color: colors.text_grey,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    marginTop: 3
   },
   headOptions: {
     flex: 1,
@@ -50,32 +61,28 @@ export default StyleSheet.create({
     marginTop: 20,
     alignItems: "flex-end"
   },
-  exitIconContainer: {
-    flex: 1
+  //Body
+  locationContainer: { flex: 1 },
+  location: {
+    fontSize: sizes.medium,
+    color: colors.text_grey
   },
-  exitIcon: {
-    height: 15,
-    width: 15
-  },
-  content: {
-    flex: 3,
-    marginTop: 60,
-    flexDirection: "column"
+  mapContainer: {
+    flex: 10
   },
   map: {
-    flex: 5
+    flex: 3
   },
   descriptionContainer: {
-    flex: 1
+    flex: 2,
+    padding: 10
   },
   description: {
     flex: 1,
-    fontSize: sizes.medium,
+    fontSize: sizes.small,
     color: colors.text
   },
-  footer: {
-    flex: 3
-  },
+  //Footer
   footerTitleContainer: {
     flex: 1
   },
@@ -87,9 +94,24 @@ export default StyleSheet.create({
   playersContainer: {
     flex: 5
   },
+  //Members
+  memberListItem: {
+    padding: 0.2,
+    alignItems: "center",
+    elevation: 1,
+    height: 40,
+    flexDirection: "row"
+  },
+  participantIconContainer: {
+    flex: 1
+  },
+  participantNameContainer: {
+    flex: 8
+  },
   participantIcon: {
     height: 15,
-    width: 15
+    width: 15,
+    marginLeft: 15
   },
   participantName: {
     fontSize: sizes.small

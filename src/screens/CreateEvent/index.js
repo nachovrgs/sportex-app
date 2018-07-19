@@ -498,7 +498,6 @@ export default class CreateEvent extends Component {
                   isVisible={this.state.isTimePickerVisible}
                   onConfirm={this._handleTimePicked}
                   onCancel={this._hideTimePicker}
-                  minimumDate={new Date()}
                   mode="time"
                 />
               </Item>

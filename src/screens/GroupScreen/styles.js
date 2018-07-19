@@ -9,10 +9,10 @@ export default StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginLeft: 25,
-    marginTop: 40,
-    marginBottom: 40,
-    marginRight: 25,
+    marginLeft: 15,
+    marginTop: 20,
+    marginBottom: 20,
+    marginRight: 15,
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
@@ -49,7 +49,10 @@ export default StyleSheet.create({
     flex: 10,
     marginTop: 20
   },
-  infoContainer: { flex: 1 },
+  infoContainer: {
+    flex: 3,
+    marginLeft: 15
+  },
   ownerDesc: {
     fontSize: sizes.medium,
     color: colors.text
@@ -59,21 +62,75 @@ export default StyleSheet.create({
     color: colors.text_grey
   },
   membersContainer: {
-    flex: 2,
-    marginTop: 10
+    flex: 7,
+  },
+  membersHeader: {
+    flex: 1,
+    flexDirection: "row"
+  },
+  membersTitle: {
+    flex: 8
+  },
+  membersEdit: {
+    flex: 2
+  },
+  membersEditButton: {
+    height: 15,
+    width: 15,
+    padding: 0,
+    marginLeft: 30
+  },
+  memberList: {
+    flex: 9,
+  },
+  memberListItem: {
+    padding: 0.2,
+    alignItems: "center",
+    elevation: 1,
+    height: 40,
+    flexDirection: "row"
+  },
+  participantIconContainer: {
+    flex: 1
+  },
+  participantNameContainer: {
+    flex: 8
+  },
+  participantRemoveContainer: {
+    flex: 1
+  },
+  participantRemoveIcon: {
+    height: 30,
+    width: 30
   },
   participantIcon: {
-    height: 15,
-    width: 15
+    height: 30,
+    width: 30
   },
   participantName: {
     fontSize: sizes.small
   },
   addMemberContainer: {
-    flex: 1
+    flex: 1,
+    flexDirection: "row"
   },
   autocompleteContainer: {
-    width: 300
+    flex: 5
+  },
+  buttonContainer: {
+    flex: 1,
+    alignSelf: "center",
+    marginLeft: 5
+  },
+  button: {
+    width: 40,
+    height: 40,
+    borderColor: "transparent",
+    borderWidth: 0,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    backgroundColor: colors.background
   },
   queryResultContainer: {
     flex: 1
@@ -81,5 +138,5 @@ export default StyleSheet.create({
   queryResultItem: {
     opacity: 1,
     color: colors.text
-  },
+  }
 });

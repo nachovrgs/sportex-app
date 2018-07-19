@@ -5,28 +5,28 @@ import { colors, sizes } from "../../styles";
 export default StyleSheet.create({
   container: {
     flex: 1,
-    height: 120,
+    height: 80,
     margin: 22,
     padding: 20,
     backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.borders,
-    elevation: 1
+    elevation: 1,
+    flexDirection: "row"
   },
   head: {
-    flex: 1,
-    flexDirection: "row"
+    flex: 1
   },
-  timeContainer: {
-    flex: 1,
-    flexDirection: "row"
+  groupImage: {
+    height: 60,
+    width: 60,
+    marginLeft: -10,
+    marginTop: -10
   },
-  time: {
-    flex: 1,
-    fontSize: sizes.medium,
-    color: colors.text,
-    marginLeft: 10
+  info: {
+    flex: 3,
+    flexDirection: "column"
   },
   titleContainer: {
     flex: 1
@@ -34,23 +34,15 @@ export default StyleSheet.create({
   title: {
     flex: 1,
     fontSize: sizes.medium,
-    color: colors.text
+    color: colors.text_blue
   },
-  location: {
+  membersContainer: {
+    flex: 1,
+    marginTop: 10
+  },
+  members: {
     flex: 1,
     fontSize: sizes.small,
-    color: colors.text
-  },
-  locationContainer: {
-    flex: 1,
-    alignItems: "flex-end"
-  },
-  eventImage: {
-    height: 25,
-    width: 25
-  },
-  info: {
-    flex: 3,
-    flexDirection: "row"
+    color: colors.text_grey
   }
 });
