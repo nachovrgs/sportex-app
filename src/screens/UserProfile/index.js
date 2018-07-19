@@ -1,8 +1,9 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 
 import { screens } from "../../screens";
+import PhotoUpload from "react-native-photo-upload";
 
 import { Thumbnail } from "native-base";
 import {
@@ -122,7 +123,27 @@ export default class UserProfile extends Component {
           <View style={styles.container}>
             <View style={styles.head}>
               <View style={styles.imageContainer}>
-                {image}
+                <PhotoUpload
+                  onPhotoSelect={avatar => {
+                    if (avatar) {
+                      console.log("Image base64 string: ", avatar);
+                    }
+                  }}
+                >
+                  <Image
+                    style={{
+                      paddingVertical: 30,
+                      width: 100,
+                      height: 100,
+                      borderRadius: 50
+                    }}
+                    resizeMode="cover"
+                    source={{
+                      uri:
+                        "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                    }}
+                  />
+                </PhotoUpload>
               </View>
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{profile.firstName}</Text>

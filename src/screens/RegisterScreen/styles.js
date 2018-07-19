@@ -10,7 +10,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     marginLeft: 12,
-    marginTop: 45,
+    marginTop: 15,
     marginBottom: 22,
     marginRight: 12,
     borderRadius: 30,
@@ -20,14 +20,14 @@ export default StyleSheet.create({
     backgroundColor: colors.white
   },
   logoContainer: {
-    flex: 3,
+    flex: 2,
     justifyContent: "center",
     alignItems: "center",
     alignSelf: "center"
   },
   formContainer: {
     flex: 5,
-    padding: 20,
+    padding: 20
   },
   logo: {
     width: 100,
@@ -45,7 +45,7 @@ export default StyleSheet.create({
     borderColor: colors.borders,
     elevation: 1,
     marginBottom: 15,
-    marginLeft: 25,
+    marginLeft: 25
   },
   dateInput: {
     height: 40,
@@ -93,5 +93,5 @@ export default StyleSheet.create({
     color: colors.text,
     fontSize: 20,
     fontWeight: "bold"
-  },
+  }
 });

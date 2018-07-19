@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import geolib from "geolib";
-
+import Swipeout from "react-native-swipeout";
 import { screens } from "../../screens";
 import { navigate } from "../../helpers/navigation";
 
@@ -45,6 +45,12 @@ class NotificationContainer extends Component {
     });
   }
   render() {
+    // Buttons
+    var swipeoutBtns = [
+      {
+        text: "Button"
+      }
+    ];
     const notification = this.state.item;
     if (JSON.stringify(notification) != JSON.stringify({})) {
       return (

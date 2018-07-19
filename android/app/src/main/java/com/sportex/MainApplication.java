@@ -25,6 +25,9 @@ public class MainApplication extends NavigationApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNFSPackage(),
+            new ImageResizerPackage(),
+            new ImagePickerPackage(),
             new VectorIconsPackage(),
             new RNSpinkitPackage(),
             new NavigationReactPackage(),

@@ -26,7 +26,8 @@ export default StyleSheet.create({
   },
   formContainer: {
     flex: 1,
-    padding: 20
+    paddingLeft: 20,
+    paddingRight: 15
   },
   logo: {
     width: 100,
@@ -44,7 +45,19 @@ export default StyleSheet.create({
     borderColor: colors.borders,
     elevation: 1,
     marginBottom: 15,
+    marginLeft: 15
+  },
+  button: {
+    height: 45,
     marginLeft: 15,
+    marginRight: 30,
+    marginTop: 15,
+    borderColor: "transparent",
+    borderWidth: 0,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    backgroundColor: colors.background
   },
   buttonContainer: {
     marginTop: 10,
@@ -59,17 +72,5 @@ export default StyleSheet.create({
   register: {
     margin: 15,
     textAlign: "center"
-  },
-  button: {
-    width: 260,
-    height: 45,
-    marginLeft: 15,
-    marginTop: 15,
-    borderColor: "transparent",
-    borderWidth: 0,
-    borderRadius: 30,
-    borderWidth: 1,
-    borderColor: colors.borders,
-    backgroundColor: colors.background
-  },
+  }
 });

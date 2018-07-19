@@ -148,8 +148,10 @@ class EventContainer extends Component {
       const list = event.listStarters;
       let marker = {
         latitude: event.location.latitude ? event.location.latitude : 37.78825,
-        longitude: event.location.longitude ? event.location.longitude : -37.78825
-      }
+        longitude: event.location.longitude
+          ? event.location.longitude
+          : -37.78825
+      };
       let creator;
       if (event.creatorProfile.picturePath == "") {
         creator = (
@@ -206,14 +208,19 @@ class EventContainer extends Component {
               <DeckSwiper
                 dataSource={cards}
                 style={styles.swiper}
+                scrollEnabled={this.props.scroll}
                 renderItem={item => (
                   <Card style={styles.swiperCard}>
                     {item.type == 1 && (
                       <View style={styles.mapContainer}>
                         <MapView
                           initialRegion={{
-                            latitude: event.location.latitude ? event.location.latitude : 37.78825,
-                            longitude: event.location.longitude ? event.location.longitude : -37.78825,
+                            latitude: event.location.latitude
+                              ? event.location.latitude
+                              : 37.78825,
+                            longitude: event.location.longitude
+                              ? event.location.longitude
+                              : -37.78825,
                             latitudeDelta: 0.0922,
                             longitudeDelta: 0.0421
                           }}
@@ -225,30 +232,41 @@ class EventContainer extends Component {
                     )}
                     {item.type == 2 && (
                       <ScrollView>
-                        {list.length > 0 && (<List>
-                          {list.map((participant, i) => (
-                            <ListItem avatar>
-                              <TouchableOpacity
-                                onPress={() => this.goToProfile(participant.standardProfileID)}
-                              >
-                                <Left>
-                                  <Thumbnail
-                                    style={styles.participantIcon}
-                                    source={{ uri: participant.profileParticipant.picturePath }}
-                                  />
-                                </Left>
-                              </TouchableOpacity>
-                              <Body>
-                                <Text style={styles.participantName}>
-                                  {participant.profileParticipant.account.username}
-                                </Text>
-                              </Body>
-                            </ListItem>
-                          ))}
-                        </List>)}
-                        {list.length == 0 && (
-                          <Text>No hay jugadores</Text>
+                        {list.length > 0 && (
+                          <List>
+                            {list.map((participant, i) => (
+                              <ListItem avatar>
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    this.goToProfile(
+                                      participant.standardProfileID
+                                    )
+                                  }
+                                >
+                                  <Left>
+                                    <Thumbnail
+                                      style={styles.participantIcon}
+                                      source={{
+                                        uri:
+                                          participant.profileParticipant
+                                            .picturePath
+                                      }}
+                                    />
+                                  </Left>
+                                </TouchableOpacity>
+                                <Body>
+                                  <Text style={styles.participantName}>
+                                    {
+                                      participant.profileParticipant.account
+                                        .username
+                                    }
+                                  </Text>
+                                </Body>
+                              </ListItem>
+                            ))}
+                          </List>
                         )}
+                        {list.length == 0 && <Text>No hay jugadores</Text>}
                       </ScrollView>
                     )}
                     {item.type == 3 && (

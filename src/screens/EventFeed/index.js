@@ -70,7 +70,8 @@ export default class EventFeed extends Component {
       profileId: 0,
       refreshing: false,
       noEventsShowed: false,
-      initial: true
+      initial: true,
+      allowVerticalScroll: true
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.loadData();
@@ -99,9 +100,17 @@ export default class EventFeed extends Component {
     }
   }
   _renderItem = ({ item }) => (
-    <EventContainer eventItem={item} navigator={this.props.navigator} />
+    <EventContainer
+      eventItem={item}
+      navigator={this.props.navigator}
+      scroll={this.SwipeScrollEvent.bind(this)}
+    />
   );
-
+  SwipeScrollEvent(allowParentScroll) {
+    if (this.state.allowVerticalScroll != allowParentScroll) {
+      this.setState({ allowVerticalScroll: allowParentScroll });
+    }
+  }
   async loadData() {
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();

@@ -6,11 +6,20 @@ import {
   Image,
   AsyncStorage,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  KeyboardAvoidingView
 } from "react-native";
 import geolib from "geolib";
 import Autocomplete from "react-native-autocomplete-input";
-import { List, ListItem, Left, Thumbnail, Body, Label } from "native-base";
+import {
+  List,
+  ListItem,
+  Left,
+  Thumbnail,
+  Body,
+  Label,
+  Root
+} from "native-base";
 import { Button } from "react-native-elements";
 import { API_URI } from "../../constants";
 import { screens } from "../../screens";
@@ -375,111 +384,136 @@ export default class GroupScreen extends Component {
       }
       let members = group.listMembers;
       console.log(JSON.stringify(members));
-      return (
-        <View style={styles.background}>
-          <View style={styles.container}>
-            <View style={styles.head}>
-              <View style={styles.imageContainer}>{image}</View>
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>{group.groupName}</Text>
-                <Text style={styles.description}>{group.groupDescription}</Text>
-              </View>
-            </View>
-            <View style={styles.body}>
-              <View style={styles.infoContainer}>
-                <Text style={styles.ownerDesc}>Creador: </Text>
-                <Text style={styles.owner}>
-                  {group.creatorProfile.firstName}{" "}
-                  {group.creatorProfile.lastName}
-                </Text>
-              </View>
-              <View style={styles.membersContainer}>
-                <View style={styles.membersHeader}>
-                  <View style={styles.membersTitle}>
-                    <Text>Members</Text>
-                  </View>
-                  <View style={styles.membersEdit}>
-                    <TouchableOpacity onPress={() => this.toggleEditing()}>
-                      <Image
-                        style={styles.membersEditButton}
-                        source={require("../../assets/images/edit.png")}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <View style={styles.memberList}>
-                  <ScrollView>
-                    {members.map((participant, i) => (
-                      <View style={styles.memberListItem}>
-                        <TouchableOpacity
-                          style={styles.participantIconContainer}
-                          onPress={() => this.goToProfile(participant)}
-                        >
-                          <Thumbnail
-                            style={styles.participantIcon}
-                            source={require("../../assets/images/profile.png")}
-                          />
-                        </TouchableOpacity>
-                        <View style={styles.participantNameContainer}>
-                          <Text style={styles.participantName}>
-                            {participant.profileMember.account.username}
-                          </Text>
-                        </View>
-                        <View style={styles.participantRemoveContainer}>
-                          {this.state.editing && (
-                            <TouchableOpacity
-                              onPress={() => this.removeMember(participant)}
-                            >
-                              <Thumbnail
-                                style={styles.participantRemoveIcon}
-                                source={require("../../assets/images/exit.png")}
-                              />
-                            </TouchableOpacity>
-                          )}
-                        </View>
-                      </View>
-                    ))}
-                  </ScrollView>
-                </View>
-              </View>
-              <View style={styles.addMemberContainer}>
-                <Autocomplete
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  containerStyle={styles.autocompleteContainer}
-                  data={
-                    users.length === 1 && comp(query, users[0].mailAddress)
-                      ? []
-                      : users
-                  }
-                  defaultValue={query}
-                  onChangeText={text => this.setState({ query: text })}
-                  placeholder="Agrega integrantes"
-                  listContainerStyle={styles.queryResultContainer}
-                  listStyle={styles.queryResultItem}
-                  renderItem={({ mailAddress }) => (
-                    <TouchableOpacity
-                      onPress={() => this.setState({ query: mailAddress })}
-                    >
-                      <Text style={styles.itemText}>{mailAddress}</Text>
-                    </TouchableOpacity>
-                  )}
-                />
-                <View style={styles.buttonContainer}>
-                  <Button
-                    title="+"
-                    onPress={this.inviteMember(users)}
-                    disabled={users.length != 1}
-                    // loading={this.state.isLoading}
-                    // loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
-                    titleStyle={{ fontWeight: "700" }}
-                    buttonStyle={styles.button}
-                  />
-                </View>
-              </View>
+
+      return this.state.isLoading ? (
+        <Root>
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#ecf0f1" animating />
+          </View>
+        </Root>
+      ) : this.state.isError ? (
+        <Root>
+          <View style={styles.noEventsContainer}>
+            <View style={styles.noEventsSubContainer}>
+              <Image
+                style={styles.noEventsImage}
+                source={require("../../assets/images/no_internet.png")}
+              />
+              <Text style={styles.noEventsText}>
+                No tienes conexion a internet.
+              </Text>
             </View>
           </View>
-        </View>
+        </Root>
+      ) : (
+        <Root>
+          <KeyboardAvoidingView style={styles.background}>
+            <View style={styles.container}>
+              <View style={styles.head}>
+                <View style={styles.imageContainer}>{image}</View>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.title}>{group.groupName}</Text>
+                  <Text style={styles.description}>
+                    {group.groupDescription}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.body}>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.ownerDesc}>Creador: </Text>
+                  <Text style={styles.owner}>
+                    {group.creatorProfile.firstName}{" "}
+                    {group.creatorProfile.lastName}
+                  </Text>
+                </View>
+                <View style={styles.membersContainer}>
+                  <View style={styles.membersHeader}>
+                    <View style={styles.membersTitle}>
+                      <Text>Members</Text>
+                    </View>
+                    <View style={styles.membersEdit}>
+                      <TouchableOpacity onPress={() => this.toggleEditing()}>
+                        <Image
+                          style={styles.membersEditButton}
+                          source={require("../../assets/images/edit.png")}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={styles.memberList}>
+                    <ScrollView>
+                      {members.map((participant, i) => (
+                        <View style={styles.memberListItem}>
+                          <TouchableOpacity
+                            style={styles.participantIconContainer}
+                            onPress={() => this.goToProfile(participant)}
+                          >
+                            <Thumbnail
+                              style={styles.participantIcon}
+                              source={require("../../assets/images/profile.png")}
+                            />
+                          </TouchableOpacity>
+                          <View style={styles.participantNameContainer}>
+                            <Text style={styles.participantName}>
+                              {participant.profileMember.account.username}
+                            </Text>
+                          </View>
+                          <View style={styles.participantRemoveContainer}>
+                            {this.state.editing && (
+                              <TouchableOpacity
+                                onPress={() => this.removeMember(participant)}
+                              >
+                                <Thumbnail
+                                  style={styles.participantRemoveIcon}
+                                  source={require("../../assets/images/exit.png")}
+                                />
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        </View>
+                      ))}
+                    </ScrollView>
+                  </View>
+                </View>
+                <View style={styles.addMemberContainer}>
+                  <Autocomplete
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    containerStyle={styles.autocompleteContainer}
+                    data={
+                      users.length === 1 && comp(query, users[0].mailAddress)
+                        ? []
+                        : users
+                    }
+                    defaultValue={query}
+                    onChangeText={text => this.setState({ query: text })}
+                    placeholder="Agrega integrantes"
+                    listContainerStyle={styles.queryResultContainer}
+                    listStyle={styles.queryResultItem}
+                    renderItem={({ mailAddress }) => (
+                      <TouchableOpacity
+                        onPress={() => this.setState({ query: mailAddress })}
+                      >
+                        <Text style={styles.itemText}>{mailAddress}</Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      title="+"
+                      onPress={this.inviteMember(users)}
+                      disabled={users.length != 1}
+                      // loading={this.state.isLoading}
+                      // loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
+                      titleStyle={{ fontWeight: "700" }}
+                      buttonStyle={styles.button}
+                    />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </Root>
       );
     } else {
       return null;
