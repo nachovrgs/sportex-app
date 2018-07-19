@@ -28,6 +28,10 @@ export default StyleSheet.create({
   imageContainer: {
     flex: 3
   },
+  avatar: {
+    height: 60,
+    width: 60,
+  },
   titleContainer: {
     flex: 1
   },

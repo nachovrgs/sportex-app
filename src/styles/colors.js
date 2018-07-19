@@ -3,6 +3,7 @@ export default {
   navbar: "rgba(25, 35, 68, 1)",
   white: "#ecf0f1",
   borders: "#2c3e50",
+  borders_thin: "#ecf0f1",
   text: "#2c3e50",
   text_blue: "rgb(36, 57, 131)",
   text_light_blue: "rgb(50, 95, 255)",
@@ -15,5 +16,5 @@ export default {
   bar_rank_2: "#f1c40f",
   bar_rank_3: "#27ae60",
   rating_gold: "#f1c40f",
-  rating_back: "#ecf0f1"
+  rating_back: "#ecf0f1",
 };

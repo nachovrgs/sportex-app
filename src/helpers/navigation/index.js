@@ -11,6 +11,7 @@ export async function login() {
 
 // handle logout logic
 export async function logout() {
+  console.log(IS_LOGGED)
   if (IS_LOGGED) {
     IS_LOGGED = false;
     startLogin();

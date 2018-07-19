@@ -29,22 +29,22 @@ export const screens = {
   },
   eventFeed: {
     id: "sportex.EventFeed",
-    title: "Sportex",
+    title: "Explorar",
     backButtonHidden: true
   },
   createEvent: {
     id: "sportex.CreateEvent",
-    title: "Sportex",
+    title: "Crear Evento",
     backButtonHidden: false
   },
   userProfile: {
     id: "sportex.UserProfile",
-    title: "Sportex",
+    title: "Mi Perfil",
     backButtonHidden: false
   },
   event: {
     id: "sportex.EventScreen",
-    title: "Sportex",
+    title: "Mis Eventos",
     backButtonHidden: false
   },
   invitationEvent: {
@@ -54,22 +54,22 @@ export const screens = {
   },
   groups: {
     id: "sportex.Groups",
-    title: "Sportex",
+    title: "Grupos",
     backButtonHidden: true
   },
   groupScreen: {
     id: "sportex.GroupScreen",
-    title: "Sportex",
+    title: "Grupo",
     backButtonHidden: false
   },
   createGroup: {
     id: "sportex.CreateGroup",
-    title: "Sportex",
+    title: "Crear Grupo",
     backButtonHidden: false
   },
   historyFeed: {
     id: "sportex.HistoryFeed",
-    title: "Sportex",
+    title: "Historial",
     backButtonHidden: true
   },
   currentEventFeed: {
@@ -84,7 +84,7 @@ export const screens = {
   },
   profileScreen: {
     id: "sportex.ProfileScreen",
-    title: "Sportex",
+    title: "Perfil",
     backButtonHidden: false
   }
 };

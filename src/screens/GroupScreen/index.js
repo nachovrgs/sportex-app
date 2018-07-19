@@ -11,7 +11,7 @@ import {
 import geolib from "geolib";
 import Autocomplete from "react-native-autocomplete-input";
 import { List, ListItem, Left, Thumbnail, Body, Label } from "native-base";
-import { Avatar } from "react-native-elements";
+import { Button } from "react-native-elements";
 import { API_URI } from "../../constants";
 import { screens } from "../../screens";
 import styles from "./styles";
@@ -38,7 +38,8 @@ export default class GroupScreen extends Component {
       error: "",
       token: "",
       query: "",
-      users: []
+      users: [],
+      editing: false
     };
 
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
@@ -231,8 +232,54 @@ export default class GroupScreen extends Component {
     });
   }
 
-  inviteMember(memberId) {
-    fetch(`${API_URI}/group/JoinGroup/`, {
+  inviteMember = users => {
+    let memberId = users && users.length == 1 ? users[0].id : null;
+    if (memberId != null) {
+      fetch(`${API_URI}/group/JoinGroup/`, {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Bearer " +
+            (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          idProfile: memberId,
+          idGroup: this.state.groupId,
+          listIdProfiles: []
+        })
+      })
+        .then(response => {
+          if (response.ok) {
+            this.loadData();
+          } else {
+            console.log("Network response was not ok.");
+            this.setState({
+              isLoading: false,
+              isError: true,
+              error: "Network response was not ok.",
+              token: ""
+            });
+            return new Error("Network response was not ok.");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: error.message,
+            token: ""
+          });
+          throw error;
+        });
+    }
+  };
+
+  removeMember(member) {
+    this.toggleEditing();
+    fetch(`${API_URI}/group/LeaveGroup/`, {
       method: "POST",
       headers: {
         Authorization:
@@ -242,7 +289,7 @@ export default class GroupScreen extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        idProfile: memberId,
+        idProfile: member.standardProfileID,
         idGroup: this.state.groupId,
         listIdProfiles: []
       })
@@ -250,14 +297,7 @@ export default class GroupScreen extends Component {
       .then(response => {
         if (response.ok) {
           console.log("Network response was ok.");
-          //Event created going to feed
-          this.props.navigator.push({
-            screen: screens.groups.id,
-            title: screens.groups.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.groups.backButtonHidden
-          });
+          this.loadData();
         } else {
           console.log("Network response was not ok.");
           this.setState({
@@ -280,7 +320,6 @@ export default class GroupScreen extends Component {
         throw error;
       });
   }
-
   renderUser(user) {
     const { mailAddress } = user;
 
@@ -296,40 +335,51 @@ export default class GroupScreen extends Component {
       return [];
     }
 
-    const { users } = this.state;
+    const { group, users } = this.state;
     const regex = new RegExp(`${query.trim()}`, "i");
     return users
       .filter(
         user =>
-          !this.state.group.listMembers.includes(user) &&
-          user.id != this.state.profileId
+          !group.listMembers
+            .map(member => member.profileMember.id)
+            .includes(user.id) && user.id != this.state.profileId
       )
       .filter(user => user.mailAddress.search(regex) >= 0)
       .slice(0, 5);
   }
+
+  toggleEditing() {
+    this.setState({ editing: !this.state.editing });
+  }
+
   render() {
     const { group, query } = this.state;
     const users = this.findUser(query);
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
     if (JSON.stringify(group) != JSON.stringify({})) {
+      let image;
+      if (group.creatorProfile.picturePath == "") {
+        image = (
+          <Thumbnail
+            source={require("../../assets/images/profile.png")}
+            style={styles.groupImage}
+          />
+        );
+      } else {
+        image = (
+          <Thumbnail
+            source={{ uri: group.creatorProfile.picturePath }}
+            style={styles.groupImage}
+          />
+        );
+      }
       let members = group.listMembers;
+      console.log(JSON.stringify(members));
       return (
         <View style={styles.background}>
           <View style={styles.container}>
             <View style={styles.head}>
-              <View style={styles.imageContainer}>
-                <Avatar
-                  large
-                  containerStyle={styles.avatar}
-                  rounded
-                  source={{
-                    uri: group.picturePath
-                      ? group.picturePath
-                      : "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg"
-                  }}
-                  activeOpacity={0.7}
-                />
-              </View>
+              <View style={styles.imageContainer}>{image}</View>
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{group.groupName}</Text>
                 <Text style={styles.description}>{group.groupDescription}</Text>
@@ -344,50 +394,55 @@ export default class GroupScreen extends Component {
                 </Text>
               </View>
               <View style={styles.membersContainer}>
-                <Text>Members</Text>
-                <ScrollView>
-                  <List>
+                <View style={styles.membersHeader}>
+                  <View style={styles.membersTitle}>
+                    <Text>Members</Text>
+                  </View>
+                  <View style={styles.membersEdit}>
+                    <TouchableOpacity onPress={() => this.toggleEditing()}>
+                      <Image
+                        style={styles.membersEditButton}
+                        source={require("../../assets/images/edit.png")}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <View style={styles.memberList}>
+                  <ScrollView>
                     {members.map((participant, i) => (
-                      <ListItem avatar>
+                      <View style={styles.memberListItem}>
                         <TouchableOpacity
+                          style={styles.participantIconContainer}
                           onPress={() => this.goToProfile(participant)}
                         >
-                          <Left>
-                            <Thumbnail
-                              style={styles.participantIcon}
-                              source={{
-                                uri:
-                                  participant.profileMember.picturePath &&
-                                  participant.profileMember.picturePath != ""
-                                    ? participant.profileMember.picturePath
-                                    : "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg"
-                              }}
-                            />
-                          </Left>
+                          <Thumbnail
+                            style={styles.participantIcon}
+                            source={require("../../assets/images/profile.png")}
+                          />
                         </TouchableOpacity>
-                        <Body>
+                        <View style={styles.participantNameContainer}>
                           <Text style={styles.participantName}>
                             {participant.profileMember.account.username}
                           </Text>
-                        </Body>
-                      </ListItem>
+                        </View>
+                        <View style={styles.participantRemoveContainer}>
+                          {this.state.editing && (
+                            <TouchableOpacity
+                              onPress={() => this.removeMember(participant)}
+                            >
+                              <Thumbnail
+                                style={styles.participantRemoveIcon}
+                                source={require("../../assets/images/exit.png")}
+                              />
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      </View>
                     ))}
-                  </List>
-                </ScrollView>
+                  </ScrollView>
+                </View>
               </View>
               <View style={styles.addMemberContainer}>
-                <TouchableOpacity onPress={() => this.inviteMember(users[0].id)}>
-                  <Label>Agregar integrante : </Label>
-                  <View style={styles.descriptionContainer}>
-                    {users.length > 0 ? (
-                      this.renderUser(users[0])
-                    ) : (
-                      <Text style={styles.infoText}>
-                        Ingresar el nombre del usuario
-                      </Text>
-                    )}
-                  </View>
-                </TouchableOpacity>
                 <Autocomplete
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -410,6 +465,17 @@ export default class GroupScreen extends Component {
                     </TouchableOpacity>
                   )}
                 />
+                <View style={styles.buttonContainer}>
+                  <Button
+                    title="+"
+                    onPress={this.inviteMember(users)}
+                    disabled={users.length != 1}
+                    // loading={this.state.isLoading}
+                    // loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
+                    titleStyle={{ fontWeight: "700" }}
+                    buttonStyle={styles.button}
+                  />
+                </View>
               </View>
             </View>
           </View>
