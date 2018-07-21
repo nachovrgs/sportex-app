@@ -29,8 +29,10 @@ export default StyleSheet.create({
     flex: 3
   },
   avatar: {
-    height: 60,
-    width: 60,
+    paddingVertical: 30,
+    width: 100,
+    height: 100,
+    borderRadius: 50
   },
   titleContainer: {
     flex: 1

@@ -1,21 +1,21 @@
 platform :ios, '8.0'
 target 'sportex' do
-pod 'React', :path => '../node_modules/react-native', :subspecs => [
-    'Core',
-    'CxxBridge', # Include this for RN >= 0.47
-    'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
-    'RCTText',
-    'RCTNetwork',
-    'RCTImage',
-    'DevSupport',
-    'RCTWebSocket', # needed for debugging
-    # Add any other subspecs you want to use in your project
-  ]
-pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga/yoga.podspec'
-pod 'GoogleMaps'
-pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
-pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
-pod 'RNFS', :path => '../node_modules/react-native-fs'
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+      'Core',
+      'CxxBridge', # Include this for RN >= 0.47
+      'DevSupport', # Include this to enable In-App Devmenu if RN >= 0.43
+      'RCTText',
+      'RCTNetwork',
+      'RCTImage',
+      'DevSupport',
+      'RCTWebSocket', # needed for debugging
+      # Add any other subspecs you want to use in your project
+    ]
+  pod 'yoga', :path => '../node_modules/react-native/ReactCommon/yoga/yoga.podspec'
+  pod 'GoogleMaps'
+  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+  pod 'react-native-image-resizer', :path => '../node_modules/react-native-image-resizer'
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
 end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
