@@ -19,7 +19,8 @@ import {
   Button,
   DeckSwiper,
   Card,
-  CardItem
+  CardItem,
+  Root
 } from "native-base";
 import { screens } from "../../screens";
 import styles from "./styles";
@@ -32,9 +33,8 @@ import { colors } from "../../styles";
 // create a component
 export default class EventScreen extends Component {
   static navigatorStyle = {
-    navBarTextColor: "#ecf0f1",
-    navBarBackgroundColor: colors.navbar,
-    navBarComponentAlignment: "center"
+    navBarHidden: true,
+    tabBarHidden: true
   };
   static navigatorButtons = {
     rightButtons: [
@@ -53,13 +53,18 @@ export default class EventScreen extends Component {
       itemId: null,
       item: {},
       coords: {},
-      isLoading: false,
+      isLoading: true,
       isError: false,
       error: "",
-      token: ""
+      token: "",
+      showingPlayers: true,
+      isOwner: false,
+      editMode: false
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.exitAction = this.exitAction.bind(this);
+    this.deleteAction = this.deleteAction.bind(this);
+    this.toggleShowingPlayers = this.toggleShowingPlayers.bind(this);
   }
 
   componentDidMount() {
@@ -118,7 +123,11 @@ export default class EventScreen extends Component {
   componentWillUnmount() {
     this._mounted = false;
   }
-
+  close() {
+    this.props.navigator.dismissAllModals({
+      animationType: "fade" // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
+    });
+  }
   //Helpers
   async loadEvent() {
     this.state.token = await getTokenForUsage();
@@ -148,7 +157,8 @@ export default class EventScreen extends Component {
         this.setState({
           item: jsonResponse,
           isLoading: false,
-          error: ""
+          error: "",
+          isOwner: jsonResponse.standardProfileID == this.state.profileId
         });
       })
       .catch(error => {
@@ -173,6 +183,7 @@ export default class EventScreen extends Component {
   canExit() {
     return true;
   }
+
   exitAction = () => {
     fetch(`${API_URI}/event/LeaveEvent`, {
       method: "POST",
@@ -208,6 +219,37 @@ export default class EventScreen extends Component {
       });
   };
 
+  deleteAction = () => {
+    fetch(`${API_URI}/event/${this.state.itemId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          //Event deleted. Rereshing
+          this.props.navigator.push({
+            screen: screens.currentEventFeed.id,
+            title: screens.currentEventFeed.title,
+            animated: true,
+            animationType: "fade",
+            backButtonHidden: screens.currentEventFeed.backButtonHidden
+          });
+        } else {
+          console.log("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        throw error;
+      });
+  };
+
   goToProfile(profile) {
     this.props.navigator.push({
       screen: screens.profileScreen.id,
@@ -220,10 +262,15 @@ export default class EventScreen extends Component {
       }
     });
   }
-
+  toggleShowingPlayers() {
+    this.setState({
+      showingPlayers: !this.state.showingPlayers
+    });
+  }
   render() {
     const event = this.state.item;
     if (JSON.stringify(event) != JSON.stringify({})) {
+      const isOwner = this.state.isOwner;
       const cards = [
         {
           type: 1
@@ -234,130 +281,195 @@ export default class EventScreen extends Component {
       ];
       const starters = event.listStarters;
       const substitutes = event.listSubstitutes;
-      const date = new Date(event.startingTime.split("T")[0]).toDateString();
-      return (
-        <View style={styles.container}>
-          <View style={styles.head}>
-            <View style={styles.headInfo}>
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>{event.eventName}</Text>
-              </View>
-              <View style={styles.subTitleContainer}>
-                <View style={styles.subtitle}>
-                  <Text style={styles.date}>{date}</Text>
-                  <Text style={styles.hour}>
-                    {" "}
-                    | {event.startingTime.split("T")[1].split(":")[0]} hs
-                  </Text>
+      const date = event.startingTime
+        ? new Date(event.startingTime.split("T")[0]).toDateString()
+        : new Date().toDateString();
+      return this.state.isLoading ? (
+        <Root>
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator
+              size="large"
+              color={colors.background}
+              animating
+            />
+          </View>
+        </Root>
+      ) : this.state.isError ? (
+        <Root>
+          <View style={styles.noEventsContainer}>
+            <View style={styles.noEventsSubContainer}>
+              <Image
+                style={styles.noEventsImage}
+                source={require("../../assets/images/no_internet.png")}
+              />
+              <Text style={styles.noEventsText}>
+                No tienes conexion a internet.
+              </Text>
+            </View>
+          </View>
+        </Root>
+      ) : (
+        <Root>
+          <View style={styles.container}>
+            <View style={styles.head}>
+              <View style={styles.headInfo}>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.title}>{event.eventName}</Text>
+                  {isOwner && (
+                    <TouchableOpacity
+                      onPress={() => this.setState({ editMode: true })}
+                    >
+                      <Image
+                        style={styles.ownerEditButton}
+                        source={require("../../assets/images/edit.png")}
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <View style={styles.subTitleContainer}>
+                  <View style={styles.subtitle}>
+                    <Text style={styles.date}>{date}</Text>
+                    <Text style={styles.hour}>
+                      {" "}
+                      | {event.startingTime.split("T")[1].split(":")[0]} hs
+                    </Text>
+                  </View>
                 </View>
               </View>
+              <View style={styles.headOptions}>
+                <TouchableOpacity onPress={() => this.close()}>
+                  <Image
+                    style={styles.closeImage}
+                    source={require("../../assets/images/exit.png")}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          <View style={styles.content}>
-            <View style={styles.locationContainer}>
-              <Text style={styles.location}>{event.location.name}</Text>
+            <View style={styles.content}>
+              <View style={styles.locationContainer}>
+                <Text style={styles.location}>{event.location.name}</Text>
+              </View>
+              <View style={styles.mapContainer}>
+                <MapView
+                  initialRegion={{
+                    latitude: event.location.latitude
+                      ? event.location.latitude
+                      : 37.78825,
+                    longitude: event.location.longitude
+                      ? event.location.longitude
+                      : -37.78825,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421
+                  }}
+                  scrollEnabled={false}
+                  liteMode={true}
+                  style={styles.map}
+                />
+              </View>
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.description}>{event.description}</Text>
+              </View>
             </View>
-            <View style={styles.mapContainer}>
-              <MapView
-                initialRegion={{
-                  latitude: event.location.latitude
-                    ? event.location.latitude
-                    : 37.78825,
-                  longitude: event.location.longitude
-                    ? event.location.longitude
-                    : -37.78825,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421
-                }}
-                scrollEnabled={false}
-                liteMode={true}
-                style={styles.map}
-              />
-            </View>
-            <View style={styles.descriptionContainer}>
-              <Text style={styles.description}>{event.description}</Text>
-            </View>
-          </View>
-          <View style={styles.footer}>
-            <View style={styles.footerTitleContainer}>
-              <Text style={styles.footerTitle}>Jugadores</Text>
-            </View>
-            <View style={styles.playersContainer}>
-              <DeckSwiper
-                dataSource={cards}
-                style={styles.swiper}
-                renderItem={item => (
-                  <Card style={styles.swiperCard}>
-                    {item.type == 1 && (
-                      <ScrollView>
-                        {starters.map((participant, i) => (
-                          <View style={styles.memberListItem}>
-                            <TouchableOpacity
-                              style={styles.participantIconContainer}
-                              onPress={() => this.goToProfile(participant)}
-                            >
-                              <Image
-                                style={styles.participantIcon}
-                                source={require("../../assets/images/profile.png")}
-                              />
-                            </TouchableOpacity>
-                            <View style={styles.participantNameContainer}>
-                              <Text style={styles.participantName}>
-                                {participant.profileParticipant.account.username}
-                              </Text>
-                            </View>
-                          </View>
-                        ))}
-                      </ScrollView>
-                    )}
-                    {item.type == 2 && (
-                      <ScrollView>
-                        <List>
-                          {substitutes.map((participant, i) => (
-                            <ListItem avatar>
-                              <Left>
-                                <Thumbnail
+            <View style={styles.footer}>
+              <View style={styles.footerTitleContainer}>
+                {this.state.showingPlayers && (
+                  <Text style={styles.footerTitle}>Jugadores</Text>
+                )}
+                {!this.state.showingPlayers && (
+                  <Text style={styles.footerTitle}>Suplentes</Text>
+                )}
+              </View>
+              <View style={styles.playersContainer}>
+                <DeckSwiper
+                  dataSource={cards}
+                  style={styles.swiper}
+                  onSwipeRight={this.toggleShowingPlayers}
+                  onSwipeLeft={this.toggleShowingPlayers}
+                  renderItem={item => (
+                    <Card style={styles.swiperCard}>
+                      {item.type == 1 && (
+                        <ScrollView>
+                          {starters.map((participant, i) => (
+                            <View style={styles.memberListItem}>
+                              <TouchableOpacity
+                                style={styles.participantIconContainer}
+                                onPress={() => this.goToProfile(participant)}
+                              >
+                                <Image
                                   style={styles.participantIcon}
-                                  source={{
-                                    uri:
-                                      participant.profileParticipant.picturePath
-                                  }}
+                                  source={require("../../assets/images/profile.png")}
                                 />
-                              </Left>
-                              <Body>
+                              </TouchableOpacity>
+                              <View style={styles.participantNameContainer}>
                                 <Text style={styles.participantName}>
                                   {
                                     participant.profileParticipant.account
                                       .username
                                   }
                                 </Text>
-                              </Body>
-                            </ListItem>
+                              </View>
+                            </View>
                           ))}
-                        </List>
-                      </ScrollView>
-                    )}
-                    {item.type == 3 && (
-                      <Text style={styles.eventDescription}>
-                        {event.description}
-                      </Text>
-                    )}
-                  </Card>
+                        </ScrollView>
+                      )}
+                      {item.type == 2 && (
+                        <ScrollView>
+                          <List>
+                            {substitutes.map((participant, i) => (
+                              <ListItem avatar>
+                                <Left>
+                                  <Thumbnail
+                                    style={styles.participantIcon}
+                                    source={{
+                                      uri:
+                                        participant.profileParticipant
+                                          .picturePath
+                                    }}
+                                  />
+                                </Left>
+                                <Body>
+                                  <Text style={styles.participantName}>
+                                    {
+                                      participant.profileParticipant.account
+                                        .username
+                                    }
+                                  </Text>
+                                </Body>
+                              </ListItem>
+                            ))}
+                          </List>
+                        </ScrollView>
+                      )}
+                      {item.type == 3 && (
+                        <Text style={styles.eventDescription}>
+                          {event.description}
+                        </Text>
+                      )}
+                    </Card>
+                  )}
+                />
+              </View>
+              <View style={styles.button}>
+                {!isOwner && (
+                  <Button
+                    block
+                    rounded
+                    danger
+                    onPress={this.exitAction}
+                    disabled={!this.canExit()}
+                  >
+                    <Text>Salir</Text>
+                  </Button>
                 )}
-              />
-            </View>
-            <View style={styles.button}>
-              <Button
-                block
-                success
-                onPress={this.exitAction}
-                disabled={!this.canExit()}
-              >
-                <Text>Salir</Text>
-              </Button>
+                {isOwner && (
+                  <Button block rounded danger onPress={this.deleteAction}>
+                    <Text>Eliminar</Text>
+                  </Button>
+                )}
+              </View>
             </View>
           </View>
-        </View>
+        </Root>
       );
     } else {
       return null;

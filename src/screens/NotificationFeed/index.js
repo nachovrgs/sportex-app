@@ -33,6 +33,7 @@ export default class NotificationFeed extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     tabBarHidden: true,
+    navBarButtonColor: colors.text_orange,
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"

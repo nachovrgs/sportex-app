@@ -7,9 +7,11 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     height: 120,
-    margin: 22,
+    marginLeft: 17,
+    marginRight: 17,
+    marginTop: 17,
     backgroundColor: "rgba(255,255,255,0.9)",
-    borderRadius: 10,
+    borderRadius: 7,
     borderWidth: 1,
     borderColor: colors.borders,
     elevation: 1
@@ -20,19 +22,20 @@ export default StyleSheet.create({
   },
   //Regular
   sidebar: {
-    flex: 1,
+    width: 12,
+    marginBottom: 2,
     backgroundColor: colors.bar_rank_1,
     borderBottomLeftRadius: 0,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5
   },
   mainInfo: {
-    flex: 10,
     padding: 10,
+    width: 250,
     flexDirection: "column"
   },
   sideInfo: {
-    flex: 5,
+    width: 100,
     padding: 10
   },
   head: {
@@ -139,6 +142,7 @@ export default StyleSheet.create({
     margin: 20
   },
   button: {
-    height: 50
+    height: 50,
+    paddingTop: 10
   }
 });

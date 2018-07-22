@@ -71,9 +71,16 @@ export default StyleSheet.create({
     flex: 10
   },
   createButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
-    right:0
+    right: 0
+  },
+  queryResultContainer: {
+    marginTop: -120
+  },
+  queryResultItem: {
+    opacity: 1,
+    color: colors.text
   }
 });

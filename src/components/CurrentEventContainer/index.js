@@ -48,8 +48,8 @@ class CurrentEventContainer extends Component {
 
   handlePress = () => {
     var event = this.state.item;
-    //Go to event page
-    this.props.navigator.push({
+    //Go to event modal
+    this.props.navigator.showModal({
       screen: screens.event.id,
       title: screens.event.title,
       animated: true,

@@ -405,6 +405,8 @@ export default class CreateGroup extends Component {
                         : users
                     }
                     defaultValue={query}
+                    listContainerStyle={styles.queryResultContainer}
+                    listStyle={styles.queryResultItem}
                     onChangeText={text => this.setState({ query: text })}
                     placeholder="Agrega integrantes"
                     listContainerStyle={styles.queryResultContainer}
