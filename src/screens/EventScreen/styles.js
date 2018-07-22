@@ -11,18 +11,44 @@ export default StyleSheet.create({
     borderBottomColor: colors.borders,
     borderBottomWidth: StyleSheet.hairlineWidth
   },
+  noEventsContainer: {
+    flex: 1,
+    backgroundColor: colors.background
+  },
+  noEventsSubContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  noEventsImage: {
+    width: 40,
+    height: 40
+  },
+  noEventsText: {
+    color: colors.text,
+    fontSize: 20,
+    fontWeight: "bold"
+  },
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+    justifyContent: "center",
+    alignItems: "center"
+  },
   //Level 1
   head: {
-    flex: 1,
-    flexDirection: "row"
+    height: 85,
+    flexDirection: "row",
+    paddingTop: 20
   },
   content: {
-    flex: 4,
-    marginTop: 20,
-    flexDirection: "column"
+    height: 210,
+    flexDirection: "column",
+    paddingTop: 30
   },
   footer: {
-    flex: 4
+    height: 450,
+    paddingTop: 20
   },
   //Level 2
   headInfo: {
@@ -31,15 +57,23 @@ export default StyleSheet.create({
     marginTop: 5
   },
   titleContainer: {
-    flex: 3
+    height: 35,
+    flexDirection: "row"
   },
   subTitleContainer: {
-    flex: 2
+    height: 30
   },
   title: {
-    flex: 1,
     fontSize: sizes.xlarge,
-    color: colors.text_blue
+    color: colors.text_light_blue,
+    fontWeight: "900"
+  },
+  ownerEditButton: {
+    height: 15,
+    width: 15,
+    padding: 0,
+    marginLeft: 30,
+    marginTop: 5
   },
   subtitle: {
     flex: 1,
@@ -47,7 +81,7 @@ export default StyleSheet.create({
   },
   date: {
     fontSize: sizes.large,
-    color: colors.text_light_blue
+    color: colors.text_blue
   },
   hour: {
     fontSize: sizes.medium,
@@ -62,20 +96,24 @@ export default StyleSheet.create({
     alignItems: "flex-end"
   },
   //Body
-  locationContainer: { flex: 1 },
+  locationContainer: {
+    height: 30
+  },
+  mapContainer: {
+    height: 120,
+    marginLeft: -18,
+    marginRight: -18
+  },
+  descriptionContainer: {
+    height: 30
+  },
   location: {
+    height: 50,
     fontSize: sizes.medium,
     color: colors.text_grey
   },
-  mapContainer: {
-    flex: 10
-  },
   map: {
-    flex: 3
-  },
-  descriptionContainer: {
-    flex: 2,
-    padding: 10
+    height: 120
   },
   description: {
     flex: 1,
@@ -84,7 +122,7 @@ export default StyleSheet.create({
   },
   //Footer
   footerTitleContainer: {
-    flex: 1
+    height: 30
   },
   footerTitle: {
     flex: 1,
@@ -92,7 +130,7 @@ export default StyleSheet.create({
     color: colors.text_blue
   },
   playersContainer: {
-    flex: 5
+    height: 250
   },
   //Members
   memberListItem: {
@@ -117,13 +155,14 @@ export default StyleSheet.create({
     fontSize: sizes.small
   },
   swiper: {
-    height: 180
+    height: 250
   },
   swiperCard: {
-    height: 180,
-    elevation: 3
+    height: 250,
+    elevation: 1
   },
   button: {
-    flex: 1
+    marginTop: 30,
+    height: 70
   }
 });

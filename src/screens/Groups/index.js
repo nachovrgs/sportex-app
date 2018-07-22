@@ -1,6 +1,13 @@
 //import libraries
 import React, { Component } from "react";
-import { View, FlatList, ActivityIndicator, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  FlatList,
+  ActivityIndicator,
+  Image,
+  TouchableOpacity,
+  RefreshControl
+} from "react-native";
 
 import {
   Container,
@@ -27,6 +34,7 @@ export default class Groups extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
+    navBarButtonColor: colors.text_orange,
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"
   };
@@ -200,6 +208,7 @@ export default class Groups extends Component {
       <Root>
         <View style={styles.container}>
           <FlatList
+            refreshControl={this._refreshControl()}
             style={styles.groupList}
             data={this.state.dataSource}
             keyExtractor={this._keyExtractor}

@@ -26,6 +26,7 @@ export default class HistoryFeed extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
+    navBarButtonColor: colors.text_orange,
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"
   };
