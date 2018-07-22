@@ -34,13 +34,14 @@ export default class CurrentEventFeed extends Component {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center",
-    navBarTextAlignment: "center"
+    navBarTextAlignment: "center",
+    navBarHidden: false
   };
   static navigatorButtons = {
     rightButtons: [
       {
-        icon: require("../../assets/images/add.png"),
-        id: "add",
+        icon: require("../../assets/images/history.png"),
+        id: "history",
         buttonColor: "#ecf0f1",
         buttonFontSize: 20,
         buttonFontWeight: "600"
@@ -78,20 +79,20 @@ export default class CurrentEventFeed extends Component {
   // Handle nav bar navigation
   onNavigatorEvent(event) {
     if (event.type == "NavBarButtonPress") {
-      if (event.id == "add") {
+      if (event.id == "history") {
         this.props.navigator.push({
-          screen: screens.createEvent.id,
-          title: screens.createEvent.title,
+          screen: screens.historyFeed.id,
+          title: screens.historyFeed.title,
           animated: true,
-          animationType: "fade",
-          backButtonHidden: screens.createEvent.backButtonHidden
+          animationType: "slide-down",
+          backButtonHidden: screens.historyFeed.backButtonHidden
         });
       } else if (event.id == "notifications") {
         this.props.navigator.push({
           screen: screens.notificationFeed.id,
           title: screens.notificationFeed.title,
           animated: true,
-          animationType: "fade",
+          animationType: "slide-down",
           backButtonHidden: screens.notificationFeed.backButtonHidden
         });
       }

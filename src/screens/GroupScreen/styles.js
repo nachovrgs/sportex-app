@@ -133,10 +133,16 @@ export default StyleSheet.create({
     backgroundColor: colors.background
   },
   queryResultContainer: {
-    flex: 1
+    marginTop: -120
   },
   queryResultItem: {
     opacity: 1,
     color: colors.text
+  },
+  avatar: {
+    paddingVertical: 30,
+    width: 80,
+    height: 80,
+    borderRadius: 40
   }
 });

@@ -79,8 +79,9 @@ class EventContainer extends Component {
   canJoin() {
     return true;
   }
+
   joinAction = () => {
-    fetch(`${API_URI}/event/JoinEvent`, {
+    fetch(`${API_URI}/event/JoinEventAdvanced`, {
       method: "POST",
       headers: {
         Authorization:
@@ -113,6 +114,7 @@ class EventContainer extends Component {
         throw error;
       });
   };
+
   goToProfile(profileId) {
     this.props.navigator.push({
       screen: screens.profileScreen.id,
@@ -125,6 +127,7 @@ class EventContainer extends Component {
       }
     });
   }
+
   getContainerHeight = () => {
     return this.state.containerHeight == sizes.itemCardExpanded
       ? sizes.itemCard
@@ -153,7 +156,10 @@ class EventContainer extends Component {
           : -37.78825
       };
       let creator;
-      if (event.creatorProfile.picturePath == "") {
+      if (
+        event.creatorProfile.picturePath == "" ||
+        event.creatorProfile.picturePath == null
+      ) {
         creator = (
           <Thumbnail
             source={require("../../assets/images/profile.png")}
@@ -248,8 +254,13 @@ class EventContainer extends Component {
                                       style={styles.participantIcon}
                                       source={{
                                         uri:
-                                          participant.profileParticipant
-                                            .picturePath
+                                          event.creatorProfile.picturePath ==
+                                            "" ||
+                                          event.creatorProfile.picturePath ==
+                                            null
+                                            ? "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                                            : participant.profileParticipant
+                                                .picturePath
                                       }}
                                     />
                                   </Left>

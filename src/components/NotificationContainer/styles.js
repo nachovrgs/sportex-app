@@ -5,7 +5,7 @@ import { colors, sizes } from "../../styles";
 export default StyleSheet.create({
   container: {
     flex: 1,
-    height: 120,
+    height: 100,
     margin: 22,
     padding: 20,
     backgroundColor: "rgba(255,255,255,0.9)",
@@ -13,6 +13,39 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borders,
     elevation: 1
+  },
+  swipeContainerAccept: {
+    height: 100,
+    marginTop: 22,
+    marginBottom: 22,
+    width: 75,
+    padding: 10,
+    backgroundColor: colors.button_green,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    elevation: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  swipeContainerRemove: {
+    height: 100,
+    marginTop: 22,
+    marginBottom: 22,
+    width: 75,
+    padding: 10,
+    backgroundColor: colors.button_red,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    elevation: 1,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  swiperImage: {
+    width: 30,
+    height: 30,
+    color: colors.white
   },
   head: {
     flex: 1,

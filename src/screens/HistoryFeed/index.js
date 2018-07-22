@@ -29,17 +29,7 @@ export default class HistoryFeed extends Component {
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"
   };
-  static navigatorButtons = {
-    leftButtons: [
-      {
-        icon: require("../../assets/images/bell.png"),
-        id: "notifications",
-        buttonColor: "#ecf0f1",
-        buttonFontSize: 20,
-        buttonFontWeight: "600"
-      }
-    ]
-  };
+  static navigatorButtons = {};
   _keyExtractor = (item, index) => item.id.toString();
 
   constructor(props) {
@@ -62,15 +52,6 @@ export default class HistoryFeed extends Component {
   // Handle nav bar navigation
   onNavigatorEvent(event) {
     if (event.type == "NavBarButtonPress") {
-      if (event.id == "notifications") {
-        this.props.navigator.push({
-          screen: screens.notificationFeed.id,
-          title: screens.notificationFeed.title,
-          animated: true,
-          animationType: "fade",
-          backButtonHidden: screens.notificationFeed.backButtonHidden
-        });
-      }
     }
   }
   _renderItem = ({ item }) => (

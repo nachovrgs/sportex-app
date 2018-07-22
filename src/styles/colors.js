@@ -17,4 +17,6 @@ export default {
   bar_rank_3: "#27ae60",
   rating_gold: "#f1c40f",
   rating_back: "#ecf0f1",
+  button_green: "#2ecc71",
+  button_red: "#e74c3c"
 };

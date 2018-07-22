@@ -10,7 +10,9 @@ import {
   KeyboardAvoidingView
 } from "react-native";
 import geolib from "geolib";
+import PhotoUpload from "react-native-photo-upload";
 import Autocomplete from "react-native-autocomplete-input";
+
 import {
   List,
   ListItem,
@@ -410,7 +412,25 @@ export default class GroupScreen extends Component {
           <KeyboardAvoidingView style={styles.background}>
             <View style={styles.container}>
               <View style={styles.head}>
-                <View style={styles.imageContainer}>{image}</View>
+                <View style={styles.imageContainer}>
+                  <PhotoUpload
+                    onPhotoSelect={avatar => {
+                      if (avatar) {
+                        //Send image to azure blob
+                        console.log("Image base64 string: ", avatar);
+                      }
+                    }}
+                  >
+                    <Image
+                      style={styles.avatar}
+                      resizeMode="cover"
+                      source={{
+                        uri:
+                          "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                      }}
+                    />
+                  </PhotoUpload>
+                </View>
                 <View style={styles.titleContainer}>
                   <Text style={styles.title}>{group.groupName}</Text>
                   <Text style={styles.description}>

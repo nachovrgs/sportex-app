@@ -86,6 +86,9 @@
 		C63AE9E020FF9095004EA82E /* AIRMapUrlTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C63AE9CD20FF9095004EA82E /* AIRMapUrlTileManager.m */; };
 		C63AE9E120FF9095004EA82E /* AIRMapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C63AE9D020FF9095004EA82E /* AIRMapManager.m */; };
 		C63AE9E220FF9095004EA82E /* RCTConvert+AirMap.m in Sources */ = {isa = PBXBuildFile; fileRef = C63AE9D120FF9095004EA82E /* RCTConvert+AirMap.m */; };
+		C6A1598221038D8F00EB9E49 /* RNNotificationsBridgeQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = C6A1597821038D8E00EB9E49 /* RNNotificationsBridgeQueue.m */; };
+		C6A1598321038D8F00EB9E49 /* RNNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = C6A1597B21038D8E00EB9E49 /* RNNotifications.m */; };
+		C6A1598B2103C3F600EB9E49 /* libRCTAutoComplete.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C6A1598A2103C3DE00EB9E49 /* libRCTAutoComplete.a */; };
 		CA04A916EC12446F88851DB0 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FCDFAA2F3A8F4C07A5781E4D /* libRNVectorIcons.a */; };
 		CE344981D7084208902E0DC9 /* libRNSpinkit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 95CE4EB5F02444E788DABFA5 /* libRNSpinkit.a */; };
 		EBDB54238BD3416B84D3A0A5 /* Roboto_medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CDB454F5A17A45ABB58646EA /* Roboto_medium.ttf */; };
@@ -388,6 +391,20 @@
 			remoteGlobalIDString = 11FA5C511C4A1296003AC2EE;
 			remoteInfo = AirMaps;
 		};
+		C6A1598021038D8F00EB9E49 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6A1597C21038D8E00EB9E49 /* RNNotifications.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNNotifications;
+		};
+		C6A159892103C3DE00EB9E49 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C6A159852103C3DD00EB9E49 /* RCTAutoComplete.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RCTAutoComplete;
+		};
 		C6A4C5B220FD334F00FAB6A5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 146833FF1AC3E56700842450 /* React.xcodeproj */;
@@ -522,6 +539,13 @@
 		C63AE9CF20FF9095004EA82E /* AIRMapPolylineManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIRMapPolylineManager.h; sourceTree = "<group>"; };
 		C63AE9D020FF9095004EA82E /* AIRMapManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIRMapManager.m; sourceTree = "<group>"; };
 		C63AE9D120FF9095004EA82E /* RCTConvert+AirMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "RCTConvert+AirMap.m"; sourceTree = "<group>"; };
+		C6A1597821038D8E00EB9E49 /* RNNotificationsBridgeQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNotificationsBridgeQueue.m; sourceTree = "<group>"; };
+		C6A1597921038D8E00EB9E49 /* RNNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNotifications.h; sourceTree = "<group>"; };
+		C6A1597A21038D8E00EB9E49 /* RNNotificationsBridgeQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNNotificationsBridgeQueue.h; sourceTree = "<group>"; };
+		C6A1597B21038D8E00EB9E49 /* RNNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNNotifications.m; sourceTree = "<group>"; };
+		C6A1597C21038D8E00EB9E49 /* RNNotifications.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = RNNotifications.xcodeproj; sourceTree = "<group>"; };
+		C6A159842103936100EB9E49 /* sportex.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = sportex.entitlements; path = sportex/sportex.entitlements; sourceTree = "<group>"; };
+		C6A159852103C3DD00EB9E49 /* RCTAutoComplete.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAutoComplete.xcodeproj; path = "../node_modules/react-native-autocomplete/RCTAutoComplete.xcodeproj"; sourceTree = "<group>"; };
 		CC43EFA546AF4787BEA709C3 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/native-base/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		CDB454F5A17A45ABB58646EA /* Roboto_medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto_medium.ttf; path = "../node_modules/native-base/Fonts/Roboto_medium.ttf"; sourceTree = "<group>"; };
 		CE32621EB79DB91B3330BE47 /* libPods-sportex.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-sportex.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -544,6 +568,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6A1598B2103C3F600EB9E49 /* libRCTAutoComplete.a in Frameworks */,
 				ADBDB9381DFEBF1600ED6528 /* libRCTBlob.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -672,6 +697,7 @@
 		13B07FAE1A68108700A75B9A /* sportex */ = {
 			isa = PBXGroup;
 			children = (
+				C6A159842103936100EB9E49 /* sportex.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -757,6 +783,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				C6A159852103C3DD00EB9E49 /* RCTAutoComplete.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -789,6 +816,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				C6A1597721038D8E00EB9E49 /* RNNotifications */,
 				C63AE9AD20FF9095004EA82E /* AirMaps */,
 				C63AE90E20FF8AC9004EA82E /* AirGoogleMaps */,
 				13B07FAE1A68108700A75B9A /* sportex */,
@@ -975,6 +1003,35 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		C6A1597721038D8E00EB9E49 /* RNNotifications */ = {
+			isa = PBXGroup;
+			children = (
+				C6A1597821038D8E00EB9E49 /* RNNotificationsBridgeQueue.m */,
+				C6A1597921038D8E00EB9E49 /* RNNotifications.h */,
+				C6A1597A21038D8E00EB9E49 /* RNNotificationsBridgeQueue.h */,
+				C6A1597B21038D8E00EB9E49 /* RNNotifications.m */,
+				C6A1597C21038D8E00EB9E49 /* RNNotifications.xcodeproj */,
+			);
+			name = RNNotifications;
+			path = "../node_modules/react-native-notifications/RNNotifications";
+			sourceTree = "<group>";
+		};
+		C6A1597D21038D8E00EB9E49 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C6A1598121038D8F00EB9E49 /* libRNNotifications.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C6A159862103C3DD00EB9E49 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C6A1598A2103C3DE00EB9E49 /* libRCTAutoComplete.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1068,6 +1125,11 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = 523RVMS28K;
+						SystemCapabilities = {
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -1105,6 +1167,10 @@
 				{
 					ProductGroup = 5E91572E1DD0AC6500FF2AA8 /* Products */;
 					ProjectRef = 5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */;
+				},
+				{
+					ProductGroup = C6A159862103C3DD00EB9E49 /* Products */;
+					ProjectRef = C6A159852103C3DD00EB9E49 /* RCTAutoComplete.xcodeproj */;
 				},
 				{
 					ProductGroup = ADBDB9201DFEBF0600ED6528 /* Products */;
@@ -1149,6 +1215,10 @@
 				{
 					ProductGroup = C685636D20F7B0DE0024B91E /* Products */;
 					ProjectRef = 31CFAF1A254947A887BCA69A /* ReactNativeNavigation.xcodeproj */;
+				},
+				{
+					ProductGroup = C6A1597D21038D8E00EB9E49 /* Products */;
+					ProjectRef = C6A1597C21038D8E00EB9E49 /* RNNotifications.xcodeproj */;
 				},
 				{
 					ProductGroup = C685636B20F7B0DE0024B91E /* Products */;
@@ -1450,6 +1520,20 @@
 			remoteRef = C68D18F320FED7F000CC61DC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		C6A1598121038D8F00EB9E49 /* libRNNotifications.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNNotifications.a;
+			remoteRef = C6A1598021038D8F00EB9E49 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C6A1598A2103C3DE00EB9E49 /* libRCTAutoComplete.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTAutoComplete.a;
+			remoteRef = C6A159892103C3DE00EB9E49 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		C6A4C5B320FD334F00FAB6A5 /* libjsinspector.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1615,6 +1699,7 @@
 				C63AE96220FF8AC9004EA82E /* AIRGMSPolygon.m in Sources */,
 				C63AE96D20FF8AC9004EA82E /* RCTConvert+GMSMapViewType.m in Sources */,
 				C63AE9D720FF9095004EA82E /* SMCalloutView.m in Sources */,
+				C6A1598321038D8F00EB9E49 /* RNNotifications.m in Sources */,
 				C63AE96920FF8AC9004EA82E /* AIRGoogleMapPolyline.m in Sources */,
 				C63AE9D620FF9095004EA82E /* AIRMapPolylineManager.m in Sources */,
 				C63AE95F20FF8AC9004EA82E /* AIRGoogleMapUrlTile.m in Sources */,
@@ -1622,6 +1707,7 @@
 				C63AE9D920FF9095004EA82E /* AIRMapPolyline.m in Sources */,
 				C63AE9DB20FF9095004EA82E /* AIRMapMarker.m in Sources */,
 				C63AE97120FF8AC9004EA82E /* AIRGMSMarker.m in Sources */,
+				C6A1598221038D8F00EB9E49 /* RNNotificationsBridgeQueue.m in Sources */,
 				C63AE9DA20FF9095004EA82E /* AIRMapCircleManager.m in Sources */,
 				C63AE9DE20FF9095004EA82E /* AIRMap.m in Sources */,
 				C63AE9D320FF9095004EA82E /* AIRMapMarkerManager.m in Sources */,
@@ -1747,6 +1833,7 @@
 			baseConfigurationReference = 01CCDEBC40884146CE6FE38E /* Pods-sportex.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = sportex/sportex.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 523RVMS28K;
@@ -1774,6 +1861,7 @@
 			baseConfigurationReference = ABEE896DF395F6C26D28E1DB /* Pods-sportex.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = sportex/sportex.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 523RVMS28K;
 				HEADER_SEARCH_PATHS = (

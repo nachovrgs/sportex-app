@@ -135,7 +135,16 @@ export default class UserProfile extends Component {
                       console.log("Image base64 string: ", avatar);
                     }
                   }}
-                />
+                >
+                  <Image
+                    style={styles.avatar}
+                    resizeMode="cover"
+                    source={{
+                      uri:
+                        "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                    }}
+                  />
+                </PhotoUpload>
               </View>
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{profile.firstName}</Text>

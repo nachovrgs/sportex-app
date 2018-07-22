@@ -33,18 +33,10 @@ export default class InvitationEventScreen extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
     navBarBackgroundColor: colors.navbar,
-    navBarComponentAlignment: "center",
+    navBarComponentAlignment: "center"
   };
   static navigatorButtons = {
-    rightButtons: [
-      {
-        icon: require("../../assets/images/trash.png"),
-        id: "delete",
-        buttonColor: "#ecf0f1",
-        buttonFontSize: 20,
-        buttonFontWeight: "600"
-      }
-    ]
+    rightButtons: []
   };
   constructor(props) {
     super(props);
@@ -67,7 +59,7 @@ export default class InvitationEventScreen extends Component {
       item: this.props.item,
       eventInvitation: this.props.eventInvitation
     });
-    this.loadState()
+    this.loadState();
   }
 
   // Handle nav bar navigation
@@ -136,12 +128,6 @@ export default class InvitationEventScreen extends Component {
     return true;
   }
   acceptAction = () => {
-    console.log(JSON.stringify({
-      idProfileReceived: this.state.profileId,
-      idProfileSent: this.state.eventInvitation.idProfileInvites,
-      idEvent: this.state.eventInvitation.eventID,
-      idGroup: 0
-    }))
     fetch(`${API_URI}/eventInvitation/AcceptEventInvitation`, {
       method: "POST",
       headers: {
@@ -159,7 +145,6 @@ export default class InvitationEventScreen extends Component {
       })
     })
       .then(response => {
-        console.log(JSON.stringify(response))
         if (response.ok) {
           //Event joined. Rereshing
           this.props.navigator.push({

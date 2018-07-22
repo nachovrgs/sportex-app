@@ -70,7 +70,7 @@ export const screens = {
   historyFeed: {
     id: "sportex.HistoryFeed",
     title: "Historial",
-    backButtonHidden: true
+    backButtonHidden: false
   },
   currentEventFeed: {
     id: "sportex.CurrentEventFeed",
