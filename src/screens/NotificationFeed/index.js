@@ -53,10 +53,12 @@ export default class NotificationFeed extends Component {
     this.loadData();
   }
 
+  //Item renderer
   _renderItem = ({ item }) => (
     <NotificationContainer
       notificationItem={item}
       navigator={this.props.navigator}
+      removeNotification={this.removeNotification}
     />
   );
 
@@ -114,6 +116,11 @@ export default class NotificationFeed extends Component {
         throw error;
       });
   }
+
+  removeNotification(notificationId) {
+    console.log("This is the id: " + notificationId);
+  }
+
   toggleNoNotificationsShowed = () => {
     this.state.noNotificationsShowed = true;
   };

@@ -1,7 +1,6 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text } from "react-native";
-
+import { View, Text, Image } from "react-native";
 import { screens } from "../../screens";
 import { Thumbnail } from "native-base";
 import {

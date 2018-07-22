@@ -11,6 +11,8 @@ import {
   Platform,
   ActivityIndicator
 } from "react-native";
+import { Navigation } from "react-native-navigation";
+import { startMainApp } from "../../App";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import {
   Container,
@@ -20,7 +22,6 @@ import {
   Item,
   Input,
   CheckBox,
-  Button,
   Label,
   Left,
   Body,
@@ -31,6 +32,8 @@ import {
   Picker,
   Root
 } from "native-base";
+
+import { Button } from "react-native-elements";
 import { logout } from "../../helpers/navigation";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
@@ -41,9 +44,8 @@ import { colors } from "../../styles";
 // create a component
 export default class CreateEvent extends Component {
   static navigatorStyle = {
-    navBarTextColor: "#ecf0f1",
-    navBarBackgroundColor: colors.navbar,
-    navBarComponentAlignment: "center",
+    navBarHidden: true,
+    tabBarHidden: true
   };
   constructor(props) {
     super(props);
@@ -343,7 +345,6 @@ export default class CreateEvent extends Component {
       });
   };
   inviteGroupAction = eventId => {
-    
     fetch(`${API_URI}/eventInvitation/InviteWholeGroup`, {
       method: "POST",
       headers: {
@@ -397,6 +398,11 @@ export default class CreateEvent extends Component {
       selectedGroup: value
     });
   }
+  onValueChangePublic(value) {
+    this.setState({
+      isPublic: value
+    });
+  }
   onValueChangeLocations(value) {
     this.setState({
       selectedLocation: value
@@ -424,6 +430,16 @@ export default class CreateEvent extends Component {
     return d;
     //and that's how you are ready to go, because this issue isn't fixed yet (checked on 28-Dec-2017)
   };
+
+  close() {
+    console.log("closing modal");
+    this.props.navigator.dismissAllModals({
+      animationType: "fade" // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
+    });
+    //Fix, remove this. This is bad.
+    // React native navigation v1 removed support for the tab based modals.
+    startMainApp();
+  }
   render() {
     const { name, description, isLoading, groups, locations } = this.state;
     return this.state.isLoading ? (
@@ -444,114 +460,186 @@ export default class CreateEvent extends Component {
           <Header>
             <Left />
             <Body>
-              <Title>Nuevo partido</Title>
+              <Title style={styles.pageTitle}>Nuevo partido</Title>
             </Body>
-            <Right />
+            <Right>
+              <TouchableOpacity onPress={() => this.close()}>
+                <Image
+                  style={styles.closeImage}
+                  source={require("../../assets/images/exit.png")}
+                />
+              </TouchableOpacity>
+            </Right>
           </Header>
           <Content>
-            <Form>
-              <Item fixedLabel>
-                <Label>Nombre</Label>
-                <Input
-                  returnKeyType="next"
-                  value={name}
-                  onChangeText={this.onNameChanged}
-                  autoCorrect={true}
+            <ScrollView style={styles.form}>
+              <View style={styles.inputHolder}>
+                <Text style={styles.label}>Nombre</Text>
+                <View style={styles.input}>
+                  <View style={styles.iconHolder}>
+                    <Icon active name="information" style={styles.icon} />
+                  </View>
+                  <View style={styles.content}>
+                    <TextInput
+                      style={styles.textContent}
+                      onChangeText={value => this.setState({ name: value })}
+                      value={this.state.name}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.inputHolder}>
+                <Text style={styles.label}>Descripcion</Text>
+                <View style={styles.input}>
+                  <View style={styles.iconHolder}>
+                    <Icon active name="information" style={styles.icon} />
+                  </View>
+                  <View style={styles.content}>
+                    <TextInput
+                      style={styles.textContent}
+                      onChangeText={value =>
+                        this.setState({ description: value })
+                      }
+                      value={this.state.description}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.inputHolder}>
+                <Text style={styles.label}>Cuando?</Text>
+                <View style={styles.input}>
+                  <View style={styles.iconHolder}>
+                    <Icon active name="calendar" style={styles.icon} />
+                  </View>
+                  <View style={styles.content}>
+                    <TouchableOpacity onPress={this._showDateTimePicker}>
+                      <Text style={styles.valueItem}>
+                        {this.state.startingDate != null &&
+                          new Date(
+                            this.cleanDate(this.state.startingDate)
+                          ).toDateString()}
+                      </Text>
+                    </TouchableOpacity>
+                    <DateTimePicker
+                      isVisible={this.state.isDateTimePickerVisible}
+                      onConfirm={this._handleDatePicked}
+                      onCancel={this._hideDateTimePicker}
+                      minimumDate={new Date()}
+                      // maximumDate={new Date().setMonth((new Date().getMonth()+1))}
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.inputHolder}>
+                <Text style={styles.label}>Hora?</Text>
+                <View style={styles.input}>
+                  <View style={styles.iconHolder}>
+                    <Icon active name="clock" style={styles.icon} />
+                  </View>
+                  <View style={styles.content}>
+                    <TouchableOpacity onPress={this._showTimePicker}>
+                      <Text style={styles.valueItem}>
+                        {this.state.startingTime != null &&
+                          this.cleanTime(this.state.startingTime).split(
+                            ":"
+                          )[0] +
+                            ":" +
+                            this.cleanTime(this.state.startingTime).split(
+                              ":"
+                            )[1]}
+                      </Text>
+                    </TouchableOpacity>
+                    <DateTimePicker
+                      isVisible={this.state.isTimePickerVisible}
+                      onConfirm={this._handleTimePicked}
+                      onCancel={this._hideTimePicker}
+                      mode="time"
+                    />
+                  </View>
+                </View>
+              </View>
+              <View style={styles.inputHolder}>
+                <Text style={styles.label}>Donde?</Text>
+                <View style={styles.input}>
+                  <View style={styles.iconHolder}>
+                    <Icon active name="pin" style={styles.icon} />
+                  </View>
+                  <View style={styles.content}>
+                    <Picker
+                      mode="dropdown"
+                      note={false}
+                      style={{ width: 350 }}
+                      placeholderStyle={{ color: "#bfc6ea" }}
+                      placeholderIconColor="#007aff"
+                      selectedValue={this.state.selectedLocation}
+                      onValueChange={this.onValueChangeLocations.bind(this)}
+                    >
+                      {this._renderLocationOptionItem(locations)}
+                    </Picker>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.inputHolder}>
+                <Text style={styles.label}>Tipo</Text>
+                <View style={styles.input}>
+                  <View style={styles.iconHolder}>
+                    <Icon active name="cog" style={styles.icon} />
+                  </View>
+                  <View style={styles.content}>
+                    <Picker
+                      mode="dropdown"
+                      note={false}
+                      style={{ width: 350 }}
+                      placeholderStyle={{ color: "#bfc6ea" }}
+                      placeholderIconColor="#007aff"
+                      selectedValue={this.state.isPublic}
+                      onValueChange={this.onValueChangePublic.bind(this)}
+                    >
+                      <Picker.Item label="Publico" value={true} />
+                      <Picker.Item label="Privado" value={false} />
+                    </Picker>
+                  </View>
+                </View>
+              </View>
+              {!this.state.isPublic && (
+                <View style={styles.inputHolder}>
+                  <Text style={styles.label}>Grupo</Text>
+                  <View style={styles.input}>
+                    <View style={styles.iconHolder}>
+                      <Icon active name="contacts" style={styles.icon} />
+                    </View>
+                    <View style={styles.content}>
+                      <Picker
+                        mode="dropdown"
+                        note={false}
+                        style={{ width: 350 }}
+                        enabled={!this.state.isPublic}
+                        placeholderStyle={{ color: "#bfc6ea" }}
+                        placeholderIconColor="#007aff"
+                        selectedValue={this.state.selectedGroup}
+                        onValueChange={this.onValueChangeGroups.bind(this)}
+                      >
+                        {this._renderGroupOptionItem(groups)}
+                      </Picker>
+                    </View>
+                  </View>
+                </View>
+              )}
+              <View style={styles.buttonHolder}>
+                <Button
+                  title="Crear"
+                  onPress={this.createAction}
+                  disabled={!this.isReady()}
+                  loading={this.state.isLoading}
+                  loadingProps={{
+                    size: "large",
+                    color: "rgba(111, 202, 186, 1)"
+                  }}
+                  titleStyle={{ fontWeight: "700" }}
+                  buttonStyle={styles.button}
                 />
-              </Item>
-              <Item fixedLabel>
-                <Label>Descripción</Label>
-                <Input
-                  value={description}
-                  autoCorrect={true}
-                  onChangeText={this.onDescriptionChanged}
-                  ref={input => (this.descriptionInput = input)}
-                />
-              </Item>
-              <Item>
-                <TouchableOpacity onPress={this._showDateTimePicker}>
-                  <Icon active name="calendar" />
-                </TouchableOpacity>
-                <Input
-                  editable={false}
-                  placeholder="Fecha"
-                  value={this.cleanDate(this.state.startingDate)}
-                />
-                <DateTimePicker
-                  isVisible={this.state.isDateTimePickerVisible}
-                  onConfirm={this._handleDatePicked}
-                  onCancel={this._hideDateTimePicker}
-                  minimumDate={new Date()}
-                  // maximumDate={new Date().setMonth((new Date().getMonth()+1))}
-                />
-              </Item>
-              <Item>
-                <TouchableOpacity onPress={this._showTimePicker}>
-                  <Icon active name="clock" />
-                </TouchableOpacity>
-                <Input
-                  editable={false}
-                  placeholder="Hora"
-                  value={this.cleanTime(this.state.startingTime)}
-                />
-                <DateTimePicker
-                  isVisible={this.state.isTimePickerVisible}
-                  onConfirm={this._handleTimePicked}
-                  onCancel={this._hideTimePicker}
-                  mode="time"
-                />
-              </Item>
-              <Item picker>
-                <Picker
-                  mode="dropdown"
-                  iosIcon={<Icon name="ios-arrow-down-outline" />}
-                  style={{ width: undefined }}
-                  placeholder="Grupo"
-                  enabled={!this.state.isPublic}
-                  placeholderStyle={{ color: "#bfc6ea" }}
-                  placeholderIconColor="#007aff"
-                  selectedValue={this.state.selectedGroup}
-                  onValueChange={this.onValueChangeGroups.bind(this)}
-                >
-                  {this._renderGroupOptionItem(groups)}
-                </Picker>
-              </Item>
-              <Item picker>
-                <Picker
-                  mode="dropdown"
-                  iosIcon={<Icon name="ios-arrow-down-outline" />}
-                  style={{ width: undefined }}
-                  placeholder="Lugar"
-                  placeholderStyle={{ color: "#bfc6ea" }}
-                  placeholderIconColor="#007aff"
-                  selectedValue={this.state.selectedLocation}
-                  onValueChange={this.onValueChangeLocations.bind(this)}
-                >
-                  {this._renderLocationOptionItem(locations)}
-                </Picker>
-              </Item>
-              <Item last>
-                <CheckBox
-                  checked={this.state.isPublic}
-                  onPress={() =>
-                    this.setState({ isPublic: !this.state.isPublic })
-                  }
-                />
-                <Body>
-                  <Text>Publico</Text>
-                </Body>
-              </Item>
-            </Form>
-            <View style={styles.createButton}>
-              <Button
-                block
-                success
-                onPress={this.createAction}
-                disabled={!this.isReady()}
-              >
-                <Text>Crear</Text>
-              </Button>
-            </View>
+              </View>
+            </ScrollView>
           </Content>
         </Container>
       </Root>

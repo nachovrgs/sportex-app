@@ -70,7 +70,7 @@ export const screens = {
   historyFeed: {
     id: "sportex.HistoryFeed",
     title: "Historial",
-    backButtonHidden: true
+    backButtonHidden: false
   },
   currentEventFeed: {
     id: "sportex.CurrentEventFeed",
@@ -97,7 +97,10 @@ export function registerScreens() {
   Navigation.registerComponent(screens.createEvent.id, () => CreateEvent);
   Navigation.registerComponent(screens.userProfile.id, () => UserProfile);
   Navigation.registerComponent(screens.event.id, () => EventScreen);
-  Navigation.registerComponent(screens.invitationEvent.id, () => InvitationEventScreen);
+  Navigation.registerComponent(
+    screens.invitationEvent.id,
+    () => InvitationEventScreen
+  );
   Navigation.registerComponent(screens.groups.id, () => Groups);
   Navigation.registerComponent(screens.createGroup.id, () => CreateGroup);
   Navigation.registerComponent(screens.groupScreen.id, () => GroupScreen);

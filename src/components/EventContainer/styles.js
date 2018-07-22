@@ -106,16 +106,17 @@ export default StyleSheet.create({
   //Expanded
   mapRegion: {
     height: 190,
-    flex: 1,
+    flex: 1
   },
   mapContainer: {
-    height: 190,
+    height: 190
   },
   map: {
-    height: 190,
+    height: 190
   },
   swiper: {
-    height: 190
+    height: 190,
+    flex: 1
   },
   swiperCard: {
     height: 190,

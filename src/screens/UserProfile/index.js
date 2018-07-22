@@ -1,8 +1,9 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 
 import { screens } from "../../screens";
+import PhotoUpload from "react-native-photo-upload";
 
 import { Thumbnail } from "native-base";
 import {
@@ -103,17 +104,22 @@ export default class UserProfile extends Component {
     if (JSON.stringify(profile) != JSON.stringify({})) {
       let image;
       if (profile.picturePath == "") {
-        image = (
-          <Thumbnail
-            source={require("../../assets/images/profile.png")}
+        source = (
+          <Image
             style={styles.avatar}
+            resizeMode="cover"
+            source={{
+              uri:
+                "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+            }}
           />
         );
       } else {
         image = (
-          <Thumbnail
-            source={{ uri: profile.picturePath }}
+          <Image
             style={styles.avatar}
+            resizeMode="cover"
+            source={{ uri: profile.picturePath }}
           />
         );
       }
@@ -122,7 +128,23 @@ export default class UserProfile extends Component {
           <View style={styles.container}>
             <View style={styles.head}>
               <View style={styles.imageContainer}>
-                {image}
+                <PhotoUpload
+                  onPhotoSelect={avatar => {
+                    if (avatar) {
+                      //Send image to azure blob
+                      console.log("Image base64 string: ", avatar);
+                    }
+                  }}
+                >
+                  <Image
+                    style={styles.avatar}
+                    resizeMode="cover"
+                    source={{
+                      uri:
+                        "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                    }}
+                  />
+                </PhotoUpload>
               </View>
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{profile.firstName}</Text>

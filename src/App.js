@@ -1,5 +1,4 @@
 import { Navigation } from "react-native-navigation";
-
 import { registerScreens, screens } from "./screens";
 
 import { isLoggedIn } from "./helpers/storage";
@@ -38,7 +37,7 @@ export function startMainApp() {
         label: "",
         screen: screens.eventFeed.id,
         icon: require("./assets/images/home.png"),
-        iconInsets: {top: 5,bottom: -5},
+        iconInsets: { top: 5, bottom: -5 },
         selectedIcon: require("./assets/images/home.png"),
         title: screens.eventFeed.title
       },
@@ -46,23 +45,23 @@ export function startMainApp() {
         label: "",
         screen: screens.groups.id,
         icon: require("./assets/images/groups.png"),
-        iconInsets: {top: 5,bottom: -5},
+        iconInsets: { top: 5, bottom: -5 },
         selectedIcon: require("./assets/images/groups.png"),
         title: screens.groups.title
       },
       {
         label: "",
-        screen: screens.historyFeed.id,
-        icon: require("./assets/images/history.png"),
-        iconInsets: {top: 5,bottom: -5},
-        selectedIcon: require("./assets/images/history.png"),
-        title: screens.historyFeed.title
+        screen: screens.createEvent.id,
+        icon: require("./assets/images/add.png"),
+        iconInsets: { top: 5, bottom: -5 },
+        title: screens.createEvent.title,
+        modal: true
       },
       {
         label: "",
         screen: screens.currentEventFeed.id,
         icon: require("./assets/images/calendar.png"),
-        iconInsets: {top: 5,bottom: -5},
+        iconInsets: { top: 5, bottom: -5 },
         selectedIcon: require("./assets/images/calendar.png"),
         title: screens.currentEventFeed.title
       },
@@ -70,24 +69,23 @@ export function startMainApp() {
         label: "",
         screen: screens.userProfile.id,
         icon: require("./assets/images/profile.png"),
-        iconInsets: {top: 5,bottom: -5},
+        iconInsets: { top: 5, bottom: -5 },
         selectedIcon: require("./assets/images/profile.png"),
         title: screens.userProfile.title
-      },
+      }
     ],
     tabsStyle: {
       tabBarButtonColor: "#ecf0f1",
       tabBarSelectedButtonColor: "#e74c3c",
       tabBarBackgroundColor: "#2c3e50",
       initialTabIndex: 0, // optional, the default selected bottom tab. Default: 0. On Android, add this to appStyle
-      drawUnderTabBar: true, // draw the screen content under the tab bar (the tab bar is always translucent)
-      
+      drawUnderTabBar: true // draw the screen content under the tab bar (the tab bar is always translucent)
     },
     appStyle: {
       tabBarButtonColor: "#ecf0f1",
       tabBarSelectedButtonColor: "#e74c3c",
       tabBarBackgroundColor: "#2c3e50",
-      initialTabIndex: 0,
+      initialTabIndex: 0
     },
     animationType: "slide-down" // optional, add transition animation to root change: 'none', 'slide-down', 'fade'
   });

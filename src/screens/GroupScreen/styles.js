@@ -62,7 +62,7 @@ export default StyleSheet.create({
     color: colors.text_grey
   },
   membersContainer: {
-    flex: 7,
+    flex: 7
   },
   membersHeader: {
     flex: 1,
@@ -81,7 +81,7 @@ export default StyleSheet.create({
     marginLeft: 30
   },
   memberList: {
-    flex: 9,
+    flex: 9
   },
   memberListItem: {
     padding: 0.2,
@@ -133,10 +133,16 @@ export default StyleSheet.create({
     backgroundColor: colors.background
   },
   queryResultContainer: {
-    flex: 1
+    marginTop: -120
   },
   queryResultItem: {
     opacity: 1,
     color: colors.text
+  },
+  avatar: {
+    paddingVertical: 30,
+    width: 80,
+    height: 80,
+    borderRadius: 40
   }
 });

@@ -20,7 +20,6 @@ import { colors } from "../../styles";
 export default class RegisterScreen extends Component {
   static navigatorStyle = {
     navBarTextColor: "#ecf0f1",
-    navBarHidden: true,
     navBarBackgroundColor: colors.navbar,
     navBarComponentAlignment: "center"
   };
@@ -181,7 +180,7 @@ export default class RegisterScreen extends Component {
       </View>
     ) : (
       <View style={styles.background}>
-        <View behavior="padding" style={styles.container}>
+        <KeyboardAvoidingView behavior="padding" style={styles.container}>
           <View style={styles.logoContainer}>
             <Image
               style={styles.logo}
@@ -243,19 +242,22 @@ export default class RegisterScreen extends Component {
                 maximumDate={new Date()}
               />
             </View>
+            <View style={styles.buttonContainer}>
+              <Button
+                title="Siguiente"
+                onPress={this.registerAction}
+                disabled={!this.isReady()}
+                loading={this.state.isLoading}
+                loadingProps={{
+                  size: "large",
+                  color: "rgba(111, 202, 186, 1)"
+                }}
+                titleStyle={{ fontWeight: "700" }}
+                buttonStyle={styles.button}
+              />
+            </View>
           </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              title="Siguiente"
-              onPress={this.registerAction}
-              disabled={!this.isReady()}
-              loading={this.state.isLoading}
-              loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
-              titleStyle={{ fontWeight: "700" }}
-              buttonStyle={styles.button}
-            />
-          </View>
-        </View>
+        </KeyboardAvoidingView>
       </View>
     );
   }

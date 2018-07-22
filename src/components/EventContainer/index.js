@@ -79,8 +79,9 @@ class EventContainer extends Component {
   canJoin() {
     return true;
   }
+
   joinAction = () => {
-    fetch(`${API_URI}/event/JoinEvent`, {
+    fetch(`${API_URI}/event/JoinEventAdvanced`, {
       method: "POST",
       headers: {
         Authorization:
@@ -113,6 +114,7 @@ class EventContainer extends Component {
         throw error;
       });
   };
+
   goToProfile(profileId) {
     this.props.navigator.push({
       screen: screens.profileScreen.id,
@@ -125,6 +127,7 @@ class EventContainer extends Component {
       }
     });
   }
+
   getContainerHeight = () => {
     return this.state.containerHeight == sizes.itemCardExpanded
       ? sizes.itemCard
@@ -148,10 +151,15 @@ class EventContainer extends Component {
       const list = event.listStarters;
       let marker = {
         latitude: event.location.latitude ? event.location.latitude : 37.78825,
-        longitude: event.location.longitude ? event.location.longitude : -37.78825
-      }
+        longitude: event.location.longitude
+          ? event.location.longitude
+          : -37.78825
+      };
       let creator;
-      if (event.creatorProfile.picturePath == "") {
+      if (
+        event.creatorProfile.picturePath == "" ||
+        event.creatorProfile.picturePath == null
+      ) {
         creator = (
           <Thumbnail
             source={require("../../assets/images/profile.png")}
@@ -206,14 +214,19 @@ class EventContainer extends Component {
               <DeckSwiper
                 dataSource={cards}
                 style={styles.swiper}
+                scrollEnabled={this.props.scroll}
                 renderItem={item => (
                   <Card style={styles.swiperCard}>
                     {item.type == 1 && (
                       <View style={styles.mapContainer}>
                         <MapView
                           initialRegion={{
-                            latitude: event.location.latitude ? event.location.latitude : 37.78825,
-                            longitude: event.location.longitude ? event.location.longitude : -37.78825,
+                            latitude: event.location.latitude
+                              ? event.location.latitude
+                              : 37.78825,
+                            longitude: event.location.longitude
+                              ? event.location.longitude
+                              : -37.78825,
                             latitudeDelta: 0.0922,
                             longitudeDelta: 0.0421
                           }}
@@ -225,30 +238,46 @@ class EventContainer extends Component {
                     )}
                     {item.type == 2 && (
                       <ScrollView>
-                        {list.length > 0 && (<List>
-                          {list.map((participant, i) => (
-                            <ListItem avatar>
-                              <TouchableOpacity
-                                onPress={() => this.goToProfile(participant.standardProfileID)}
-                              >
-                                <Left>
-                                  <Thumbnail
-                                    style={styles.participantIcon}
-                                    source={{ uri: participant.profileParticipant.picturePath }}
-                                  />
-                                </Left>
-                              </TouchableOpacity>
-                              <Body>
-                                <Text style={styles.participantName}>
-                                  {participant.profileParticipant.account.username}
-                                </Text>
-                              </Body>
-                            </ListItem>
-                          ))}
-                        </List>)}
-                        {list.length == 0 && (
-                          <Text>No hay jugadores</Text>
+                        {list.length > 0 && (
+                          <List>
+                            {list.map((participant, i) => (
+                              <ListItem avatar>
+                                <TouchableOpacity
+                                  onPress={() =>
+                                    this.goToProfile(
+                                      participant.standardProfileID
+                                    )
+                                  }
+                                >
+                                  <Left>
+                                    <Thumbnail
+                                      style={styles.participantIcon}
+                                      source={{
+                                        uri:
+                                          event.creatorProfile.picturePath ==
+                                            "" ||
+                                          event.creatorProfile.picturePath ==
+                                            null
+                                            ? "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                                            : participant.profileParticipant
+                                                .picturePath
+                                      }}
+                                    />
+                                  </Left>
+                                </TouchableOpacity>
+                                <Body>
+                                  <Text style={styles.participantName}>
+                                    {
+                                      participant.profileParticipant.account
+                                        .username
+                                    }
+                                  </Text>
+                                </Body>
+                              </ListItem>
+                            ))}
+                          </List>
                         )}
+                        {list.length == 0 && <Text>No hay jugadores</Text>}
                       </ScrollView>
                     )}
                     {item.type == 3 && (
