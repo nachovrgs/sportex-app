@@ -74,11 +74,21 @@ export default class CurrentEventFeed extends Component {
       initial: true
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    this.loadData();
   }
-
-  // Handle nav bar navigation
   onNavigatorEvent(event) {
+    switch (event.id) {
+      case "willAppear":
+        break;
+      case "didAppear":
+        this.loadData();
+        break;
+      case "willDisappear":
+        break;
+      case "didDisappear":
+        break;
+      case "willCommitPreview":
+        break;
+    }
     if (event.type == "NavBarButtonPress") {
       if (event.id == "history") {
         this.props.navigator.push({
@@ -99,6 +109,7 @@ export default class CurrentEventFeed extends Component {
       }
     }
   }
+
   _renderItem = ({ item }) => (
     <CurrentEventContainer eventItem={item} navigator={this.props.navigator} />
   );

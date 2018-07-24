@@ -47,9 +47,27 @@ export default class UserProfile extends Component {
       accountID: ""
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    this.loadData();
   }
-
+  onNavigatorEvent(event) {
+    switch (event.id) {
+      case "willAppear":
+        break;
+      case "didAppear":
+        this.loadData();
+        break;
+      case "willDisappear":
+        break;
+      case "didDisappear":
+        break;
+      case "willCommitPreview":
+        break;
+    }
+    if (event.type == "NavBarButtonPress") {
+      if (event.id == "logout") {
+        resetAndLogout();
+      }
+    }
+  }
   async loadData() {
     this.state.token = await getTokenForUsage();
     this.state.accountID = await getAccountIdForUsage();
@@ -92,14 +110,6 @@ export default class UserProfile extends Component {
       });
   }
 
-  // Handle nav bar navigation
-  onNavigatorEvent(event) {
-    if (event.type == "NavBarButtonPress") {
-      if (event.id == "logout") {
-        resetAndLogout();
-      }
-    }
-  }
   render() {
     const profile = this.state.profile;
     if (JSON.stringify(profile) != JSON.stringify({})) {

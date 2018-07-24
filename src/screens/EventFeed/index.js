@@ -74,7 +74,6 @@ export default class EventFeed extends Component {
       allowVerticalScroll: true,
       readyForApi: false
     };
-    this.loadAll();
     NotificationsIOS.addEventListener(
       "remoteNotificationsRegistered",
       this.onPushRegistered.bind(this)
@@ -83,7 +82,6 @@ export default class EventFeed extends Component {
       "remoteNotificationsRegistrationFailed",
       this.onPushRegistrationFailed.bind(this)
     );
-    NotificationsIOS.requestPermissions();
 
     this._boundOnNotificationReceivedForeground = this.onNotificationReceivedForeground.bind(
       this
@@ -107,7 +105,33 @@ export default class EventFeed extends Component {
     );
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
-
+  onNavigatorEvent(event) {
+    switch (event.id) {
+      case "willAppear":
+        break;
+      case "didAppear":
+        this.loadAll();
+        NotificationsIOS.requestPermissions();
+        break;
+      case "willDisappear":
+        break;
+      case "didDisappear":
+        break;
+      case "willCommitPreview":
+        break;
+    }
+    if (event.type == "NavBarButtonPress") {
+      if (event.id == "notifications") {
+        this.props.navigator.push({
+          screen: screens.notificationFeed.id,
+          title: screens.notificationFeed.title,
+          animated: true,
+          animationType: "slide-down",
+          backButtonHidden: screens.notificationFeed.backButtonHidden
+        });
+      }
+    }
+  }
   //Notifications
   onPushRegistered(deviceToken) {
     // TODO: Send the token to my server so it could send back push notifications...
@@ -169,21 +193,6 @@ export default class EventFeed extends Component {
 
   onNotificationOpened(notification) {
     console.log("Notification opened by device user", notification);
-  }
-
-  // Handle nav bar navigation
-  onNavigatorEvent(event) {
-    if (event.type == "NavBarButtonPress") {
-      if (event.id == "notifications") {
-        this.props.navigator.push({
-          screen: screens.notificationFeed.id,
-          title: screens.notificationFeed.title,
-          animated: true,
-          animationType: "slide-down",
-          backButtonHidden: screens.notificationFeed.backButtonHidden
-        });
-      }
-    }
   }
 
   _renderItem = ({ item }) => (
