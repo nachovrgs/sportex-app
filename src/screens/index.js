@@ -14,6 +14,9 @@ import GroupScreen from "./GroupScreen";
 import CreateGroup from "./CreateGroup";
 import NotificationFeed from "./NotificationFeed";
 import ProfileScreen from "./ProfileScreen";
+import AddPlayersModal from "./AddPlayersModal";
+import AddPlayersSelectionModal from "./AddPlayersSelectionModal";
+import AddPlayersConfirmModal from "./AddPlayersConfirmModal";
 
 // Add ALL screens here for easy use all over project
 export const screens = {
@@ -86,6 +89,21 @@ export const screens = {
     id: "sportex.ProfileScreen",
     title: "Perfil",
     backButtonHidden: false
+  },
+  addPlayersModal: {
+    id: "sportex.AddPlayersModal",
+    title: "Agregar Jugadores",
+    backButtonHidden: true
+  },
+  addPlayersSelectionModal: {
+    id: "sportex.AddPlayersSelectionModal",
+    title: "Agregar Jugadores",
+    backButtonHidden: true
+  },
+  addPlayersConfirmModal: {
+    id: "sportex.AddPlayersConfirmModal",
+    title: "Confirmar Jugadores",
+    backButtonHidden: true
   }
 };
 
@@ -114,4 +132,16 @@ export function registerScreens() {
     () => NotificationFeed
   );
   Navigation.registerComponent(screens.profileScreen.id, () => ProfileScreen);
+  Navigation.registerComponent(
+    screens.addPlayersModal.id,
+    () => AddPlayersModal
+  );
+  Navigation.registerComponent(
+    screens.addPlayersSelectionModal.id,
+    () => AddPlayersSelectionModal
+  );
+  Navigation.registerComponent(
+    screens.addPlayersConfirmModal.id,
+    () => AddPlayersConfirmModal
+  );
 }

@@ -250,6 +250,22 @@ export default class EventScreen extends Component {
       });
   };
 
+  //add
+  addAction = () => {
+    this.props.navigator.showModal({
+      screen: screens.addPlayersSelectionModal.id,
+      title: screens.addPlayersSelectionModal.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.addPlayersSelectionModal.backButtonHidden,
+      passProps: {
+        eventId: this.state.itemId
+      }
+    });
+  };
+  canAdd() {
+    return true;
+  }
   goToProfile(profile) {
     this.props.navigator.push({
       screen: screens.profileScreen.id,
@@ -462,9 +478,26 @@ export default class EventScreen extends Component {
                   </Button>
                 )}
                 {isOwner && (
-                  <Button block rounded danger onPress={this.deleteAction}>
-                    <Text>Eliminar</Text>
-                  </Button>
+                  <View>
+                    <Button
+                      block
+                      rounded
+                      success
+                      onPress={this.addAction}
+                      disabled={!this.canAdd()}
+                    >
+                      <Text>Agregar Jugadores</Text>
+                    </Button>
+                    <Button
+                      block
+                      rounded
+                      danger
+                      style={styles.exitButton}
+                      onPress={this.deleteAction}
+                    >
+                      <Text>Eliminar</Text>
+                    </Button>
+                  </View>
                 )}
               </View>
             </View>
