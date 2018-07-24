@@ -11,7 +11,7 @@ import {
   getAccountIdForUsage,
   resetAndLogout
 } from "../../helpers/storage";
-import { API_URI } from "../../constants";
+import { API_URI, BLOB_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
 
@@ -103,27 +103,6 @@ export default class UserProfile extends Component {
   render() {
     const profile = this.state.profile;
     if (JSON.stringify(profile) != JSON.stringify({})) {
-      let image;
-      if (profile.picturePath == "") {
-        source = (
-          <Image
-            style={styles.avatar}
-            resizeMode="cover"
-            source={{
-              uri:
-                "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
-            }}
-          />
-        );
-      } else {
-        image = (
-          <Image
-            style={styles.avatar}
-            resizeMode="cover"
-            source={{ uri: profile.picturePath }}
-          />
-        );
-      }
       return (
         <View style={styles.background}>
           <View style={styles.container}>
@@ -142,7 +121,9 @@ export default class UserProfile extends Component {
                     resizeMode="cover"
                     source={{
                       uri:
-                        "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                        profile.picturePath != null && profile.picturePath != ""
+                          ? profile.picturePath
+                          : "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
                     }}
                   />
                 </PhotoUpload>
