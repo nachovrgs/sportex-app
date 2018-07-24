@@ -61,7 +61,6 @@ export default class CreateGroup extends Component {
       isError: false,
       error: "",
       users: [],
-      query: "",
       selectedUsers: []
     };
     this.loadData();

@@ -1,5 +1,6 @@
 export default {
   background: "rgba(19, 26, 54, 0.8)",
+  modal_background: "#2980b9",
   navbar: "rgba(25, 35, 68, 1)",
   white: "#ecf0f1",
   borders: "#2c3e50",

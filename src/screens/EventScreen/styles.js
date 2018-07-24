@@ -31,7 +31,7 @@ export default StyleSheet.create({
   },
   loaderContainer: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: "rgba(255,255,255,0.1)",
     justifyContent: "center",
     alignItems: "center"
   },
@@ -162,7 +162,10 @@ export default StyleSheet.create({
     elevation: 1
   },
   button: {
-    marginTop: 30,
-    height: 70
+    marginTop: 20,
+    height: 50
+  },
+  exitButton: {
+    marginTop: 5
   }
 });

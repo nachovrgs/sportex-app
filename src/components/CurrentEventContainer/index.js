@@ -66,7 +66,10 @@ class CurrentEventContainer extends Component {
     if (JSON.stringify(event) != JSON.stringify({})) {
       const date = new Date(event.startingTime.split("T")[0]).toDateString();
       let creator;
-      if (event.creatorProfile.picturePath == "") {
+      if (
+        event.creatorProfile.picturePath == "" ||
+        event.creatorProfile.picturePath == null
+      ) {
         creator = (
           <Thumbnail
             source={require("../../assets/images/profile.png")}
