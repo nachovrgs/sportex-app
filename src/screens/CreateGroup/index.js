@@ -10,30 +10,10 @@ import {
   TextInput,
   ScrollView
 } from "react-native";
+import { Button, Divider } from "react-native-elements";
+import PhotoUpload from "react-native-photo-upload";
 import Autocomplete from "react-native-autocomplete-input";
 import DateTimePicker from "react-native-modal-datetime-picker";
-import {
-  Container,
-  Header,
-  Content,
-  Form,
-  Item,
-  Input,
-  CheckBox,
-  Button,
-  Label,
-  Left,
-  Body,
-  Right,
-  Title,
-  DatePicker,
-  Thumbnail,
-  Icon,
-  Picker,
-  Root,
-  List,
-  ListItem
-} from "native-base";
 import { logout } from "../../helpers/navigation";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
@@ -49,23 +29,43 @@ export default class CreateGroup extends Component {
     navBarComponentAlignment: "center",
     tabBarHidden: true
   };
+  static navigatorButtons = {
+    rightButtons: [
+      {
+        title: "Crear",
+        id: "create",
+        buttonColor: colors.text_orange,
+        buttonFontSize: 20,
+        buttonFontWeight: "600"
+      }
+    ]
+  };
   constructor(props) {
     super(props);
     this.state = {
       name: "",
       description: "",
       query: "",
-      token: "",
+      token: null,
       profileId: null,
-      isLoading: true,
+      isLoading: false,
       isError: false,
       error: "",
       users: [],
-      selectedUsers: []
+      filteredUsers: [],
+      selectedUsers: [],
+      addingMemberId: 0
     };
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.loadData();
   }
-
+  onNavigatorEvent(event) {
+    if (event.type == "NavBarButtonPress") {
+      if (event.id == "create") {
+        this.createAction();
+      }
+    }
+  }
   //Helper methods
   async loadData() {
     this.state.token = await getTokenForUsage();
@@ -83,28 +83,27 @@ export default class CreateGroup extends Component {
           return response.json();
         } else {
           this.setState({
-            isLoading: false,
             isError: true,
-            error: "Network response was not ok.",
-            token: ""
+            error: "Network response was not ok."
           });
           return new Error("Network response was not ok.");
         }
       })
       .then(jsonResponse => {
         this.setState({
-          users: jsonResponse,
-          isLoading: false,
+          users: jsonResponse.slice(0, 30),
+          filteredUsers: jsonResponse
+            .slice(0, 30)
+            .filter(
+              user =>
+                !this.state.selectedUsers.includes(user) &&
+                user.id != this.state.profileId
+            ),
           error: ""
         });
-        if (this.state.initial) {
-          this.setState({ initial: false });
-          this._refreshListView();
-        }
       })
       .catch(error => {
         this.setState({
-          isLoading: false,
           isError: true,
           error: error.message,
           token: ""
@@ -112,73 +111,78 @@ export default class CreateGroup extends Component {
         throw error;
       });
   }
-  renderUser(user) {
-    const { mailAddress } = user;
 
-    return (
-      <View>
-        <Text style={styles.titleText}>{mailAddress}</Text>
-      </View>
-    );
-  }
-  findLocation = query => {
-    if (!query || query === "") {
-      return [];
+  //UserAdd Helper functions
+  findUser = query => {
+    if (!this.selectedEveryUser()) {
+      this.state.query = query;
+      const { users } = this.state;
+
+      if (query === "") {
+        this.clearFilteredUsers();
+      }
+
+      const regex = new RegExp(`${query.trim()}`, "i");
+      var filteredUsers = users
+        .filter(
+          user =>
+            !this.state.selectedUsers.includes(user) &&
+            user.id != this.state.profileId
+        )
+        .filter(user => user.mailAddress.search(regex) >= 0);
+      this.setState({ filteredUsers: filteredUsers });
     }
-    const { users } = this.state.users;
-    const regex = new RegExp(`${query.trim()}`, "i");
-    return users.filter(user => user.Name.search(regex) >= 0);
   };
 
-  onNameChanged = name => {
-    this.setState({
-      name: name
-    });
-  };
-  onDescriptionChanged = description => {
-    this.setState({
-      description: description
-    });
+  addMember = member => {
+    if (!this.state.selectedUsers.includes(member)) {
+      this.setState({ addingMemberId: member.member.id });
+      setTimeout(() => {
+        this.state.selectedUsers.push(member);
+        this.clearFilteredUsers();
+      }, 400);
+    }
   };
 
-  insertUser(users) {
-    let member = users && users.length == 1 ? users[0] : null;
-    if (member != null) {
-      this.state.selectedUsers.push(member);
+  clearFilteredUsers = () => {
+    const { users, selectedUsers } = this.state;
+
+    var filteredUsersTreating = users.filter(
+      user =>
+        !this.includesMember(user, selectedUsers) &&
+        user.id != this.state.profileId
+    );
+    if (this.state.filteredUsers.length == 1) {
       this.setState({
-        selectedUsers: this.state.selectedUsers,
-        query: ""
+        filteredUsers: filteredUsersTreating,
+        query: "",
+        addingMemberId: 0
+      });
+    } else {
+      this.setState({
+        filteredUsers: filteredUsersTreating,
+        addingMemberId: 0
       });
     }
-  }
-
-  findUser(query) {
-    if (query === "") {
-      return [];
-    }
-
-    const { users } = this.state;
-    const regex = new RegExp(`${query.trim()}`, "i");
-    return users
-      .filter(
-        user =>
-          !this.state.selectedUsers.includes(user) &&
-          user.id != this.state.profileId
-      )
-      .filter(user => user.mailAddress.search(regex) >= 0)
-      .slice(0, 5);
-  }
-
-  isReady = () => {
-    return (
-      this.state.name &&
-      this.state.description &&
-      this.state.name != "" &&
-      this.state.description != ""
-    );
   };
 
+  includesMember = (member, list) => {
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].member.id == member.id) {
+        return true;
+      }
+    }
+  };
+
+  selectedEveryUser = () => {
+    return this.state.users.length == this.state.selectedUsers.length + 1;
+  };
+
+  //END user add helper ACTIONS
+
+  //SERVER ACTIONS
   createAction = () => {
+    this.setState({ isLoading: true });
     const memberList = this.state.selectedUsers;
     fetch(`${API_URI}/group`, {
       method: "POST",
@@ -209,7 +213,6 @@ export default class CreateGroup extends Component {
         } else {
           console.log("Network response was not ok.");
           this.setState({
-            isLoading: false,
             isError: true,
             error: "Network response was not ok.",
             token: ""
@@ -223,19 +226,15 @@ export default class CreateGroup extends Component {
         } else {
           console.log("Network response was ok.");
           //Event created going to feed
-          this.props.navigator.push({
-            screen: screens.groups.id,
-            title: screens.groups.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.groups.backButtonHidden
+          this.props.navigator.popToRoot({
+            animated: true, // does the popToRoot have transition animation or does it happen immediately (optional)
+            animationType: "fade" // 'fade' (for both) / 'slide-horizontal' (for android) does the popToRoot have different transition animation (optional)
           });
         }
       })
       .catch(error => {
         console.log(error);
         this.setState({
-          isLoading: false,
           isError: true,
           error: error.message,
           token: ""
@@ -243,6 +242,7 @@ export default class CreateGroup extends Component {
         throw error;
       });
   };
+
   invitarMiembros(groupId) {
     fetch(`${API_URI}/group/InsertManyMembers/`, {
       method: "POST",
@@ -256,24 +256,22 @@ export default class CreateGroup extends Component {
       body: JSON.stringify({
         idProfile: this.state.profileId,
         idGroup: groupId,
-        listIdProfiles: this.state.selectedUsers.map((member, i) => member.id)
+        listIdProfiles: this.state.selectedUsers.map(
+          (member, i) => member.member.id
+        )
       })
     })
       .then(response => {
         if (response.ok) {
           console.log("Network response was ok.");
           //Event created going to feed
-          this.props.navigator.push({
-            screen: screens.groups.id,
-            title: screens.groups.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.groups.backButtonHidden
+          this.props.navigator.popToRoot({
+            animated: true, // does the popToRoot have transition animation or does it happen immediately (optional)
+            animationType: "fade" // 'fade' (for both) / 'slide-horizontal' (for android) does the popToRoot have different transition animation (optional)
           });
         } else {
           console.log("Network response was not ok.");
           this.setState({
-            isLoading: false,
             isError: true,
             error: "Network response was not ok.",
             token: ""
@@ -284,7 +282,6 @@ export default class CreateGroup extends Component {
       .catch(error => {
         console.log(error);
         this.setState({
-          isLoading: false,
           isError: true,
           error: error.message,
           token: ""
@@ -292,159 +289,144 @@ export default class CreateGroup extends Component {
         throw error;
       });
   }
+
+  //UI ACTIONS
+  onNameChanged = name => {
+    this.setState({
+      name: name
+    });
+  };
+  onDescriptionChanged = description => {
+    this.setState({
+      description: description
+    });
+  };
+  getButtonTitle = () => {
+    const invited = this.state.selectedUsers.length;
+    if (invited > 0) {
+      return (
+        "Invitando " + this.state.selectedUsers.length + " usuarios al grupo"
+      );
+    } else {
+      return "Agregar usuarios";
+    }
+  };
   render() {
-    const { name, description, isLoading, query } = this.state;
-    const users = this.findUser(query);
+    const { name, query } = this.state;
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
     return this.state.isLoading ? (
-      <Root>
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#ecf0f1" animating />
-        </View>
-      </Root>
-    ) : this.state.isError ? (
-      <Root>
-        <View style={styles.noEventsContainer}>
-          <View style={styles.noEventsSubContainer}>
-            <Image
-              style={styles.noEventsImage}
-              source={require("../../assets/images/no_internet.png")}
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color={colors.background} animating />
+      </View>
+    ) : (
+      <View style={styles.container}>
+        <View style={styles.headHolder}>
+          <View style={styles.imageHolder}>
+            <PhotoUpload
+              onPhotoSelect={avatar => {
+                if (avatar) {
+                  //Send image to azure blob
+                  console.log("Image base64 string: ", avatar);
+                }
+              }}
+            >
+              <Image
+                style={styles.image}
+                resizeMode="cover"
+                source={{
+                  uri:
+                    "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                }}
+              />
+            </PhotoUpload>
+          </View>
+          <View style={styles.nameHolder}>
+            <Text style={styles.name}>Nombre</Text>
+            <TextInput
+              style={styles.nameInput}
+              onChangeText={text => this.onNameChanged(text)}
+              autoCorrect={false}
+              value={name}
             />
-            <Text style={styles.noEventsText}>
-              No tienes conexion a internet.
-            </Text>
           </View>
         </View>
-      </Root>
-    ) : (
-      <Root>
-        <Container>
-          <Header>
-            <Left />
-            <Body>
-              <Title>Nuevo grupo</Title>
-            </Body>
-            <Right />
-          </Header>
-          <Content>
-            <Form style={styles.groupForm}>
-              <Item fixedLabel>
-                <Label>Nombre</Label>
-                <Input
-                  returnKeyType="next"
-                  value={name}
-                  onChangeText={this.onNameChanged}
-                  autoCorrect={true}
-                />
-              </Item>
-              <Item fixedLabel>
-                <Label>Descripción</Label>
-                <Input
-                  value={description}
-                  autoCorrect={true}
-                  onChangeText={this.onDescriptionChanged}
-                  ref={input => (this.descriptionInput = input)}
-                />
-              </Item>
-              <Item>
-                <ScrollView style={styles.userList}>
-                  <List>
-                    {this.state.selectedUsers.length == 0 && (
-                      <View style={styles.noUsers}>
-                        <Text>Agrega usuarios!</Text>
-                      </View>
-                    )}
-                    {this.state.selectedUsers.length > 0 &&
-                      this.state.selectedUsers.map((member, i) => (
-                        <ListItem avatar>
-                          <Left>
-                            <Thumbnail
-                              style={styles.participantIcon}
-                              source={{
-                                uri:
-                                  member.picturePath && member.picturePath != ""
-                                    ? member.picturePath
-                                    : "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
-                              }}
-                            />
-                          </Left>
-                          <Body>
-                            <Text style={styles.participantName}>
-                              {member.account.username}
-                            </Text>
-                          </Body>
-                        </ListItem>
-                      ))}
-                  </List>
-                </ScrollView>
-              </Item>
-              {/* <Item>
-                <TouchableOpacity onPress={() => this.insertUser(users[0])}>
-                  <Label>Agregar integrante : </Label>
-                  <View style={styles.descriptionContainer}>
-                    {users.length > 0 ? (
-                      this.renderUser(users[0])
-                    ) : (
-                      <Text style={styles.infoText}>
-                        Ingresar el nombre del usuario
-                      </Text>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              </Item> */}
-              <Item>
-                <View style={styles.addMemberContainer}>
-                  <Autocomplete
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    containerStyle={styles.autocompleteContainer}
-                    data={
-                      users.length === 1 && comp(query, users[0].mailAddress)
-                        ? []
-                        : users
-                    }
-                    defaultValue={query}
-                    listContainerStyle={styles.queryResultContainer}
-                    listStyle={styles.queryResultItem}
-                    onChangeText={text => this.setState({ query: text })}
-                    placeholder="Agrega integrantes"
-                    listContainerStyle={styles.queryResultContainer}
-                    listStyle={styles.queryResultItem}
-                    renderItem={({ mailAddress }) => (
-                      <TouchableOpacity
-                        onPress={() => this.setState({ query: mailAddress })}
-                      >
-                        <Text style={styles.itemText}>{mailAddress}</Text>
-                      </TouchableOpacity>
-                    )}
-                  />
-                  <View style={styles.buttonContainer}>
-                    <Button
-                      title="+"
-                      onPress={this.insertUser(users)}
-                      disabled={users.length != 1}
-                      // loading={this.state.isLoading}
-                      // loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
-                      titleStyle={{ fontWeight: "700" }}
-                      buttonStyle={styles.button}
+        <View style={styles.divider}>
+          <Divider style={{ backgroundColor: colors.text_grey }} />
+        </View>
+        <View style={styles.inviteHolder}>
+          <Text style={styles.inviteTitle}>{this.getButtonTitle()}</Text>
+          <View style={styles.playerSearchHolder}>
+            <TextInput
+              style={styles.search}
+              onChangeText={text => this.findUser(text)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={this.state.query}
+            />
+          </View>
+          <View style={styles.playersHolder}>
+            <ScrollView style={styles.userList}>
+              {this.state.filteredUsers.length == 0 &&
+                this.state.query.length == 0 &&
+                !this.selectedEveryUser() && (
+                  <View style={styles.noUsers}>
+                    <ActivityIndicator
+                      size="large"
+                      color={colors.background}
+                      animating
                     />
                   </View>
+                )}
+              {((this.state.filteredUsers.length == 0 &&
+                this.state.query.length != 0) ||
+                this.selectedEveryUser()) && (
+                <View style={styles.noUsers}>
+                  <Text>El usuario no existe</Text>
                 </View>
-              </Item>
-            </Form>
-          </Content>
-          <View style={styles.createButton}>
-            <Button
-              block
-              success
-              onPress={this.createAction}
-              disabled={!this.isReady()}
-            >
-              <Text>Crear</Text>
-            </Button>
+              )}
+              {this.state.filteredUsers.length > 0 &&
+                this.state.filteredUsers.map((member, i) => (
+                  <View style={styles.participant}>
+                    <View style={styles.iconHolder}>
+                      <Image
+                        style={styles.participantIcon}
+                        source={{
+                          uri:
+                            member.picturePath && member.picturePath != ""
+                              ? member.picturePath
+                              : "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
+                        }}
+                      />
+                    </View>
+                    <View style={styles.dataHolder}>
+                      <Text style={styles.participantName}>
+                        {member.account.username}
+                      </Text>
+                    </View>
+                    <View style={styles.selectorHolder}>
+                      {this.state.addingMemberId == member.id && (
+                        <Image
+                          style={styles.selector}
+                          source={require("../../assets/images/ok.png")}
+                        />
+                      )}
+                      {this.state.addingMemberId != member.id && (
+                        <TouchableOpacity
+                          onPress={() => this.addMember({ member })}
+                        >
+                          <Image
+                            style={styles.selector}
+                            source={require("../../assets/images/add.png")}
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </View>
+                ))}
+            </ScrollView>
           </View>
-        </Container>
-      </Root>
+        </View>
+      </View>
     );
   }
 }

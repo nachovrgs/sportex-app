@@ -89,7 +89,7 @@ export default class addPlayersConfirmModal extends Component {
         throw error;
       });
   }
-  addAction = () => {
+  addAction = async () => {
     const playerList = this.state.playerList;
     this.setState({ isLoading: true });
     playerList.forEach(async element => {

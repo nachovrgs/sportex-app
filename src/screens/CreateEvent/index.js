@@ -281,6 +281,7 @@ export default class CreateEvent extends Component {
   };
 
   createAction = () => {
+    this.setState({ isLoading: true });
     fetch(`${API_URI}/event`, {
       method: "POST",
       headers: {
@@ -364,13 +365,7 @@ export default class CreateEvent extends Component {
       .then(response => {
         if (response.ok) {
           //Event created, invitations not sent, going to feed
-          this.props.navigator.push({
-            screen: screens.eventFeed.id,
-            title: screens.eventFeed.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.eventFeed.backButtonHidden
-          });
+          this.close();
         } else {
           console.log("Network response was not ok.");
           this.setState({
@@ -432,7 +427,6 @@ export default class CreateEvent extends Component {
   };
 
   close() {
-    console.log("closing modal");
     this.props.navigator.dismissAllModals({
       animationType: "fade" // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
     });
@@ -442,13 +436,7 @@ export default class CreateEvent extends Component {
   }
   render() {
     const { name, description, isLoading, groups, locations } = this.state;
-    return this.state.isLoading ? (
-      <Root>
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#ecf0f1" animating />
-        </View>
-      </Root>
-    ) : this.state.isError ? (
+    return this.state.isError ? (
       <Root>
         <View style={styles.container}>
           <Text>{this.state.error}</Text>

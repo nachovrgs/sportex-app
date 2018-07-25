@@ -49,7 +49,7 @@ class GroupContainer extends Component {
     const group = this.state.item;
     if (JSON.stringify(group) != JSON.stringify({})) {
       let image;
-      if (group.creatorProfile.picturePath == "") {
+      if (group.picturePath == "" || group.picturePath == null) {
         image = (
           <Thumbnail
             source={require("../../assets/images/profile.png")}
@@ -59,7 +59,7 @@ class GroupContainer extends Component {
       } else {
         image = (
           <Thumbnail
-            source={{ uri: group.creatorProfile.picturePath }}
+            source={{ uri: group.picturePath }}
             style={styles.groupImage}
           />
         );

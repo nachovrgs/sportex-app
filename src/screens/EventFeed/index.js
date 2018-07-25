@@ -74,6 +74,8 @@ export default class EventFeed extends Component {
       allowVerticalScroll: true,
       readyForApi: false
     };
+    this.loadAll();
+
     NotificationsIOS.addEventListener(
       "remoteNotificationsRegistered",
       this.onPushRegistered.bind(this)
@@ -104,22 +106,9 @@ export default class EventFeed extends Component {
       this._boundOnNotificationOpened
     );
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    NotificationsIOS.requestPermissions();
   }
   onNavigatorEvent(event) {
-    switch (event.id) {
-      case "willAppear":
-        break;
-      case "didAppear":
-        this.loadAll();
-        NotificationsIOS.requestPermissions();
-        break;
-      case "willDisappear":
-        break;
-      case "didDisappear":
-        break;
-      case "willCommitPreview":
-        break;
-    }
     if (event.type == "NavBarButtonPress") {
       if (event.id == "notifications") {
         this.props.navigator.push({

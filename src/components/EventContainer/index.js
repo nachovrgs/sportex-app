@@ -1,6 +1,13 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator
+} from "react-native";
 import geolib from "geolib";
 import MapView from "react-native-maps";
 import {
@@ -8,13 +15,14 @@ import {
   Card,
   CardItem,
   Icon,
-  Button,
   Thumbnail,
   List,
   ListItem,
   Left,
   Body
 } from "native-base";
+
+import { Button } from "react-native-elements";
 import { CurrentEventCard, ExpandedCurrentEventCard } from "../../components";
 import { screens } from "../../screens";
 import { navigate } from "../../helpers/navigation";
@@ -33,6 +41,7 @@ class EventContainer extends Component {
       expanded: false,
       token: "",
       profileId: null,
+      isLoading: false,
       containerHeight: sizes.itemCard
     };
     this.handlePress = this.handlePress.bind(this);
@@ -81,6 +90,7 @@ class EventContainer extends Component {
   }
 
   joinAction = () => {
+    this.setState({ isLoading: true });
     fetch(`${API_URI}/event/JoinEventAdvanced`, {
       method: "POST",
       headers: {
@@ -98,6 +108,7 @@ class EventContainer extends Component {
       .then(response => {
         if (response.ok) {
           //Event joined. Rereshing
+          this.setState({ isLoading: false });
           this.props.navigator.push({
             screen: screens.eventFeed.id,
             title: screens.eventFeed.title,
@@ -291,15 +302,19 @@ class EventContainer extends Component {
             </View>
           )}
           {this.state.expanded && (
-            <View style={styles.button}>
+            <View style={styles.buttonHolder}>
               <Button
-                block
-                success
+                title="Unirse"
                 onPress={this.joinAction}
                 disabled={!this.canJoin()}
-              >
-                <Text>Unirse</Text>
-              </Button>
+                loading={this.state.isLoading}
+                loadingProps={{
+                  size: "small",
+                  color: "rgba(111, 202, 186, 1)"
+                }}
+                titleStyle={{ fontWeight: "700" }}
+                buttonStyle={styles.button}
+              />
             </View>
           )}
         </View>

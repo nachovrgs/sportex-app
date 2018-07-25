@@ -19,7 +19,6 @@ import {
   Root
 } from "native-base";
 import { EventContainer } from "../../components";
-
 import { screens } from "../../screens";
 
 import { GroupContainer } from "../../components";
@@ -72,21 +71,9 @@ export default class Groups extends Component {
       noEventsShowed: false
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    this.loadData();
   }
   onNavigatorEvent(event) {
-    switch (event.id) {
-      case "willAppear":
-        break;
-      case "didAppear":
-        this.loadData();
-        break;
-      case "willDisappear":
-        break;
-      case "didDisappear":
-        break;
-      case "willCommitPreview":
-        break;
-    }
     if (event.type == "NavBarButtonPress") {
       if (event.id == "add") {
         this.props.navigator.push({
@@ -107,7 +94,6 @@ export default class Groups extends Component {
       }
     }
   }
-
   _renderItem = ({ item }) => (
     <GroupContainer groupItem={item} navigator={this.props.navigator} />
   );

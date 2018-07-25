@@ -6,7 +6,8 @@ import {
   Image,
   AsyncStorage,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  ActivityIndicator
 } from "react-native";
 import geolib from "geolib";
 import MapView from "react-native-maps";
@@ -16,12 +17,13 @@ import {
   ListItem,
   Left,
   Body,
-  Button,
   DeckSwiper,
   Card,
   CardItem,
   Root
 } from "native-base";
+
+import { Button } from "react-native-elements";
 import { screens } from "../../screens";
 import styles from "./styles";
 
@@ -37,15 +39,7 @@ export default class EventScreen extends Component {
     tabBarHidden: true
   };
   static navigatorButtons = {
-    rightButtons: [
-      // {
-      //   icon: require("../../assets/images/trash.png"),
-      //   id: "delete",
-      //   buttonColor: "#ecf0f1",
-      //   buttonFontSize: 20,
-      //   buttonFontWeight: "600"
-      // }
-    ]
+    rightButtons: []
   };
   constructor(props) {
     super(props);
@@ -59,7 +53,8 @@ export default class EventScreen extends Component {
       token: "",
       showingPlayers: true,
       isOwner: false,
-      editMode: false
+      editMode: false,
+      isLoadingAction: false
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.exitAction = this.exitAction.bind(this);
@@ -90,12 +85,8 @@ export default class EventScreen extends Component {
           .then(response => {
             if (response.ok) {
               //Event deleted, going to feed
-              this.props.navigator.push({
-                screen: screens.eventFeed.id,
-                title: screens.eventFeed.title,
-                animated: true,
-                animationType: "fade",
-                backButtonHidden: screens.eventFeed.backButtonHidden
+              this.props.navigator.dismissAllModals({
+                animationType: "fade" // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
               });
             } else {
               this.setState({
@@ -185,6 +176,7 @@ export default class EventScreen extends Component {
   }
 
   exitAction = () => {
+    this.setState({ isLoadingAction: true });
     fetch(`${API_URI}/event/LeaveEvent`, {
       method: "POST",
       headers: {
@@ -201,13 +193,9 @@ export default class EventScreen extends Component {
     })
       .then(response => {
         if (response.ok) {
-          //Event joined. Rereshing
-          this.props.navigator.push({
-            screen: screens.currentEventFeed.id,
-            title: screens.currentEventFeed.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.currentEventFeed.backButtonHidden
+          this.setState({ isLoadingAction: false });
+          this.props.navigator.dismissAllModals({
+            animationType: "fade" // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
           });
         } else {
           console.log("Network response was not ok.");
@@ -220,6 +208,7 @@ export default class EventScreen extends Component {
   };
 
   deleteAction = () => {
+    this.setState({ isLoadingAction: true });
     fetch(`${API_URI}/event/${this.state.itemId}`, {
       method: "DELETE",
       headers: {
@@ -232,13 +221,9 @@ export default class EventScreen extends Component {
     })
       .then(response => {
         if (response.ok) {
-          //Event deleted. Rereshing
-          this.props.navigator.push({
-            screen: screens.currentEventFeed.id,
-            title: screens.currentEventFeed.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.currentEventFeed.backButtonHidden
+          this.setState({ isLoadingAction: false });
+          this.props.navigator.dismissAllModals({
+            animationType: "fade" // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
           });
         } else {
           console.log("Network response was not ok.");
@@ -377,7 +362,7 @@ export default class EventScreen extends Component {
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421
                   }}
-                  scrollEnabled={false}
+                  scrollEnabled={true}
                   liteMode={true}
                   style={styles.map}
                 />
@@ -468,35 +453,43 @@ export default class EventScreen extends Component {
               <View style={styles.button}>
                 {!isOwner && (
                   <Button
-                    block
-                    rounded
-                    danger
+                    title="Salir"
                     onPress={this.exitAction}
                     disabled={!this.canExit()}
-                  >
-                    <Text>Salir</Text>
-                  </Button>
+                    loading={this.state.isLoadingAction}
+                    loadingProps={{
+                      size: "small",
+                      color: "rgba(111, 202, 186, 1)"
+                    }}
+                    titleStyle={{ fontWeight: "700" }}
+                    buttonStyle={styles.exitButton}
+                  />
                 )}
                 {isOwner && (
                   <View>
                     <Button
-                      block
-                      rounded
-                      success
+                      title="Agregar Jugadores"
                       onPress={this.addAction}
                       disabled={!this.canAdd()}
-                    >
-                      <Text>Agregar Jugadores</Text>
-                    </Button>
+                      loading={this.state.isLoadingAction}
+                      loadingProps={{
+                        size: "small",
+                        color: "rgba(111, 202, 186, 1)"
+                      }}
+                      titleStyle={{ fontWeight: "700" }}
+                      buttonStyle={styles.addButton}
+                    />
                     <Button
-                      block
-                      rounded
-                      danger
-                      style={styles.exitButton}
+                      title="Eliminar"
                       onPress={this.deleteAction}
-                    >
-                      <Text>Eliminar</Text>
-                    </Button>
+                      loading={this.state.isLoadingAction}
+                      loadingProps={{
+                        size: "small",
+                        color: "rgba(111, 202, 186, 1)"
+                      }}
+                      titleStyle={{ fontWeight: "700" }}
+                      buttonStyle={styles.exitButton}
+                    />
                   </View>
                 )}
               </View>

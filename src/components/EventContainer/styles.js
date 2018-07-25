@@ -95,8 +95,7 @@ export default StyleSheet.create({
   },
   fillContainer: {
     flex: 2,
-    marginTop: 30,
-    alignItems: "flex-end"
+    marginTop: 30
   },
   fillIcon: {
     fontSize: sizes.medium,
@@ -141,8 +140,19 @@ export default StyleSheet.create({
     fontSize: sizes.medium,
     margin: 20
   },
+  buttonHolder: {
+    height: 60,
+    marginTop: 10
+  },
   button: {
-    height: 50,
-    paddingTop: 10
+    height: 40,
+    marginTop: 10,
+    marginBottom: 10,
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    elevation: 1
   }
 });

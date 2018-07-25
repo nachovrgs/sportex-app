@@ -67,7 +67,7 @@ export const screens = {
   },
   createGroup: {
     id: "sportex.CreateGroup",
-    title: "Crear Grupo",
+    title: "Nuevo Grupo",
     backButtonHidden: false
   },
   historyFeed: {

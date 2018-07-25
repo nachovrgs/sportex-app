@@ -46,7 +46,7 @@ export default class addPlayersSelectionModal extends Component {
   };
 
   linkAction = async () => {
-    await Clipboard.setString("hello world");
+    await Clipboard.setString("https://www.apple.com/lae/ios/app-store/");
     this.setState({
       linkButtonText: "Copiado!"
     });

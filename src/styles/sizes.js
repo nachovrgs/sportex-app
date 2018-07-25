@@ -5,5 +5,5 @@ export default {
   large: 20,
   xlarge: 25,
   itemCard: 120,
-  itemCardExpanded: 360
+  itemCardExpanded: 380
 };

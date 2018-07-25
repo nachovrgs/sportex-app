@@ -165,7 +165,46 @@ export default StyleSheet.create({
     marginTop: 20,
     height: 50
   },
+  addButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 40,
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    elevation: 1,
+    backgroundColor: colors.button_green
+  },
+  deleteButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 40,
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    elevation: 1,
+    backgroundColor: colors.button_red
+  },
   exitButton: {
-    marginTop: 5
+    alignItems: "center",
+    justifyContent: "center",
+    height: 40,
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: colors.borders,
+    elevation: 1,
+    backgroundColor: colors.button_red
   }
 });

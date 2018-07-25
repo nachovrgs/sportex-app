@@ -74,13 +74,13 @@ export default class CurrentEventFeed extends Component {
       initial: true
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+    this.loadData();
   }
   onNavigatorEvent(event) {
     switch (event.id) {
       case "willAppear":
         break;
       case "didAppear":
-        this.loadData();
         break;
       case "willDisappear":
         break;

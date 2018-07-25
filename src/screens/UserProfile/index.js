@@ -46,6 +46,7 @@ export default class UserProfile extends Component {
       token: "",
       accountID: ""
     };
+    this.loadData();
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
   onNavigatorEvent(event) {
@@ -53,7 +54,6 @@ export default class UserProfile extends Component {
       case "willAppear":
         break;
       case "didAppear":
-        this.loadData();
         break;
       case "willDisappear":
         break;
