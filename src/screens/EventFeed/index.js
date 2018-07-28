@@ -29,6 +29,7 @@ import {
   getProfileIdForUsage,
   getAccountIdForUsage
 } from "../../helpers/storage";
+import { getEvents, saveEvents } from "../../helpers/store";
 import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
@@ -62,7 +63,6 @@ export default class EventFeed extends Component {
     super(props);
     this.state = {
       dataSource: [],
-      isLoading: true,
       isError: false,
       error: "",
       token: "",
@@ -74,8 +74,6 @@ export default class EventFeed extends Component {
       allowVerticalScroll: true,
       readyForApi: false
     };
-    this.loadAll();
-
     NotificationsIOS.addEventListener(
       "remoteNotificationsRegistered",
       this.onPushRegistered.bind(this)
@@ -106,7 +104,6 @@ export default class EventFeed extends Component {
       this._boundOnNotificationOpened
     );
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    NotificationsIOS.requestPermissions();
   }
   onNavigatorEvent(event) {
     if (event.type == "NavBarButtonPress") {
@@ -120,6 +117,20 @@ export default class EventFeed extends Component {
         });
       }
     }
+  }
+  componentDidMount() {
+    this.getStorageEvents();
+  }
+
+  async getStorageEvents() {
+    this.setState({ refreshing: true });
+    var events = await getEvents();
+
+    this.setState({
+      dataSource: events
+    });
+    this.loadAll();
+    NotificationsIOS.requestPermissions();
   }
   //Notifications
   onPushRegistered(deviceToken) {
@@ -226,12 +237,10 @@ export default class EventFeed extends Component {
       .then(response => {
         if (response.ok) {
           this.setState({
-            isLoading: false,
             error: ""
           });
         } else {
           this.setState({
-            isLoading: false,
             isError: true,
             error: "Network response was not ok.",
             token: ""
@@ -241,7 +250,6 @@ export default class EventFeed extends Component {
       })
       .catch(error => {
         this.setState({
-          isLoading: false,
           isError: true,
           error: error.message,
           token: ""
@@ -252,27 +260,26 @@ export default class EventFeed extends Component {
 
   async loadData() {
     if (this.state.readyForApi) {
-      this.state.dataSource = [];
-      this.state.isLoading = true;
       fetch(`${API_URI}/event/avaiable/${this.state.profileId}`, {
         method: "GET",
         headers: {
           Authorization:
             "Bearer " +
             (this.state.token ? this.state.token.replace(/"/g, "") : "")
-        }
+        },
+        timeout: 500
       })
         .then(response => {
           if (response.ok) {
             return response.json();
           } else {
             this.setState({
-              isLoading: false,
-              isError: true,
-              error: "Network response was not ok.",
-              token: ""
+              refreshing: false
             });
-            return new Error("Network response was not ok.");
+            Toast.show({
+              text: "Imposible conectarse al servidor. Tienes internet?",
+              buttonText: "Ok"
+            });
           }
         })
         .then(jsonResponse => {
@@ -285,20 +292,22 @@ export default class EventFeed extends Component {
           }
           this.setState({
             dataSource: jsonResponse,
-            isLoading: false,
+            refreshing: false,
             error: ""
           });
-          if (this.state.initial) {
-            this.setState({ initial: false });
-            this._refreshListView();
-          }
+          saveEvents(jsonResponse);
+          // if (this.state.initial) {
+          //   this.setState({ initial: false });
+          //   this._refreshListView();
+          // }
         })
         .catch(error => {
           this.setState({
-            isLoading: false,
-            isError: true,
-            error: error.message,
-            token: ""
+            refreshing: false
+          });
+          Toast.show({
+            text: "Ocurrio un error",
+            buttonText: "Ok"
           });
           throw error;
         });
@@ -309,45 +318,25 @@ export default class EventFeed extends Component {
     this.state.noEventsShowed = true;
   };
 
-  _refreshListView = () => {
+  _refreshListView = async () => {
     this.setState({
       refreshing: true
     });
-    this.loadData().then(() => {
-      this.setState({ refreshing: false });
-    });
+    await this.loadData();
   };
 
   _refreshControl() {
     return (
       <RefreshControl
+        title="buscando nuevos partidos"
+        titleColor={colors.text_orange}
         refreshing={this.state.refreshing}
         onRefresh={() => this._refreshListView()}
       />
     );
   }
   render() {
-    return this.state.isLoading ? (
-      <Root>
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#ecf0f1" animating />
-        </View>
-      </Root>
-    ) : this.state.isError ? (
-      <Root>
-        <View style={styles.noEventsContainer}>
-          <View style={styles.noEventsSubContainer}>
-            <Image
-              style={styles.noEventsImage}
-              source={require("../../assets/images/no_internet.png")}
-            />
-            <Text style={styles.noEventsText}>
-              No tienes conexion a internet.
-            </Text>
-          </View>
-        </View>
-      </Root>
-    ) : !this.state.refreshing && this.state.dataSource.length == 0 ? (
+    return this.state.dataSource.length == 0 ? (
       <Root>
         <View style={styles.noEventsContainer}>
           <TouchableOpacity

@@ -20,7 +20,7 @@ import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 
 // create a component
-export default class addPlayersConfirmModal extends Component {
+export default class addMembersConfirmModal extends Component {
   static navigatorStyle = {
     navBarHidden: true,
     tabBarHidden: true
@@ -36,7 +36,7 @@ export default class addPlayersConfirmModal extends Component {
   componentDidMount() {
     this.setState({
       playerList: this.props.playerList,
-      eventId: this.props.eventId
+      groupId: this.props.groupId
     });
   }
 
@@ -46,50 +46,47 @@ export default class addPlayersConfirmModal extends Component {
   }
 
   //Helper methods
-  async inviteMember(memberId) {
-    fetch(`${API_URI}/eventInvitation`, {
-      method: "POST",
-      headers: {
-        Authorization:
-          "Bearer " +
-          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        Type: 1,
-        IdProfileInvites: this.state.profileId,
-        IdProfileInvited: memberId,
-        EventID: this.state.eventId,
-        Message: "Estas invitado"
+  inviteMember = memberId => {
+    if (memberId != null) {
+      fetch(`${API_URI}/group/JoinGroup/`, {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Bearer " +
+            (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          idProfile: memberId,
+          idGroup: this.state.groupId,
+          listIdProfiles: []
+        })
       })
-    })
-      .then(response => {
-        if (response.ok) {
-          console.log("User invited");
-          //Event created going to feed
-        } else {
-          console.log("Network response was not ok.");
+        .then(response => {
+          if (response.ok) {
+            console.log("Miembro invitado : " + memberId);
+          } else {
+            console.log("Network response was not ok.");
+            this.setState({
+              isError: true,
+              error: "Network response was not ok.",
+              token: ""
+            });
+            return new Error("Network response was not ok.");
+          }
+        })
+        .catch(error => {
+          console.log(error);
           this.setState({
-            isLoading: false,
             isError: true,
-            error: "Network response was not ok.",
+            error: error.message,
             token: ""
           });
-          return new Error("Network response was not ok.");
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        this.setState({
-          isLoading: false,
-          isError: true,
-          error: error.message,
-          token: ""
+          throw error;
         });
-        throw error;
-      });
-  }
+    }
+  };
   addAction = async () => {
     const playerList = this.state.playerList;
     this.setState({ isLoading: true });

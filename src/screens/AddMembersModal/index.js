@@ -20,7 +20,7 @@ import styles from "./styles";
 import { colors } from "../../styles";
 
 // create a component
-export default class addPlayersModal extends Component {
+export default class addMembersModal extends Component {
   static navigatorStyle = {
     navBarHidden: true,
     tabBarHidden: true
@@ -37,14 +37,14 @@ export default class addPlayersModal extends Component {
       users: [],
       filteredUsers: [],
       selectedUsers: [],
-      eventId: 0,
+      groupId: 0,
       addingMemberId: 0
     };
     this.loadData();
   }
   componentDidMount() {
     this.setState({
-      eventId: this.props.eventId
+      groupId: this.props.groupId
     });
   }
   //Helper methods
@@ -103,14 +103,14 @@ export default class addPlayersModal extends Component {
   addAction = () => {
     if (this.state.selectedUsers.length > 0) {
       this.props.navigator.showModal({
-        screen: screens.addPlayersConfirmModal.id,
-        title: screens.addPlayersConfirmModal.title,
+        screen: screens.addMembersConfirmModal.id,
+        title: screens.addMembersConfirmModal.title,
         animated: true,
         animationType: "fade",
-        backButtonHidden: screens.addPlayersConfirmModal.backButtonHidden,
+        backButtonHidden: screens.addMembersConfirmModal.backButtonHidden,
         passProps: {
           playerList: this.state.selectedUsers,
-          eventId: this.state.eventId
+          groupId: this.state.groupId
         }
       });
     }

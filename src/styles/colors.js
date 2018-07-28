@@ -19,5 +19,6 @@ export default {
   rating_gold: "#f1c40f",
   rating_back: "#ecf0f1",
   button_green: "#2ecc71",
-  button_red: "#e74c3c"
+  button_red: "#e74c3c",
+  black: "#2d3436"
 };

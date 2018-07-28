@@ -34,7 +34,7 @@ class GroupContainer extends Component {
   //Helpers
   handlePress() {
     var group = this.state.item;
-    this.props.navigator.push({
+    this.props.navigator.showModal({
       screen: screens.groupScreen.id,
       title: screens.groupScreen.title,
       animated: true,

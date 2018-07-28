@@ -7,7 +7,7 @@ export default StyleSheet.create({
     flex: 1,
     height: 80,
     margin: 22,
-    padding: 20,
+    padding: 15,
     backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 10,
     borderWidth: 1,
@@ -21,15 +21,15 @@ export default StyleSheet.create({
   groupImage: {
     height: 60,
     width: 60,
-    marginLeft: -10,
-    marginTop: -10
+    marginLeft: -5,
+    marginTop: -5
   },
   info: {
     flex: 3,
     flexDirection: "column"
   },
   titleContainer: {
-    flex: 1
+    flex: 2
   },
   title: {
     flex: 1,

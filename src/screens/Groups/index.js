@@ -27,6 +27,7 @@ import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
 
+import { getGroups, saveGroups } from "../../helpers/store";
 // create a component
 export default class Groups extends Component {
   //Navigation
@@ -63,16 +64,28 @@ export default class Groups extends Component {
     super(props);
     this.state = {
       dataSource: [],
-      isLoading: true,
-      isError: false,
       error: "",
       token: "",
       refreshing: false,
       noEventsShowed: false
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+  }
+
+  componentDidMount() {
+    this.getStorageGroups();
+  }
+
+  async getStorageGroups() {
+    this.setState({ refreshing: true });
+    var groups = await getGroups();
+
+    this.setState({
+      dataSource: groups
+    });
     this.loadData();
   }
+
   onNavigatorEvent(event) {
     if (event.type == "NavBarButtonPress") {
       if (event.id == "add") {
@@ -114,12 +127,12 @@ export default class Groups extends Component {
           return response.json();
         } else {
           this.setState({
-            isLoading: false,
-            isError: true,
-            error: "Network response was not ok.",
-            token: ""
+            refreshing: false
           });
-          return new Error("Network response was not ok.");
+          Toast.show({
+            text: "Imposible conectarse al servidor. Tienes internet?",
+            buttonText: "Ok"
+          });
         }
       })
       .then(jsonResponse => {
@@ -132,19 +145,18 @@ export default class Groups extends Component {
         }
         this.setState({
           dataSource: jsonResponse,
-          isLoading: false,
-          error: "",
-          token: ""
+          refreshing: false
         });
+        saveGroups(jsonResponse);
       })
       .catch(error => {
         this.setState({
-          isLoading: false,
-          isError: true,
-          error: error.message,
-          token: ""
+          refreshing: false
         });
-        throw error;
+        Toast.show({
+          text: "Ocurrio un error!",
+          buttonText: "Ok"
+        });
       });
   }
 
@@ -153,40 +165,20 @@ export default class Groups extends Component {
   };
   _refreshListView = () => {
     this.setState({ refreshing: true });
-    this.loadData().then(() => {
-      this.setState({ refreshing: false });
-    });
+    this.loadData();
   };
   _refreshControl() {
     return (
       <RefreshControl
+        title="buscando tus grupos"
+        titleColor={colors.text_orange}
         refreshing={this.state.refreshing}
         onRefresh={() => this._refreshListView()}
       />
     );
   }
   render() {
-    return this.state.isLoading ? (
-      <Root>
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#ecf0f1" animating />
-        </View>
-      </Root>
-    ) : this.state.isError ? (
-      <Root>
-        <View style={styles.noEventsContainer}>
-          <View style={styles.noEventsSubContainer}>
-            <Image
-              style={styles.noEventsImage}
-              source={require("../../assets/images/no_internet.png")}
-            />
-            <Text style={styles.noEventsText}>
-              No tienes conexion a internet.
-            </Text>
-          </View>
-        </View>
-      </Root>
-    ) : this.state.dataSource.length == 0 ? (
+    return this.state.dataSource.length == 0 ? (
       <Root>
         <View style={styles.noEventsContainer}>
           <TouchableOpacity

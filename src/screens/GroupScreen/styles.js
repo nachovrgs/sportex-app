@@ -3,39 +3,42 @@ import { StyleSheet } from "react-native";
 import { colors, sizes } from "../../styles";
 
 export default StyleSheet.create({
-  background: {
-    flex: 1,
-    backgroundColor: colors.background
-  },
   container: {
     flex: 1,
-    marginLeft: 15,
-    marginTop: 20,
-    marginBottom: 20,
-    marginRight: 15,
-    padding: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.borders,
-    elevation: 1,
-    backgroundColor: colors.white
+    padding: 10
   },
-  head: {
-    marginTop: 20,
+  loaderContainer: {
     flex: 1,
-    flexDirection: "row"
-  },
-  avatar: {
-    height: sizes.xlarge,
-    width: sizes.xlarge
-  },
-  imageContainer: {
-    flex: 3,
     justifyContent: "center",
     alignItems: "center"
   },
+  loading: {
+    height: sizes.xlarge,
+    width: sizes.xlarge,
+    color: colors.black
+  },
+  head: {
+    marginTop: 20,
+    height: 150
+  },
+  closeHolder: {
+    position: "absolute",
+    right: 10,
+    top: 10
+  },
+  imageContainer: {
+    height: 100,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  avatar: {
+    height: 300,
+    width: 300
+  },
   titleContainer: {
-    flex: 7
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center"
   },
   title: {
     fontSize: sizes.large,
@@ -46,12 +49,11 @@ export default StyleSheet.create({
     color: colors.text_grey
   },
   body: {
-    flex: 10,
-    marginTop: 20
+    height: 500
   },
   infoContainer: {
-    flex: 3,
-    marginLeft: 15
+    height: 50,
+    marginLeft: 20
   },
   ownerDesc: {
     fontSize: sizes.medium,
@@ -61,18 +63,62 @@ export default StyleSheet.create({
     fontSize: sizes.medium,
     color: colors.text_grey
   },
-  membersContainer: {
-    flex: 7
+  addPlayersHolder: {
+    height: 40,
+    marginLeft: 10,
+    marginRight: 10,
+    borderWidth: 0.5,
+    shadowColor: colors.text_grey,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.4,
+    shadowRadius: 1,
+    borderColor: colors.text_grey,
+    elevation: 1,
+    justifyContent: "center",
+    alignItems: "center"
   },
-  membersHeader: {
+  addPlayers: {
     flex: 1,
     flexDirection: "row"
   },
-  membersTitle: {
-    flex: 8
+  addPlayersImageHolder: {
+    flex: 2,
+    justifyContent: "center",
+    alignItems: "center"
   },
-  membersEdit: {
-    flex: 2
+  addPlayersImage: {
+    height: 30,
+    width: 30,
+    tintColor: colors.text_orange
+  },
+  addPlayersTextHolder: {
+    flex: 8,
+    justifyContent: "center"
+  },
+  addPlayersText: {
+    fontSize: sizes.medium,
+    color: colors.text
+  },
+  membersContainer: {
+    marginTop: 30,
+    height: 400
+  },
+  membersHeader: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center"
+  },
+  membersTitle: {
+    flex: 3,
+    fontSize: sizes.large,
+    fontWeight: "800",
+    color: colors.text
+  },
+  membersTotal: {
+    flex: 7,
+    marginTop: 7,
+    fontSize: sizes.small,
+    color: colors.text_blue
   },
   membersEditButton: {
     height: 15,
