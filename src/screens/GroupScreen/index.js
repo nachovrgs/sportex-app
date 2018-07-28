@@ -34,7 +34,7 @@ import {
   getProfileIdForUsage
 } from "../../helpers/storage";
 import { logInfo, logError } from "../../helpers/logger";
-import { colors } from "../../styles";
+import { colors, sizes } from "../../styles";
 
 // create a component
 export default class GroupScreen extends Component {
@@ -54,7 +54,6 @@ export default class GroupScreen extends Component {
       users: [],
       editing: false
     };
-    this.loadData();
   }
   static navigatorButtons = {
     rightButtons: []
@@ -66,14 +65,17 @@ export default class GroupScreen extends Component {
     tabBarHidden: true,
     navBarHidden: true
   };
-  async loadData() {
+  async loadDataFromStorage() {
     this.state.token = await getTokenForUsage();
+    this.state.accountID = await getAccountIdForUsage();
+    this.state.profileId = await getProfileIdForUsage();
+    this.loadData();
   }
   componentDidMount() {
     this.setState({
       groupId: this.props.groupId
     });
-    this.loadData();
+    this.loadDataFromStorage();
   }
 
   //Helpers
@@ -92,9 +94,8 @@ export default class GroupScreen extends Component {
 
   //API Functions
   async loadData() {
-    this.state.token = await getTokenForUsage();
-    this.state.accountID = await getAccountIdForUsage();
-    this.state.profileId = await getProfileIdForUsage();
+    this.setState({ isLoading: true });
+
     fetch(`${API_URI}/group/${this.state.groupId}`, {
       method: "GET",
       headers: {
@@ -133,9 +134,7 @@ export default class GroupScreen extends Component {
         throw error;
       });
   }
-
-  removeMember(member) {
-    this.toggleEditing();
+  removeMember = memberId => {
     fetch(`${API_URI}/group/LeaveGroup/`, {
       method: "POST",
       headers: {
@@ -146,7 +145,7 @@ export default class GroupScreen extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        idProfile: member.standardProfileID,
+        idProfile: memberId,
         idGroup: this.state.groupId,
         listIdProfiles: []
       })
@@ -174,8 +173,63 @@ export default class GroupScreen extends Component {
         });
         throw error;
       });
-  }
+  };
 
+  leaveGroup = () => {
+    fetch(`${API_URI}/group/LeaveGroup/`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idProfile: this.state.profileId,
+        idGroup: this.state.groupId,
+        listIdProfiles: []
+      })
+    })
+      .then(response => {
+        if (response.ok) {
+          this.props.navigator.dismissAllModals({
+            animationType: "fade" // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
+          });
+        } else {
+          console.log("Network response was not ok.");
+          this.setState({
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
+  };
+  createMatch = () => {
+    console.log("estoy aca conchudo");
+    this.props.navigator.showModal({
+      screen: screens.createEvent.id,
+      title: screens.createEvent.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.createEvent.backButtonHidden,
+      passProps: {
+        groupId: this.state.groupId,
+        fromGroup: true
+      }
+    });
+  };
   //UI Helpers
   close() {
     this.props.navigator.dismissAllModals({
@@ -246,31 +300,26 @@ export default class GroupScreen extends Component {
                 </View>
               </View>
               <View style={styles.body}>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.ownerDesc}>Creador: </Text>
-                  <Text style={styles.owner}>
-                    {group.creatorProfile.firstName}{" "}
-                    {group.creatorProfile.lastName}
-                  </Text>
-                </View>
-                <View style={styles.addPlayersHolder}>
-                  <TouchableOpacity
-                    style={styles.addPlayers}
-                    onPress={() => this.addPlayersAction()}
-                  >
-                    <View style={styles.addPlayersImageHolder}>
-                      <Image
-                        style={styles.addPlayersImage}
-                        source={require("../../assets/images/add.png")}
-                      />
-                    </View>
-                    <View style={styles.addPlayersTextHolder}>
-                      <Text style={styles.addPlayersText}>
-                        Agregar usuarios
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
+                {this.state.group.creatorProfile.id == this.state.profileId && (
+                  <View style={styles.addPlayersHolder}>
+                    <TouchableOpacity
+                      style={styles.addPlayers}
+                      onPress={() => this.addPlayersAction()}
+                    >
+                      <View style={styles.addPlayersImageHolder}>
+                        <Image
+                          style={styles.addPlayersImage}
+                          source={require("../../assets/images/add.png")}
+                        />
+                      </View>
+                      <View style={styles.addPlayersTextHolder}>
+                        <Text style={styles.addPlayersText}>
+                          Agregar usuarios
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                )}
                 <View style={styles.membersContainer}>
                   <View style={styles.membersHeader}>
                     <Text style={styles.membersTitle}>Miembros</Text>
@@ -279,7 +328,35 @@ export default class GroupScreen extends Component {
                     </Text>
                   </View>
                   <View style={styles.memberList}>
-                    <UserList users={members} />
+                    <UserList
+                      users={members}
+                      callback={memberId => this.removeMember(memberId)}
+                      creatorId={this.state.group.creatorProfile.id}
+                      isOwner={
+                        this.state.group.creatorProfile.id ==
+                        this.state.profileId
+                      }
+                    />
+                  </View>
+                </View>
+                <View style={styles.buttonHolder}>
+                  <View style={styles.leaveButton}>
+                    <TouchableOpacity onPress={() => this.leaveGroup()}>
+                      <Text style={styles.leaveText}>Salir</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={styles.createButton}>
+                    <Button
+                      title="Crear Partido"
+                      onPress={this.createMatch}
+                      loading={this.state.isLoading}
+                      loadingProps={{
+                        size: "small",
+                        color: "rgba(111, 202, 186, 1)"
+                      }}
+                      titleStyle={{ fontWeight: "200", fontSize: sizes.medium }}
+                      buttonStyle={styles.button}
+                    />
                   </View>
                 </View>
               </View>

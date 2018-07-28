@@ -6,7 +6,8 @@ import {
   ActivityIndicator,
   ScrollView,
   RefreshControl,
-  Image
+  Image,
+  TouchableOpacity
 } from "react-native";
 
 import {
@@ -22,6 +23,7 @@ import { NotificationContainer } from "../../components";
 
 import { screens } from "../../screens";
 
+import { getNotifications, saveNotifications } from "../../helpers/store";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
@@ -38,22 +40,29 @@ export default class NotificationFeed extends Component {
     navBarComponentAlignment: "center",
     navBarTextAlignment: "center"
   };
-  _keyExtractor = (item, index) => item.eventID.toString();
+  _keyExtractor = (item, index) => item.id.toString();
 
   constructor(props) {
     super(props);
     this.state = {
       dataSource: [],
-      isLoading: true,
-      isError: false,
-      error: "",
       token: "",
       refreshing: false,
       noNotificationsShowed: false
     };
-    this.loadData();
+  }
+  componentDidMount() {
+    this.getStorageNotifications();
   }
 
+  async getStorageNotifications() {
+    this.setState({ refreshing: true });
+    var notifications = await getNotifications();
+    this.setState({
+      dataSource: notifications
+    });
+    this.loadFromStorage();
+  }
   //Item renderer
   _renderItem = ({ item }) => (
     <NotificationContainer
@@ -62,12 +71,14 @@ export default class NotificationFeed extends Component {
       removeNotification={this.removeNotification}
     />
   );
-
-  async loadData() {
+  async loadFromStorage() {
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();
+    this.loadData();
+  }
+  async loadData() {
     fetch(
-      `${API_URI}/eventInvitation/GetEventInvitationsReceived/${
+      `${API_URI}/notification/profilenotificationsunseen/${
         this.state.profileId
       }`,
       {
@@ -84,12 +95,12 @@ export default class NotificationFeed extends Component {
           return response.json();
         } else {
           this.setState({
-            isLoading: false,
-            isError: true,
-            error: "Network response was not ok.",
-            token: ""
+            refreshing: false
           });
-          return new Error("Network response was not ok.");
+          Toast.show({
+            text: "Imposible conectarse al servidor. Tienes internet?",
+            buttonText: "Ok"
+          });
         }
       })
       .then(jsonResponse => {
@@ -101,65 +112,90 @@ export default class NotificationFeed extends Component {
           });
         }
         this.setState({
-          dataSource: jsonResponse,
-          isLoading: false,
-          error: "",
-          token: ""
+          dataSource: jsonResponse.slice(0, 30),
+          refreshing: false
         });
+        saveNotifications(jsonResponse.slice(0, 30));
       })
       .catch(error => {
         this.setState({
-          isLoading: false,
-          isError: true,
-          error: error.message,
-          token: ""
+          refreshing: false
         });
-        throw error;
+        Toast.show({
+          text: "Ocurrio un error",
+          buttonText: "Ok"
+        });
       });
   }
 
-  removeNotification(notificationId) {
-    console.log("This is the id: " + notificationId);
-  }
+  removeNotification = notificationId => {
+    fetch(`${API_URI}/notification/setseen/${notificationId}`, {
+      method: "PUT",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          this._refreshListView();
+        } else {
+          console.log("Network response was not ok.");
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok."
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message
+        });
+        throw error;
+      });
+  };
 
   toggleNoNotificationsShowed = () => {
     this.state.noNotificationsShowed = true;
   };
-  _refreshListView = () => {
-    this.setState({ refreshing: true });
-    this.loadData().then(() => {
-      this.setState({ refreshing: false });
+  _refreshListView = async () => {
+    this.setState({
+      refreshing: true
     });
+    await this.loadData();
   };
   _refreshControl() {
     return (
       <RefreshControl
+        title="Trayendo notificaciones"
+        titleColor={colors.text_orange}
         refreshing={this.state.refreshing}
         onRefresh={() => this._refreshListView()}
       />
     );
   }
   render() {
-    return this.state.isLoading ? (
-      <Root>
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#ecf0f1" animating />
-        </View>
-      </Root>
-    ) : this.state.isError ? (
-      <Root>
-        <View style={styles.container}>
-          <Text>{this.state.error}</Text>
-        </View>
-      </Root>
-    ) : this.state.dataSource.length == 0 ? (
+    return this.state.dataSource.length == 0 ? (
       <Root>
         <View style={styles.noEventsContainer}>
           <View style={styles.noEventsSubContainer}>
-            <Image
-              style={styles.noEventsImage}
-              source={require("../../assets/images/ok.png")}
-            />
+            <TouchableOpacity
+              style={styles.noEventsSubContainer}
+              onPress={() => this._refreshListView()}
+            >
+              <Image
+                style={styles.noEventsImage}
+                source={require("../../assets/images/ok.png")}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </Root>

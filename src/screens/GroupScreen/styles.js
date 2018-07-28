@@ -100,8 +100,8 @@ export default StyleSheet.create({
     color: colors.text
   },
   membersContainer: {
-    marginTop: 30,
-    height: 400
+    marginTop: 10,
+    height: 300
   },
   membersHeader: {
     flex: 1,
@@ -150,45 +150,49 @@ export default StyleSheet.create({
     width: 30
   },
   participantIcon: {
-    height: 30,
-    width: 30
+    height: 40,
+    width: 40
   },
   participantName: {
     fontSize: sizes.small
-  },
-  addMemberContainer: {
-    flex: 1,
-    flexDirection: "row"
-  },
-  autocompleteContainer: {
-    flex: 5
-  },
-  buttonContainer: {
-    flex: 1,
-    alignSelf: "center",
-    marginLeft: 5
-  },
-  button: {
-    width: 40,
-    height: 40,
-    borderColor: "transparent",
-    borderWidth: 0,
-    borderRadius: 30,
-    borderWidth: 1,
-    borderColor: colors.borders,
-    backgroundColor: colors.background
-  },
-  queryResultContainer: {
-    marginTop: -120
-  },
-  queryResultItem: {
-    opacity: 1,
-    color: colors.text
   },
   avatar: {
     paddingVertical: 30,
     width: 80,
     height: 80,
     borderRadius: 40
+  },
+  buttonHolder: {
+    height: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 40
+  },
+  leaveButton: {
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  leaveText: {
+    fontSize: sizes.medium,
+    fontWeight: "300",
+    color: colors.text_orange
+  },
+  createButton: {
+    height: 30,
+    marginTop: 10
+  },
+  button: {
+    height: 40,
+    width: 250,
+    marginLeft: 15,
+    marginRight: 15,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: colors.text_grey,
+    backgroundColor: colors.button_green,
+    elevation: 1,
+    justifyContent: "center",
+    alignItems: "center"
   }
 });

@@ -3,6 +3,13 @@ import { STORE_EXPIRATION_HOURS } from "../../constants";
 
 //Events
 export async function saveEvents(events) {
+  await store.delete("events");
+  await store.save("events", {
+    items: events,
+    stored: new Date()
+  });
+}
+export async function updateEvents(events) {
   await store.update("events", {
     items: events,
     stored: new Date()
@@ -25,7 +32,8 @@ export async function getEvents() {
 
 //Groups
 export async function saveGroups(groups) {
-  await store.update("groups", {
+  await store.delete("groups");
+  await store.save("groups", {
     items: groups,
     stored: new Date()
   });
@@ -47,7 +55,8 @@ export async function getGroups() {
 
 //Current Events
 export async function saveCurrentEvents(currentEvents) {
-  await store.update("currentEvents", {
+  await store.delete("currentEvents");
+  await store.save("currentEvents", {
     items: currentEvents,
     stored: new Date()
   });
@@ -61,6 +70,29 @@ export async function getCurrentEvents() {
       return [];
     } else {
       return currentEvents.items;
+    }
+  } else {
+    return [];
+  }
+}
+
+//Notifications
+export async function saveNotifications(notifications) {
+  await store.delete("notifications");
+  await store.save("notifications", {
+    items: notifications,
+    stored: new Date()
+  });
+}
+export async function getNotifications() {
+  var notifications = await store.get("notifications");
+  if (notifications != null) {
+    var diff = Math.abs(new Date() - notifications.stored) / 36e5;
+    if (diff > STORE_EXPIRATION_HOURS) {
+      store.delete("notifications");
+      return [];
+    } else {
+      return notifications.items;
     }
   } else {
     return [];

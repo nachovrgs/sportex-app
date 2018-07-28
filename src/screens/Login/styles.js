@@ -17,7 +17,10 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.borders,
     elevation: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.white,
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center"
   },
   logoContainer: {
     flex: 1,
@@ -27,7 +30,7 @@ export default StyleSheet.create({
   formContainer: {
     flex: 1,
     paddingLeft: 20,
-    paddingRight: 15
+    paddingRight: 20
   },
   logo: {
     width: 100,
@@ -45,16 +48,18 @@ export default StyleSheet.create({
     borderColor: colors.borders,
     elevation: 1,
     marginBottom: 15,
-    marginLeft: 15
+    marginLeft: 15,
+    width: 280
   },
   button: {
     height: 45,
     marginLeft: 15,
-    marginRight: 30,
+    marginRight: 15,
     marginTop: 15,
     borderColor: "transparent",
     borderWidth: 0,
     borderRadius: 30,
+    width: 280,
     borderWidth: 1,
     borderColor: colors.borders,
     backgroundColor: colors.background
@@ -62,15 +67,22 @@ export default StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
     backgroundColor: colors.button,
-    paddingVertical: 15
+    paddingVertical: 15,
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center"
   },
   loginButton: {
     textAlign: "center",
     color: "#FFFFFF",
-    fontWeight: "700"
+    fontWeight: "700",
+    marginLeft: 15,
+    marginRight: 15
   },
   register: {
     margin: 15,
-    textAlign: "center"
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center"
   }
 });

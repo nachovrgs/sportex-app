@@ -62,17 +62,23 @@ export default class CreateEvent extends Component {
       groups: [],
       selectedGroup: null,
       isPublic: false,
-      maxStarters: 15,
-      maxSubs: 5,
+      maxStarters: 10,
+      maxSubs: 10,
       token: "",
       profileId: null,
       isLoading: true,
       isError: false,
+      fromGroup: false,
       error: ""
     };
     this.loadData();
   }
-
+  componentDidMount() {
+    this.setState({
+      selectedGroup: this.props.groupId,
+      fromGroup: this.props.fromGroup
+    });
+  }
   //Helper methods
   async loadData() {
     this.state.token = await getTokenForUsage();
@@ -321,7 +327,7 @@ export default class CreateEvent extends Component {
         }
       })
       .then(textResponse => {
-        if (!this.state.isPublic) {
+        if (!this.state.isPublic && this.state.selectedGroup != null) {
           this.inviteGroupAction(JSON.stringify(textResponse));
         } else {
           //Event created, invitations not sent, going to feed
@@ -398,6 +404,16 @@ export default class CreateEvent extends Component {
       isPublic: value
     });
   }
+  onValueChangeStarters(value) {
+    this.setState({
+      maxStarters: value
+    });
+  }
+  onValueChangeSubs(value) {
+    this.setState({
+      maxSubs: value
+    });
+  }
   onValueChangeLocations(value) {
     this.setState({
       selectedLocation: value
@@ -427,12 +443,14 @@ export default class CreateEvent extends Component {
   };
 
   close() {
-    this.props.navigator.dismissAllModals({
+    this.props.navigator.dismissModal({
       animationType: "fade" // 'none' / 'slide-down' , dismiss animation for the modal (optional, default 'slide-down')
     });
     //Fix, remove this. This is bad.
     // React native navigation v1 removed support for the tab based modals.
-    startMainApp();
+    if (!this.state.fromGroup) {
+      startMainApp();
+    }
   }
   render() {
     const { name, description, isLoading, groups, locations } = this.state;
@@ -613,6 +631,86 @@ export default class CreateEvent extends Component {
                   </View>
                 </View>
               )}
+              <View style={styles.inputHolder}>
+                <Text style={styles.label}>Jugadores?</Text>
+                <View style={styles.input}>
+                  <View style={styles.iconHolder}>
+                    <Icon active name="football" style={styles.icon} />
+                  </View>
+                  <View style={styles.content}>
+                    <Picker
+                      mode="dropdown"
+                      note={false}
+                      style={{ width: 350 }}
+                      placeholderStyle={{ color: "#bfc6ea" }}
+                      placeholderIconColor="#007aff"
+                      selectedValue={this.state.maxStarters}
+                      onValueChange={this.onValueChangeStarters.bind(this)}
+                    >
+                      <Picker.Item label="2" value={2} />
+                      <Picker.Item label="3" value={3} />
+                      <Picker.Item label="4" value={4} />
+                      <Picker.Item label="5" value={5} />
+                      <Picker.Item label="6" value={6} />
+                      <Picker.Item label="7" value={7} />
+                      <Picker.Item label="8" value={8} />
+                      <Picker.Item label="9" value={9} />
+                      <Picker.Item label="10" value={10} />
+                      <Picker.Item label="11" value={11} />
+                      <Picker.Item label="12" value={12} />
+                      <Picker.Item label="13" value={13} />
+                      <Picker.Item label="14" value={14} />
+                      <Picker.Item label="15" value={15} />
+                      <Picker.Item label="16" value={16} />
+                      <Picker.Item label="17" value={17} />
+                      <Picker.Item label="18" value={18} />
+                      <Picker.Item label="19" value={19} />
+                      <Picker.Item label="20" value={20} />
+                    </Picker>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.inputHolder}>
+                <Text style={styles.label}>Suplentes?</Text>
+                <View style={styles.input}>
+                  <View style={styles.iconHolder}>
+                    <Icon active name="football" style={styles.icon} />
+                  </View>
+                  <View style={styles.content}>
+                    <Picker
+                      mode="dropdown"
+                      note={false}
+                      style={{ width: 350 }}
+                      placeholderStyle={{ color: "#bfc6ea" }}
+                      placeholderIconColor="#007aff"
+                      selectedValue={this.state.maxSubs}
+                      onValueChange={this.onValueChangeSubs.bind(this)}
+                    >
+                      <Picker.Item label="0" value={0} />
+                      <Picker.Item label="1" value={1} />
+                      <Picker.Item label="2" value={2} />
+                      <Picker.Item label="3" value={3} />
+                      <Picker.Item label="4" value={4} />
+                      <Picker.Item label="5" value={5} />
+                      <Picker.Item label="6" value={6} />
+                      <Picker.Item label="7" value={7} />
+                      <Picker.Item label="8" value={8} />
+                      <Picker.Item label="9" value={9} />
+                      <Picker.Item label="10" value={10} />
+                      <Picker.Item label="11" value={11} />
+                      <Picker.Item label="12" value={12} />
+                      <Picker.Item label="13" value={13} />
+                      <Picker.Item label="14" value={14} />
+                      <Picker.Item label="15" value={15} />
+                      <Picker.Item label="16" value={16} />
+                      <Picker.Item label="17" value={17} />
+                      <Picker.Item label="18" value={18} />
+                      <Picker.Item label="19" value={19} />
+                      <Picker.Item label="20" value={20} />
+                    </Picker>
+                  </View>
+                </View>
+              </View>
               <View style={styles.buttonHolder}>
                 <Button
                   title="Crear"

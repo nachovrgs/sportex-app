@@ -49,7 +49,7 @@ export default class EventFeed extends Component {
   static navigatorButtons = {
     leftButtons: [
       {
-        icon: require("../../assets/images/bell.png"),
+        icon: require("../../assets/images/mail.png"),
         id: "notifications",
         buttonColor: "#ecf0f1",
         buttonFontSize: 20,
@@ -296,10 +296,6 @@ export default class EventFeed extends Component {
             error: ""
           });
           saveEvents(jsonResponse);
-          // if (this.state.initial) {
-          //   this.setState({ initial: false });
-          //   this._refreshListView();
-          // }
         })
         .catch(error => {
           this.setState({
@@ -309,7 +305,6 @@ export default class EventFeed extends Component {
             text: "Ocurrio un error",
             buttonText: "Ok"
           });
-          throw error;
         });
     }
   }

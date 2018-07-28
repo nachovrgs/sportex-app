@@ -22,7 +22,6 @@ class NotificationContainer extends Component {
       item: {},
       coords: {}
     };
-    this.handleViewPress = this.handleViewPress.bind(this);
     this.handleRemovePress = this.handleRemovePress.bind(this);
   }
 
@@ -38,19 +37,7 @@ class NotificationContainer extends Component {
   }
 
   //Helpers
-  handleViewPress() {
-    this.props.navigator.push({
-      screen: screens.invitationEvent.id,
-      title: screens.invitationEvent.title,
-      animated: true,
-      animationType: "fade",
-      backButtonHidden: screens.invitationEvent.backButtonHidden,
-      passProps: {
-        item: this.state.item.eventInvited,
-        eventInvitation: this.state.item
-      }
-    });
-  }
+
   handleRemovePress() {
     this.props.removeNotification(this.state.item.id);
   }
@@ -59,21 +46,12 @@ class NotificationContainer extends Component {
 
     const rightButtons = [
       <TouchableHighlight
-        style={styles.swipeContainerAccept}
-        onPress={() => this.handleViewPress()}
-      >
-        <Image
-          style={styles.swiperImage}
-          source={require("../../assets/images/eye.png")}
-        />
-      </TouchableHighlight>,
-      <TouchableHighlight
         style={styles.swipeContainerRemove}
         onPress={() => this.handleRemovePress()}
       >
         <Image
           style={styles.swiperImage}
-          source={require("../../assets/images/exit.png")}
+          source={require("../../assets/images/can.png")}
         />
       </TouchableHighlight>
     ];
@@ -85,6 +63,15 @@ class NotificationContainer extends Component {
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>{notification.message}</Text>
               </View>
+              <View style={styles.subtitleContainer}>
+                <Text style={styles.subtitle}>{notification.createdOn}</Text>
+              </View>
+            </View>
+            <View style={styles.info}>
+              <Image
+                style={styles.dotImage}
+                source={require("../../assets/images/dot.png")}
+              />
             </View>
           </View>
         </Swipeable>

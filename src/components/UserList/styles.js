@@ -7,31 +7,10 @@ export default StyleSheet.create({
     flex: 1
   },
   playersHolder: {
-    height: 400
-  },
-  playerSearchHolder: {
-    marginTop: 10,
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  search: {
-    width: 350,
-    padding: 5,
-    borderRadius: 25,
-    paddingLeft: 15,
-    paddingRight: 15,
-    paddingTop: 5,
-    paddingBottom: 5,
-    borderWidth: 1,
-    borderColor: colors.borders,
-    height: 40,
-    elevation: 1
+    height: 300
   },
   userList: {
-    height: 300,
-    marginTop: 20,
-    marginLeft: -10,
-    marginRight: -10
+    height: 200
   },
   noUsers: {
     marginTop: 200,
@@ -41,26 +20,34 @@ export default StyleSheet.create({
   participant: {
     height: 60,
     flex: 1,
+    flexDirection: "row",
+    borderBottomWidth: 0.5,
+    borderBottomColor: colors.text_grey
+  },
+  participantInfoHolder: {
+    flex: 8,
     flexDirection: "row"
   },
   iconHolder: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 1
+    flex: 2
   },
   participantIcon: {
-    height: sizes.xlarge,
-    width: sizes.xlarge,
-    borderRadius: 10,
+    height: 40,
+    width: 40,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: colors.white
   },
   dataHolder: {
     justifyContent: "center",
-    flex: 8
+    paddingLeft: 15,
+    flex: 9
   },
   participantName: {
-    fontSize: sizes.large
+    fontSize: sizes.large,
+    fontWeight: "200"
   },
   selectorHolder: {
     justifyContent: "center",

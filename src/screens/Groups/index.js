@@ -50,7 +50,7 @@ export default class Groups extends Component {
     ],
     leftButtons: [
       {
-        icon: require("../../assets/images/bell.png"),
+        icon: require("../../assets/images/mail.png"),
         id: "notifications",
         buttonColor: "#ecf0f1",
         buttonFontSize: 20,
