@@ -1,7 +1,7 @@
 //import libraries
 import React, { Component } from "react";
 import { View, Text, Image } from "react-native";
-
+import RNFetchBlob from "rn-fetch-blob";
 import { screens } from "../../screens";
 import PhotoUpload from "react-native-photo-upload";
 
@@ -11,7 +11,7 @@ import {
   getAccountIdForUsage,
   resetAndLogout
 } from "../../helpers/storage";
-import { API_URI, BLOB_URI } from "../../constants";
+import { API_URI, BLOB_URI, BLOB_ACCESS_KEY } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
 
@@ -109,6 +109,7 @@ export default class UserProfile extends Component {
         throw error;
       });
   }
+  uploadImage = image => {};
 
   render() {
     const profile = this.state.profile;
@@ -121,8 +122,7 @@ export default class UserProfile extends Component {
                 <PhotoUpload
                   onPhotoSelect={avatar => {
                     if (avatar) {
-                      //Send image to azure blob
-                      console.log("Image base64 string: ", avatar);
+                      this.uploadImage(avatar);
                     }
                   }}
                 >

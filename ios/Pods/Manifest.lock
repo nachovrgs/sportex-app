@@ -50,6 +50,8 @@ PODS:
     - React/Core
     - React/fishhook
     - React/RCTBlob
+  - rn-fetch-blob (0.10.6):
+    - React/Core
   - RNFS (2.10.14):
     - React
   - yoga (0.55.4.React)
@@ -65,6 +67,7 @@ DEPENDENCIES:
   - React/RCTNetwork (from `../node_modules/react-native`)
   - React/RCTText (from `../node_modules/react-native`)
   - React/RCTWebSocket (from `../node_modules/react-native`)
+  - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNFS (from `../node_modules/react-native-fs`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
 
@@ -83,6 +86,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-picker"
   react-native-image-resizer:
     :path: "../node_modules/react-native-image-resizer"
+  rn-fetch-blob:
+    :path: "../node_modules/rn-fetch-blob"
   RNFS:
     :path: "../node_modules/react-native-fs"
   yoga:
@@ -97,9 +102,10 @@ SPEC CHECKSUMS:
   React: aa2040dbb6f317b95314968021bd2888816e03d5
   react-native-image-picker: b303e31c3c4ada1d7cb1342423d328d2efb07fb3
   react-native-image-resizer: 04a3409e7d4ad646c4468671c69dec490def139c
+  rn-fetch-blob: 76a8f798dae965bbcd146a2438f2e1d381c91ae3
   RNFS: bbb1a64eb245763daf34aea86f97c97c4e85f74c
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: 2f8b84cdd320c762368d0406ee0a785afa74ded5
+PODFILE CHECKSUM: 292f73ac207bb41fa0025d8e8a0bb26e5a95c510
 
 COCOAPODS: 1.5.3

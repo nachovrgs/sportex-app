@@ -8,7 +8,6 @@ import {
   TouchableHighlight
 } from "react-native";
 import geolib from "geolib";
-import Swipeout from "react-native-swipeout";
 import { screens } from "../../screens";
 import { navigate } from "../../helpers/navigation";
 import Swipeable from "react-native-swipeable";

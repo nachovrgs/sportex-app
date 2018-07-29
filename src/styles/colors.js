@@ -9,7 +9,6 @@ export default {
   text_blue: "rgb(36, 57, 131)",
   text_light_blue: "rgb(50, 95, 255)",
   text_grey: "rgb(141, 141, 143)",
-  button: "#34495e",
   main: "#bdc3c7",
   text_orange: "rgb(255, 87, 34)",
   selections: "#e74c3c",
@@ -18,7 +17,9 @@ export default {
   bar_rank_3: "#27ae60",
   rating_gold: "#f1c40f",
   rating_back: "#ecf0f1",
+  button: "#34495e",
   button_green: "#2ecc71",
   button_red: "#e74c3c",
+  button_yellow: "#f1c40f",
   black: "#2d3436"
 };

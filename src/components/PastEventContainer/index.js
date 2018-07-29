@@ -1,6 +1,12 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TouchableHighlight
+} from "react-native";
 import geolib from "geolib";
 import { Icon, Thumbnail } from "native-base";
 import { Button } from "react-native-elements";
@@ -8,9 +14,9 @@ import { CurrentEventCard, ExpandedCurrentEventCard } from "../../components";
 import { screens } from "../../screens";
 import { navigate } from "../../helpers/navigation";
 import { API_URI } from "../../constants";
-import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 
-import { Rating } from "react-native-elements";
+import Swipeable from "react-native-swipeable";
+import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 
 import { colors } from "../../styles";
 import styles from "./styles";
@@ -22,13 +28,11 @@ class PastEventContainer extends Component {
     this.state = {
       item: {},
       coords: {},
-      expanded: false,
-      token: "",
+      token: null,
       profileId: null,
-      containerHeight: 120,
-      evaluation: 0
+      evaluation: 0,
+      reviewExist: false
     };
-    this.handlePress = this.handlePress.bind(this);
     this.selectBackgroundColor = this.selectBackgroundColor.bind(this);
     this.loadStorageItems = this.loadStorageItems.bind(this);
 
@@ -53,6 +57,7 @@ class PastEventContainer extends Component {
   async loadStorageItems() {
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();
+    this.checkIfEvaluationExists();
   }
 
   selectBackgroundColor() {
@@ -69,22 +74,12 @@ class PastEventContainer extends Component {
   getContainerHeight = () => {
     return this.state.containerHeight == 220 ? 120 : 220;
   };
-  handlePress = () => {
-    this.setState({
-      containerHeight: this.getContainerHeight(),
-      expanded: !this.state.expanded
-    });
-  };
+
   canEvaluate() {
     return true;
   }
-  storeEvaluation = rating => {
-    this.setState({
-      evaluation: rating
-    });
-  };
-  evaluateAction = () => {
-    fetch(`${API_URI}/playerReview/ReviewAllEventParticipants`, {
+  checkIfEvaluationExists = () => {
+    fetch(`${API_URI}/playerReview/reviewexists`, {
       method: "POST",
       headers: {
         Authorization:
@@ -94,102 +89,94 @@ class PastEventContainer extends Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        Rate: this.state.evaluation,
-        Message: "",
-        IdProfileReviews: this.state.profileId,
-        IdProfileReviewed: 0,
-        EventID: this.state.item.id
+        IdEvent: this.state.item.id,
+        IdProfileReviews: this.state.profileId
       })
     })
       .then(response => {
         if (response.ok) {
-          this.props.navigator.push({
-            screen: screens.historyFeed.id,
-            title: screens.historyFeed.title,
-            animated: true,
-            animationType: "fade",
-            backButtonHidden: screens.historyFeed.backButtonHidden
-          });
+          console.log(JSON.stringify(response));
+          this.setState({ reviewExist: response });
         } else {
           console.log("Network response was not ok.");
         }
       })
       .catch(error => {
         console.log(error);
-        throw error;
       });
   };
+
+  //UI
+  handleReviewPress = () => {
+    this.props.navigator.showModal({
+      screen: screens.rateEventModal.id,
+      title: screens.rateEventModal.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.rateEventModal.backButtonHidden,
+      passProps: {
+        event: this.state.item,
+        profileId: this.state.profileId,
+        token: this.state.token,
+        callback: () => this.callback()
+      }
+    });
+  };
+
   render() {
     const event = this.state.item;
+
     if (JSON.stringify(event) != JSON.stringify({})) {
-      let creator;
-      if (event.creatorProfile.picturePath == "") {
-        creator = (
-          <Thumbnail
-            source={require("../../assets/images/profile.png")}
-            style={styles.profilePic}
-          />
-        );
-      } else {
-        creator = (
-          <Thumbnail
-            source={{ uri: event.creatorProfile.picturePath }}
-            style={styles.profilePic}
-          />
-        );
-      }
+      const rightButtons = this.state.reviewExist
+        ? []
+        : [
+            <TouchableHighlight
+              style={styles.swipeContainerRemove}
+              onPress={() => this.handleReviewPress()}
+            >
+              <View>
+                <Image
+                  style={styles.swiperImage}
+                  source={require("../../assets/images/review.png")}
+                />
+                <Text style={styles.swipertext}>Evaluar</Text>
+              </View>
+            </TouchableHighlight>
+          ];
       return (
-        <View
-          style={[styles.container, { height: this.state.containerHeight }]}
-        >
-          <TouchableOpacity
-            style={styles.allContainer}
-            onPress={() => this.handlePress()}
-          >
-            <View style={styles.mainInfo}>
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>{event.eventName}</Text>
-              </View>
-              <View style={styles.userContainer}>
-                {creator}
-                <Text style={styles.user}>
-                  {event.creatorProfile.account.username}
-                </Text>
-              </View>
-              <View style={styles.timeContainer}>
-                <Icon name="time" style={styles.timeIcon} />
-                <Text style={styles.time}>
-                  {event.startingTime.split("T")[1]}
-                </Text>
-              </View>
+        <Swipeable rightButtons={rightButtons}>
+          <View style={styles.container}>
+            <View style={styles.avatarHolder}>
+              <Image
+                style={styles.avatar}
+                source={{
+                  uri:
+                    event.creatorProfile.picturePath &&
+                    event.creatorProfile.picturePath != ""
+                      ? event.creatorProfile.picturePath
+                      : "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
+                }}
+              />
             </View>
-            <View styles={styles.map} />
-          </TouchableOpacity>
-          {this.state.expanded && (
-            <View style={styles.ratingContainer}>
-              <View style={styles.rating}>
-                <Rating
-                  type="star"
-                  ratingCount={5}
-                  fractions={0}
-                  startingValue={event.rating ? event.rating : 0}
-                  imageSize={30}
-                  onFinishRating={this.storeEvaluation}
-                  showRating={event.rating ? true : false}
-                  style={{ paddingVertical: 10 }}
-                />
-              </View>
-              <View style={styles.buttonContainer}>
-                <Button
-                  style={styles.button}
-                  success
-                  onPress={this.evaluateAction}
-                  title="Evaluar"
-                />
-              </View>
+            <View style={styles.dataHolder}>
+              <Text style={styles.name}>{event.eventName}</Text>
+              <Text style={styles.time}>
+                {event.startingTime.split("T")[1]}
+              </Text>
             </View>
-          )}
-        </View>
+            <View style={styles.info}>
+              {!this.state.reviewExist && (
+                <View>
+                  <Image
+                    style={styles.dotImage}
+                    source={require("../../assets/images/mark.png")}
+                  />
+                  <Text style={styles.dotText}>Swipe</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        </Swipeable>
       );
     } else {
       return null;

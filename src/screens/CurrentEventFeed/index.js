@@ -42,7 +42,7 @@ export default class CurrentEventFeed extends Component {
   static navigatorButtons = {
     rightButtons: [
       {
-        icon: require("../../assets/images/history.png"),
+        icon: require("../../assets/images/time.png"),
         id: "history",
         buttonColor: "#ecf0f1",
         buttonFontSize: 20,

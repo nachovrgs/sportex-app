@@ -41,7 +41,17 @@ export default class NotificationFeed extends Component {
     navBarTextAlignment: "center"
   };
   _keyExtractor = (item, index) => item.id.toString();
-
+  static navigatorButtons = {
+    rightButtons: [
+      {
+        icon: require("../../assets/images/broom.png"),
+        id: "clean",
+        buttonColor: "#ecf0f1",
+        buttonFontSize: 15,
+        buttonFontWeight: "600"
+      }
+    ]
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -50,6 +60,14 @@ export default class NotificationFeed extends Component {
       refreshing: false,
       noNotificationsShowed: false
     };
+    this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
+  }
+  onNavigatorEvent(event) {
+    if (event.type == "NavBarButtonPress") {
+      if (event.id == "clean") {
+        this.cleanAll();
+      }
+    }
   }
   componentDidMount() {
     this.getStorageNotifications();
@@ -127,6 +145,40 @@ export default class NotificationFeed extends Component {
         });
       });
   }
+  cleanAll = () => {
+    fetch(`${API_URI}/notification/setallseen/${this.state.profileId}`, {
+      method: "PUT",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          this._refreshListView();
+        } else {
+          this.setState({
+            refreshing: false
+          });
+          Toast.show({
+            text: "Imposible conectarse al servidor. Tienes internet?",
+            buttonText: "Ok"
+          });
+        }
+      })
+      .catch(error => {
+        this.setState({
+          refreshing: false
+        });
+        Toast.show({
+          text: "Ocurrio un error",
+          buttonText: "Ok"
+        });
+      });
+  };
 
   removeNotification = notificationId => {
     fetch(`${API_URI}/notification/setseen/${notificationId}`, {
@@ -143,23 +195,23 @@ export default class NotificationFeed extends Component {
         if (response.ok) {
           this._refreshListView();
         } else {
-          console.log("Network response was not ok.");
           this.setState({
-            isLoading: false,
-            isError: true,
-            error: "Network response was not ok."
+            refreshing: false
           });
-          return new Error("Network response was not ok.");
+          Toast.show({
+            text: "Imposible conectarse al servidor. Tienes internet?",
+            buttonText: "Ok"
+          });
         }
       })
       .catch(error => {
-        console.log(error);
         this.setState({
-          isLoading: false,
-          isError: true,
-          error: error.message
+          refreshing: false
         });
-        throw error;
+        Toast.show({
+          text: "Ocurrio un error",
+          buttonText: "Ok"
+        });
       });
   };
 
