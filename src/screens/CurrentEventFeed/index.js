@@ -215,6 +215,7 @@ export default class CurrentEventFeed extends Component {
             data={this.state.dataSource}
             keyExtractor={this._keyExtractor}
             renderItem={this._renderItem}
+            extraData={this.state.dataSource}
           />
         </View>
       </Root>

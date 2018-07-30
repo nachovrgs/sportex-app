@@ -68,7 +68,7 @@ export default StyleSheet.create({
     fontWeight: "300"
   },
   playersHolder: {
-    height: 400
+    height: 300
   },
   playerSearchHolder: {
     marginTop: 10,
@@ -89,7 +89,7 @@ export default StyleSheet.create({
     elevation: 1
   },
   userList: {
-    height: 300,
+    height: 200,
     marginTop: 20,
     marginLeft: -10,
     marginRight: -10

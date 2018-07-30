@@ -45,39 +45,10 @@ export default class RateEventModal extends Component {
   //Helper methods
   evaluateAction = () => {
     this.setState({ isLoading: true });
-    fetch(`${API_URI}/playerReview/ReviewAllEventParticipants`, {
-      method: "POST",
-      headers: {
-        Authorization:
-          "Bearer " +
-          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        Rate: this.state.evaluation,
-        Message: "Buen Partido!",
-        IdProfileReviews: this.state.profileId,
-        IdProfileReviewed: 0,
-        EventID: this.state.event.id
-      })
-    })
-      .then(response => {
-        if (response.ok) {
-          this.state.callback();
-          this.this.props.navigator.dismissModal({
-            animationType: "slide-down"
-          });
-        } else {
-          this.setState({ isLoading: false });
-          console.log("Network response was not ok.");
-        }
-      })
-      .catch(error => {
-        this.setState({ isLoading: false });
-        console.log(error);
-        throw error;
-      });
+    this.state.callback(this.state.evaluation);
+    this.props.navigator.dismissModal({
+      animationType: "slide-down"
+    });
   };
 
   //UI

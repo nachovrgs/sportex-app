@@ -44,7 +44,8 @@ class PastEventContainer extends Component {
     this._mounted = true;
     this.setState({
       item: this.props.eventItem,
-      coords: {}
+      coords: {},
+      masterCallback: this.props.masterCallback
     });
     this.selectBackgroundColor();
   }
@@ -53,7 +54,6 @@ class PastEventContainer extends Component {
   }
 
   //Helpers
-
   async loadStorageItems() {
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();
@@ -80,13 +80,14 @@ class PastEventContainer extends Component {
   }
   checkIfEvaluationExists = () => {
     fetch(`${API_URI}/playerReview/reviewexists`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         Authorization:
           "Bearer " +
           (this.state.token ? this.state.token.replace(/"/g, "") : ""),
         Accept: "application/json",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache"
       },
       body: JSON.stringify({
         IdEvent: this.state.item.id,
@@ -95,17 +96,22 @@ class PastEventContainer extends Component {
     })
       .then(response => {
         if (response.ok) {
-          console.log(JSON.stringify(response));
-          this.setState({ reviewExist: response });
+          return response.json();
         } else {
           console.log("Network response was not ok.");
         }
+      })
+      .then(boolResponse => {
+        console.log(boolResponse);
+        this.setState({ reviewExist: boolResponse });
       })
       .catch(error => {
         console.log(error);
       });
   };
-
+  callback = evaluation => {
+    this.state.masterCallback(this.state.eventId, evaluation);
+  };
   //UI
   handleReviewPress = () => {
     this.props.navigator.showModal({
@@ -118,7 +124,7 @@ class PastEventContainer extends Component {
         event: this.state.item,
         profileId: this.state.profileId,
         token: this.state.token,
-        callback: () => this.callback()
+        callback: evaluation => this.callback(evaluation)
       }
     });
   };

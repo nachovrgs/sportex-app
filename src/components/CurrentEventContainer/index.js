@@ -65,25 +65,7 @@ class CurrentEventContainer extends Component {
     const event = this.state.item;
     if (JSON.stringify(event) != JSON.stringify({})) {
       const date = new Date(event.startingTime.split("T")[0]).toDateString();
-      let creator;
-      if (
-        event.creatorProfile.picturePath == "" ||
-        event.creatorProfile.picturePath == null
-      ) {
-        creator = (
-          <Thumbnail
-            source={require("../../assets/images/profile.png")}
-            style={styles.profilePic}
-          />
-        );
-      } else {
-        creator = (
-          <Thumbnail
-            source={{ uri: event.creatorProfile.picturePath }}
-            style={styles.profilePic}
-          />
-        );
-      }
+
       return (
         <View
           style={[styles.container, { height: this.state.containerHeight }]}
@@ -100,7 +82,16 @@ class CurrentEventContainer extends Component {
                 <Text style={styles.name}>{event.eventName}</Text>
               </View>
               <View style={styles.userContainer}>
-                {creator}
+                <Image
+                  style={styles.profilePic}
+                  source={{
+                    uri:
+                      event.creatorProfile.picturePath &&
+                      event.creatorProfile.picturePath != ""
+                        ? event.creatorProfile.picturePath
+                        : "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
+                  }}
+                />
                 <Text style={styles.user}>
                   {event.creatorProfile.account.username}
                 </Text>
@@ -109,12 +100,13 @@ class CurrentEventContainer extends Component {
             <View style={styles.sideInfo}>
               <View style={styles.hourContainer}>
                 <Text style={styles.hour}>
-                  {event.startingTime.split("T")[1].split(":")[0]} hs
+                  {event.startingTime.split("T")[1].split(":")[0]} :{" "}
+                  {event.startingTime.split("T")[1].split(":")[1]} hs
                 </Text>
               </View>
               <View style={styles.fillContainer}>
+                <Icon name="contacts" style={styles.fillIcon} />
                 <Text style={styles.fill}>
-                  <Icon name="contacts" style={styles.fillIcon} />
                   {event.countStarters} / {event.maxStarters}
                 </Text>
               </View>

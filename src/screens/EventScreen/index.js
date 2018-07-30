@@ -7,7 +7,9 @@ import {
   AsyncStorage,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  TextInput,
+  Platform
 } from "react-native";
 import geolib from "geolib";
 import MapView from "react-native-maps";
@@ -20,9 +22,11 @@ import {
   DeckSwiper,
   Card,
   CardItem,
+  Picker,
   Root
 } from "native-base";
 
+import DateTimePicker from "react-native-modal-datetime-picker";
 import { Button } from "react-native-elements";
 import { screens } from "../../screens";
 import styles from "./styles";
@@ -54,7 +58,9 @@ export default class EventScreen extends Component {
       showingPlayers: true,
       isOwner: false,
       editMode: false,
-      isLoadingAction: false
+      isLoadingAction: false,
+      locations: [],
+      selectedLocation: null
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
     this.exitAction = this.exitAction.bind(this);
@@ -67,7 +73,7 @@ export default class EventScreen extends Component {
     this.setState({
       itemId: this.props.eventItemId
     });
-    this.loadEvent();
+    this.loadStorageItems();
   }
 
   // Handle nav bar navigation
@@ -120,9 +126,15 @@ export default class EventScreen extends Component {
     });
   }
   //Helpers
-  async loadEvent() {
+  async loadStorageItems() {
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();
+    this.loadEvent();
+    await this.loadLocations();
+  }
+
+  //API
+  async loadEvent() {
     fetch(`${API_URI}/event/${this.state.itemId}`, {
       method: "GET",
       headers: {
@@ -148,6 +160,7 @@ export default class EventScreen extends Component {
         this.setState({
           item: jsonResponse,
           isLoading: false,
+          selectedLocation: jsonResponse.locationID,
           error: "",
           isOwner: jsonResponse.standardProfileID == this.state.profileId
         });
@@ -162,6 +175,47 @@ export default class EventScreen extends Component {
         throw error;
       });
   }
+
+  async loadLocations() {
+    fetch(`${API_URI}/Location/`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          this.setState({
+            isLoading: false,
+            isError: true,
+            error: "Network response was not ok.",
+            token: ""
+          });
+          return new Error("Network response was not ok.");
+        }
+      })
+      .then(jsonResponse => {
+        this.setState({
+          locations: jsonResponse,
+          isLoading: false,
+          error: ""
+        });
+      })
+      .catch(error => {
+        this.setState({
+          isLoading: false,
+          isError: true,
+          error: error.message,
+          token: ""
+        });
+        throw error;
+      });
+  }
+
   returnBack() {
     this.props.navigator.push({
       screen: screens.currentEventFeed.id,
@@ -235,7 +289,7 @@ export default class EventScreen extends Component {
       });
   };
 
-  //add
+  //UI
   addAction = () => {
     this.props.navigator.showModal({
       screen: screens.addPlayersSelectionModal.id,
@@ -251,6 +305,115 @@ export default class EventScreen extends Component {
   canAdd() {
     return true;
   }
+  changeEventName(text) {
+    var item = this.state.item;
+    item.eventName = text;
+    this.setState({ item: item });
+  }
+  //Date
+  _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
+
+  _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
+
+  _handleDatePicked = date => {
+    var item = this.state.item;
+    var time = this.state.item.startingTime.split("T")[1];
+    item.startingTime = this.cleanDate(date) + "T" + time;
+    this.setState({ item: item });
+    this._hideDateTimePicker();
+  };
+  //Time
+  _showTimePicker = () => this.setState({ isTimePickerVisible: true });
+
+  _hideTimePicker = () => this.setState({ isTimePickerVisible: false });
+
+  _handleTimePicked = time => {
+    var item = this.state.item;
+    var date = this.state.item.startingTime.split("T")[0];
+    item.startingTime = date + "T" + this.cleanTime(time);
+    this.setState({ item: item });
+    this._hideTimePicker();
+  };
+
+  cleanDate = date => {
+    if (date) {
+      var day =
+        String(date.getDate()).length == 1
+          ? "0" + date.getDate() + 1
+          : date.getDate() + 1 == 32
+            ? date.getDate()
+            : date.getDate() + 1;
+      var month =
+        String(date.getMonth()).length == 1
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1;
+      var year = date.getFullYear();
+      return year + "-" + month + "-" + day;
+    }
+  };
+
+  cleanTime = time => {
+    if (time) {
+      var hour =
+        String(time.getHours()).length == 1
+          ? "0" + time.getHours()
+          : time.getHours();
+      var minute =
+        String(time.getMinutes()).length == 1
+          ? "0" + time.getMinutes()
+          : time.getMinutes();
+      var second =
+        String(time.getSeconds()).length == 1
+          ? "0" + time.getSeconds()
+          : time.getSeconds();
+      return hour + ":" + minute + ":" + second;
+    }
+  };
+  onValueChangeLocations(value) {
+    var item = this.state.item;
+    item.locationID = value;
+    item.location = this.findLocation(value);
+    this.setState({
+      item: item,
+      selectedLocation: value
+    });
+  }
+  findLocation = locationId => {
+    const { locations } = this.state.locations;
+    var location = null;
+    this.state.locations.forEach(async element => {
+      if (element.id == locationId) {
+        location = element;
+      }
+    });
+    return location;
+  };
+
+  submitChanges = () => {
+    fetch(`${API_URI}/event/${this.state.itemId}`, {
+      method: "PUT",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(this.state.item)
+    })
+      .then(response => {
+        if (response.ok) {
+          //reload
+          this.loadEvent();
+        } else {
+          console.log("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        throw error;
+      });
+  };
   goToProfile(profile) {
     this.props.navigator.push({
       screen: screens.profileScreen.id,
@@ -268,8 +431,28 @@ export default class EventScreen extends Component {
       showingPlayers: !this.state.showingPlayers
     });
   }
+  startEditing() {
+    this.setState({ editMode: true });
+  }
+  finishEditing() {
+    this.setState({ editMode: false });
+    this.submitChanges();
+  }
+  _renderLocationOptionItem = list => {
+    d = list.map((data, i) => {
+      return <Picker.Item label={data.name} value={data.id} />;
+    });
+    // i did this because no need in ios :P
+    if (Platform.OS === "android") {
+      d.unshift(<Picker.Item label="Select" />);
+    }
+    return d;
+    //and that's how you are ready to go, because this issue isn't fixed yet (checked on 28-Dec-2017)
+  };
+
   render() {
     const event = this.state.item;
+    const locations = this.state.locations;
     if (JSON.stringify(event) != JSON.stringify({})) {
       const isOwner = this.state.isOwner;
       const cards = [
@@ -285,6 +468,7 @@ export default class EventScreen extends Component {
       const date = event.startingTime
         ? new Date(event.startingTime.split("T")[0]).toDateString()
         : new Date().toDateString();
+
       return this.state.isLoading ? (
         <Root>
           <View style={styles.loaderContainer}>
@@ -315,26 +499,89 @@ export default class EventScreen extends Component {
             <View style={styles.head}>
               <View style={styles.headInfo}>
                 <View style={styles.titleContainer}>
-                  <Text style={styles.title}>{event.eventName}</Text>
-                  {isOwner && (
-                    <TouchableOpacity
-                      onPress={() => this.setState({ editMode: true })}
-                    >
-                      <Image
-                        style={styles.ownerEditButton}
-                        source={require("../../assets/images/edit.png")}
+                  <View style={styles.titleHolder}>
+                    {this.state.editMode && (
+                      <TextInput
+                        style={styles.titleEdit}
+                        onChangeText={text => this.changeEventName(text)}
+                        autoCorrect={false}
+                        value={event.eventName}
                       />
-                    </TouchableOpacity>
-                  )}
+                    )}
+                    {!this.state.editMode && (
+                      <Text style={styles.title}>
+                        {event.eventName.length > 15
+                          ? event.eventName.substring(0, 15 - 3) + "..."
+                          : event.eventName}
+                      </Text>
+                    )}
+                  </View>
+                  <View style={styles.editHolder}>
+                    {isOwner &&
+                      !this.state.editMode && (
+                        <TouchableOpacity onPress={() => this.startEditing()}>
+                          <Image
+                            style={styles.ownerEditButton}
+                            source={require("../../assets/images/edit.png")}
+                          />
+                        </TouchableOpacity>
+                      )}
+                    {isOwner &&
+                      this.state.editMode && (
+                        <TouchableOpacity onPress={() => this.finishEditing()}>
+                          <Image
+                            style={styles.ownerEditButton}
+                            source={require("../../assets/images/save.png")}
+                          />
+                        </TouchableOpacity>
+                      )}
+                  </View>
                 </View>
                 <View style={styles.subTitleContainer}>
-                  <View style={styles.subtitle}>
-                    <Text style={styles.date}>{date}</Text>
-                    <Text style={styles.hour}>
-                      {" "}
-                      | {event.startingTime.split("T")[1].split(":")[0]} hs
-                    </Text>
-                  </View>
+                  {isOwner &&
+                    !this.state.editMode && (
+                      <View style={styles.subtitle}>
+                        <Text style={styles.date}>{date}</Text>
+                        <Text style={styles.hour}>
+                          {" "}
+                          | {
+                            event.startingTime.split("T")[1].split(":")[0]
+                          } : {event.startingTime.split("T")[1].split(":")[1]}{" "}
+                          hs
+                        </Text>
+                      </View>
+                    )}
+                  {isOwner &&
+                    this.state.editMode && (
+                      <View style={styles.subtitle}>
+                        <TouchableOpacity onPress={this._showDateTimePicker}>
+                          <Text style={styles.date}>{date}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this._showTimePicker}>
+                          <Text style={styles.hour}>
+                            {" "}
+                            | {
+                              event.startingTime.split("T")[1].split(":")[0]
+                            } : {event.startingTime.split("T")[1].split(":")[1]}{" "}
+                            hs
+                          </Text>
+                        </TouchableOpacity>
+                        <DateTimePicker
+                          isVisible={this.state.isDateTimePickerVisible}
+                          onConfirm={this._handleDatePicked}
+                          onCancel={this._hideDateTimePicker}
+                          minimumDate={new Date()}
+                          // maximumDate={new Date().setMonth((new Date().getMonth()+1))}
+                        />
+                        <DateTimePicker
+                          isVisible={this.state.isTimePickerVisible}
+                          onConfirm={this._handleTimePicked}
+                          onCancel={this._hideTimePicker}
+                          minuteInterval={30}
+                          mode="time"
+                        />
+                      </View>
+                    )}
                 </View>
               </View>
               <View style={styles.headOptions}>
@@ -348,11 +595,29 @@ export default class EventScreen extends Component {
             </View>
             <View style={styles.content}>
               <View style={styles.locationContainer}>
-                <Text style={styles.location}>{event.location.name}</Text>
+                {isOwner &&
+                  !this.state.editMode && (
+                    <Text style={styles.location}>{event.location.name}</Text>
+                  )}
+                {isOwner &&
+                  this.state.editMode && (
+                    <Picker
+                      mode="dropdown"
+                      note={false}
+                      style={styles.locationPicker}
+                      placeholderStyle={{ color: "#bfc6ea" }}
+                      placeholderIconColor="#007aff"
+                      selectedValue={this.state.selectedLocation}
+                      placeholderStyle={styles.locationPickerItem}
+                      onValueChange={this.onValueChangeLocations.bind(this)}
+                    >
+                      {this._renderLocationOptionItem(locations)}
+                    </Picker>
+                  )}
               </View>
               <View style={styles.mapContainer}>
                 <MapView
-                  initialRegion={{
+                  region={{
                     latitude: event.location.latitude
                       ? event.location.latitude
                       : 37.78825,
@@ -365,10 +630,23 @@ export default class EventScreen extends Component {
                   scrollEnabled={true}
                   liteMode={true}
                   style={styles.map}
-                />
-              </View>
-              <View style={styles.descriptionContainer}>
-                <Text style={styles.description}>{event.description}</Text>
+                  showsUserLocation={true}
+                  showsMyLocationButton={true}
+                >
+                  <MapView.Marker
+                    coordinate={{
+                      latitude: event.location.latitude,
+                      longitude: event.location.longitude
+                    }}
+                    title={"Tu partido"}
+                    description={event.location.name}
+                  >
+                    <Image
+                      source={require("../../assets/images/location.png")}
+                      style={styles.markerImage}
+                    />
+                  </MapView.Marker>
+                </MapView>
               </View>
             </View>
             <View style={styles.footer}>

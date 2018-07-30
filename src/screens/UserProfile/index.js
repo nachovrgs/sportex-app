@@ -1,14 +1,16 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import RNFetchBlob from "rn-fetch-blob";
 import { screens } from "../../screens";
 import PhotoUpload from "react-native-photo-upload";
 
+import { Divider, Rating } from "react-native-elements";
 import { Thumbnail } from "native-base";
 import {
   getTokenForUsage,
   getAccountIdForUsage,
+  getProfileIdForUsage,
   resetAndLogout
 } from "../../helpers/storage";
 import { API_URI, BLOB_URI, BLOB_ACCESS_KEY } from "../../constants";
@@ -44,9 +46,11 @@ export default class UserProfile extends Component {
       isError: false,
       error: "",
       token: "",
-      accountID: ""
+      accountID: "",
+      profileId: "",
+      groups: []
     };
-    this.loadData();
+    this.loadStorageItems();
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
   onNavigatorEvent(event) {
@@ -68,9 +72,15 @@ export default class UserProfile extends Component {
       }
     }
   }
-  async loadData() {
+
+  async loadStorageItems() {
     this.state.token = await getTokenForUsage();
     this.state.accountID = await getAccountIdForUsage();
+    this.state.profileId = await getProfileIdForUsage();
+    this.loadData();
+    this.loadGroups();
+  }
+  async loadData() {
     fetch(`${API_URI}/standardProfile/account/${this.state.accountID}`, {
       method: "GET",
       headers: {
@@ -109,44 +119,220 @@ export default class UserProfile extends Component {
         throw error;
       });
   }
+
+  async loadGroups() {
+    fetch(`${API_URI}/group/Joined/${this.state.profileId}`, {
+      method: "GET",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : "")
+      }
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          Toast.show({
+            text: "Imposible conectarse al servidor. Tienes internet?",
+            buttonText: "Ok"
+          });
+        }
+      })
+      .then(jsonResponse => {
+        if (jsonResponse.length == 0 && !this.state.noEventsShowed) {
+          Toast.show({
+            text: "No hay grupos! Crea uno.",
+            buttonText: "Ok",
+            onClose: this.toggleNoEventsShowed
+          });
+        }
+        this.setState({
+          groups: jsonResponse
+        });
+        console.log(JSON.stringify(jsonResponse));
+      })
+      .catch(error => {
+        Toast.show({
+          text: "Ocurrio un error!",
+          buttonText: "Ok"
+        });
+      });
+  }
   uploadImage = image => {};
+
+  handleGroupPress(groupId) {
+    this.props.navigator.showModal({
+      screen: screens.groupScreen.id,
+      title: screens.groupScreen.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.groupScreen.backButtonHidden,
+      passProps: {
+        groupId: groupId
+      }
+    });
+  }
 
   render() {
     const profile = this.state.profile;
-    if (JSON.stringify(profile) != JSON.stringify({})) {
+    const groups = this.state.groups;
+    if (
+      JSON.stringify(profile) != JSON.stringify({}) &&
+      JSON.stringify(groups) != JSON.stringify([])
+    ) {
+      console.log(JSON.stringify(profile));
       return (
-        <View style={styles.background}>
-          <View style={styles.container}>
-            <View style={styles.head}>
-              <View style={styles.imageContainer}>
-                <PhotoUpload
-                  onPhotoSelect={avatar => {
-                    if (avatar) {
-                      this.uploadImage(avatar);
-                    }
+        <View style={styles.container}>
+          <View style={styles.head}>
+            <View style={styles.imageContainer}>
+              <PhotoUpload
+                onPhotoSelect={avatar => {
+                  if (avatar) {
+                    this.uploadImage(avatar);
+                  }
+                }}
+              >
+                <Image
+                  style={styles.avatar}
+                  resizeMode="cover"
+                  source={{
+                    uri:
+                      profile.picturePath != null && profile.picturePath != ""
+                        ? profile.picturePath
+                        : "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
                   }}
-                >
-                  <Image
-                    style={styles.avatar}
-                    resizeMode="cover"
-                    source={{
-                      uri:
-                        profile.picturePath != null && profile.picturePath != ""
-                          ? profile.picturePath
-                          : "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
-                    }}
-                  />
-                </PhotoUpload>
+                />
+              </PhotoUpload>
+            </View>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>
+                {profile.firstName} {profile.lastName}
+              </Text>
+              <Text style={styles.username}>{profile.account.username}</Text>
+            </View>
+          </View>
+          <View style={styles.divider}>
+            <Divider style={{ backgroundColor: colors.text_grey }} />
+          </View>
+          <View style={styles.rating}>
+            <Text style={styles.sectionTitle}>Rating: </Text>
+            <View style={styles.rating}>
+              <Rating
+                type="star"
+                ratingCount={5}
+                fractions={0}
+                startingValue={profile.averageRating}
+                imageSize={30}
+                readonly
+                ratingColor={colors.text_orange}
+                showRating={false}
+                style={{ paddingVertical: 10 }}
+              />
+            </View>
+            <Text style={styles.ratingSubtitle}>
+              {profile.countReviews} reviews
+            </Text>
+          </View>
+          <View style={styles.divider}>
+            <Divider style={{ backgroundColor: colors.text_grey }} />
+          </View>
+          <View style={styles.challenges}>
+            <View style={styles.challengesTitleHolder}>
+              <Text style={styles.sectionTitle}>Rivales:</Text>
+            </View>
+            <View style={styles.challengesContentHolder}>
+              <View style={styles.groupHolder}>
+                <Image
+                  style={styles.groupItem}
+                  source={{
+                    uri:
+                      "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                  }}
+                />
               </View>
-              <View style={styles.titleContainer}>
-                <Text style={styles.title}>{profile.firstName}</Text>
+              <View style={styles.groupHolder}>
+                <Image
+                  style={styles.groupItem}
+                  source={{
+                    uri:
+                      "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                  }}
+                />
+              </View>
+              <View style={styles.groupHolder}>
+                <Image
+                  style={styles.groupItem}
+                  source={{
+                    uri:
+                      "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                  }}
+                />
+              </View>
+              <View style={styles.groupHolder}>
+                <Image
+                  style={styles.groupItem}
+                  source={{
+                    uri:
+                      "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                  }}
+                />
+              </View>
+              <View style={styles.groupHolder}>
+                <Image
+                  style={styles.groupItem}
+                  source={{
+                    uri:
+                      "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                  }}
+                />
+              </View>
+              <View style={styles.groupHolder}>
+                <Image
+                  style={styles.groupItem}
+                  source={{
+                    uri:
+                      "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                  }}
+                />
               </View>
             </View>
-            <View style={styles.body}>
-              <View style={styles.descriptionContainer}>
-                <Text style={styles.title}>{profile.lastName}</Text>
-                <Text style={styles.title}>{profile.mailAddress}</Text>
-              </View>
+          </View>
+          <View style={styles.divider}>
+            <Divider style={{ backgroundColor: colors.text_grey }} />
+          </View>
+          <View style={styles.played}>
+            <Text style={styles.sectionTitle}>Partidos jugados:</Text>
+            <Text style={styles.playedSubtitle}>
+              {profile.countReviews} partidos
+            </Text>
+          </View>
+          <View style={styles.divider}>
+            <Divider style={{ backgroundColor: colors.text_grey }} />
+          </View>
+          <View style={styles.sharedGroups}>
+            <View style={styles.sharedGroupsTitleHolder}>
+              <Text style={styles.sectionTitle}>Mis grupos:</Text>
+            </View>
+            <View style={styles.challengesContentHolder}>
+              {groups.length > 0 &&
+                groups.map((group, i) => (
+                  <View style={styles.groupHolder}>
+                    <TouchableOpacity
+                      onPress={() => this.handleGroupPress(group.id)}
+                    >
+                      <Image
+                        style={styles.groupItem}
+                        source={{
+                          uri:
+                            group.picturePath && group.picturePath != ""
+                              ? group.picturePath
+                              : "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                        }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ))}
             </View>
           </View>
         </View>

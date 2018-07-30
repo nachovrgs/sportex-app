@@ -9,7 +9,8 @@ export default StyleSheet.create({
     padding: 20,
     backgroundColor: "rgba(255,255,255,0.1)",
     borderBottomColor: colors.borders,
-    borderBottomWidth: StyleSheet.hairlineWidth
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    marginTop: 15
   },
   noEventsContainer: {
     flex: 1,
@@ -39,16 +40,16 @@ export default StyleSheet.create({
   head: {
     height: 85,
     flexDirection: "row",
-    paddingTop: 20
+    paddingTop: 5
   },
   content: {
     height: 210,
     flexDirection: "column",
-    paddingTop: 30
+    paddingTop: 5
   },
   footer: {
     height: 450,
-    paddingTop: 20
+    paddingTop: 5
   },
   //Level 2
   headInfo: {
@@ -58,15 +59,31 @@ export default StyleSheet.create({
   },
   titleContainer: {
     height: 35,
+    flex: 1,
     flexDirection: "row"
   },
   subTitleContainer: {
     height: 30
   },
+  editHolder: {
+    flex: 1
+  },
+  titleHolder: {
+    flex: 4
+  },
   title: {
     fontSize: sizes.xlarge,
     color: colors.text_light_blue,
     fontWeight: "900"
+  },
+  titleEdit: {
+    width: 250,
+    padding: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.white,
+    height: 30,
+    elevation: 1
   },
   ownerEditButton: {
     height: 15,
@@ -89,6 +106,9 @@ export default StyleSheet.create({
     fontWeight: "bold",
     marginTop: 3
   },
+  dateEditHolder: {
+    width: 100
+  },
   headOptions: {
     flex: 1,
     flexDirection: "column",
@@ -100,7 +120,7 @@ export default StyleSheet.create({
     height: 30
   },
   mapContainer: {
-    height: 120,
+    height: 130,
     marginLeft: -18,
     marginRight: -18
   },
@@ -112,8 +132,23 @@ export default StyleSheet.create({
     fontSize: sizes.medium,
     color: colors.text_grey
   },
+  locationPicker: {
+    width: 200,
+    height: 50,
+    marginTop: -15,
+    marginLeft: -10
+  },
+  locationPickerItem: {
+    fontSize: sizes.medium,
+    color: colors.text_grey
+  },
+
   map: {
-    height: 120
+    height: 130
+  },
+  markerImage: {
+    width: 20,
+    height: 20
   },
   description: {
     flex: 1,
@@ -130,7 +165,7 @@ export default StyleSheet.create({
     color: colors.text_blue
   },
   playersContainer: {
-    height: 250
+    height: 150
   },
   //Members
   memberListItem: {
@@ -155,10 +190,10 @@ export default StyleSheet.create({
     fontSize: sizes.small
   },
   swiper: {
-    height: 250
+    height: 150
   },
   swiperCard: {
-    height: 250,
+    height: 150,
     elevation: 1
   },
   button: {

@@ -8,8 +8,9 @@ export default StyleSheet.create({
     flex: 1,
     height: 120,
     margin: 22,
+    padding: 10,
     backgroundColor: "rgba(255,255,255,0.9)",
-    borderRadius: 10,
+    borderRadius: 5,
     borderWidth: 1,
     borderColor: colors.borders,
     elevation: 1
@@ -27,12 +28,12 @@ export default StyleSheet.create({
   },
   mainInfo: {
     flex: 10,
-    padding: 10,
     flexDirection: "column"
   },
   sideInfo: {
-    flex: 5,
-    padding: 10
+    flex: 3,
+    alignItems: "flex-end",
+    justifyContent: "center"
   },
   head: {
     flex: 1,
@@ -62,8 +63,11 @@ export default StyleSheet.create({
     marginLeft: 10
   },
   profilePic: {
+    height: 20,
     width: 20,
-    height: 20
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.white
   },
   timeContainer: {
     flex: 1,
@@ -89,19 +93,25 @@ export default StyleSheet.create({
     flex: 2,
     alignItems: "flex-end"
   },
+  fillContainer: {
+    flex: 2,
+    paddingTop: 30,
+    alignItems: "flex-end",
+    justifyContent: "center",
+    flexDirection: "row",
+    paddingBottom: 10
+  },
   fill: {
     flex: 1,
     fontSize: sizes.small,
-    color: colors.text
-  },
-  fillContainer: {
-    flex: 1,
-    marginTop: 30,
-    alignItems: "flex-end"
+    color: colors.text,
+    marginBottom: 5
   },
   fillIcon: {
-    fontSize: sizes.medium,
-    marginRight: 10
+    flex: 1,
+    fontSize: sizes.large,
+    marginTop: 5,
+    marginLeft: 15
   },
   eventImage: {
     height: 25,

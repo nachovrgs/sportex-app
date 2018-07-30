@@ -166,25 +166,7 @@ class EventContainer extends Component {
           ? event.location.longitude
           : -37.78825
       };
-      let creator;
-      if (
-        event.creatorProfile.picturePath == "" ||
-        event.creatorProfile.picturePath == null
-      ) {
-        creator = (
-          <Thumbnail
-            source={require("../../assets/images/profile.png")}
-            style={styles.profilePic}
-          />
-        );
-      } else {
-        creator = (
-          <Thumbnail
-            source={{ uri: event.creatorProfile.picturePath }}
-            style={styles.profilePic}
-          />
-        );
-      }
+
       return (
         <View
           style={[styles.container, { height: this.state.containerHeight }]}
@@ -199,7 +181,16 @@ class EventContainer extends Component {
                 <Text style={styles.title}>{event.eventName}</Text>
               </View>
               <View style={styles.userContainer}>
-                {creator}
+                <Image
+                  style={styles.profilePic}
+                  source={{
+                    uri:
+                      event.creatorProfile.picturePath &&
+                      event.creatorProfile.picturePath != ""
+                        ? event.creatorProfile.picturePath
+                        : "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg"
+                  }}
+                />
                 <Text style={styles.user}>
                   {event.creatorProfile.account.username}
                 </Text>
@@ -207,14 +198,15 @@ class EventContainer extends Component {
               <View style={styles.timeContainer}>
                 <Icon name="time" style={styles.timeIcon} />
                 <Text style={styles.time}>
-                  {event.startingTime.split("T")[1]}
+                  {event.startingTime.split("T")[1].split(":")[0]} :{" "}
+                  {event.startingTime.split("T")[1].split(":")[1]} hs
                 </Text>
               </View>
             </View>
             <View style={styles.sideInfo}>
               <View style={styles.fillContainer}>
+                <Icon name="contacts" style={styles.fillIcon} />
                 <Text style={styles.fill}>
-                  <Icon name="contacts" style={styles.fillIcon} />
                   {event.countStarters} / {event.maxStarters}
                 </Text>
               </View>
@@ -222,83 +214,42 @@ class EventContainer extends Component {
           </TouchableOpacity>
           {this.state.expanded && (
             <View style={styles.mapRegion}>
-              <DeckSwiper
-                dataSource={cards}
-                style={styles.swiper}
-                scrollEnabled={this.props.scroll}
-                renderItem={item => (
-                  <Card style={styles.swiperCard}>
-                    {item.type == 1 && (
-                      <View style={styles.mapContainer}>
-                        <MapView
-                          initialRegion={{
-                            latitude: event.location.latitude
-                              ? event.location.latitude
-                              : 37.78825,
-                            longitude: event.location.longitude
-                              ? event.location.longitude
-                              : -37.78825,
-                            latitudeDelta: 0.0922,
-                            longitudeDelta: 0.0421
-                          }}
-                          scrollEnabled={false}
-                          liteMode={true}
-                          style={styles.map}
-                        />
-                      </View>
-                    )}
-                    {item.type == 2 && (
-                      <ScrollView>
-                        {list.length > 0 && (
-                          <List>
-                            {list.map((participant, i) => (
-                              <ListItem avatar>
-                                <TouchableOpacity
-                                  onPress={() =>
-                                    this.goToProfile(
-                                      participant.standardProfileID
-                                    )
-                                  }
-                                >
-                                  <Left>
-                                    <Thumbnail
-                                      style={styles.participantIcon}
-                                      source={{
-                                        uri:
-                                          event.creatorProfile.picturePath ==
-                                            "" ||
-                                          event.creatorProfile.picturePath ==
-                                            null
-                                            ? "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
-                                            : participant.profileParticipant
-                                                .picturePath
-                                      }}
-                                    />
-                                  </Left>
-                                </TouchableOpacity>
-                                <Body>
-                                  <Text style={styles.participantName}>
-                                    {
-                                      participant.profileParticipant.account
-                                        .username
-                                    }
-                                  </Text>
-                                </Body>
-                              </ListItem>
-                            ))}
-                          </List>
-                        )}
-                        {list.length == 0 && <Text>No hay jugadores</Text>}
-                      </ScrollView>
-                    )}
-                    {item.type == 3 && (
-                      <Text style={styles.eventDescription}>
-                        {event.description}
-                      </Text>
-                    )}
-                  </Card>
-                )}
-              />
+              <Card style={styles.swiperCard}>
+                <View style={styles.mapContainer}>
+                  <MapView
+                    region={{
+                      latitude: event.location.latitude
+                        ? event.location.latitude
+                        : 37.78825,
+                      longitude: event.location.longitude
+                        ? event.location.longitude
+                        : -37.78825,
+                      latitudeDelta: 0.1,
+                      longitudeDelta: 0.1
+                    }}
+                    scrollEnabled={true}
+                    liteMode={true}
+                    style={styles.map}
+                    showsUserLocation={true}
+                    showsMyLocationButton={true}
+                  >
+                    <MapView.Marker
+                      coordinate={{
+                        latitude: event.location.latitude,
+                        longitude: event.location.longitude
+                      }}
+                      title={"Tu partido"}
+                      description={event.location.name}
+                    >
+                      <Image
+                        source={require("../../assets/images/location.png")}
+                        style={styles.markerImage}
+                      />
+                    </MapView.Marker>
+                  </MapView>
+                </View>
+              </Card>
+              )} />
             </View>
           )}
           {this.state.expanded && (

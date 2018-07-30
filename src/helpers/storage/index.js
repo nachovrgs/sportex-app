@@ -157,7 +157,8 @@ export async function getProfileFromAccountId(accountId) {
       fetch(`${API_URI}/standardProfile/account/${accountId}`, {
         method: "GET",
         headers: {
-          Authorization: "Bearer " + receivedToken.replace(/"/g, "")
+          Authorization: "Bearer " + receivedToken.replace(/"/g, ""),
+          "Cache-Control": "no-cache"
         }
       })
         .then(response => {

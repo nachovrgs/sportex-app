@@ -559,6 +559,7 @@ export default class CreateEvent extends Component {
                       isVisible={this.state.isTimePickerVisible}
                       onConfirm={this._handleTimePicked}
                       onCancel={this._hideTimePicker}
+                      minuteInterval={30}
                       mode="time"
                     />
                   </View>

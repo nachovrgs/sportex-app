@@ -63,7 +63,10 @@ export default StyleSheet.create({
   },
   profilePic: {
     width: 20,
-    height: 20
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.white
   },
   timeContainer: {
     flex: 1,
@@ -88,18 +91,25 @@ export default StyleSheet.create({
     flex: 1,
     alignItems: "flex-end"
   },
+  fillContainer: {
+    flex: 2,
+    paddingTop: 30,
+    alignItems: "flex-end",
+    justifyContent: "center",
+    flexDirection: "row",
+    paddingBottom: 10
+  },
   fill: {
     flex: 1,
     fontSize: sizes.small,
-    color: colors.text
-  },
-  fillContainer: {
-    flex: 2,
-    marginTop: 30
+    color: colors.text,
+    marginBottom: 5,
+    marginRight: 15
   },
   fillIcon: {
-    fontSize: sizes.medium,
-    marginRight: 10
+    flex: 1,
+    fontSize: sizes.large,
+    marginTop: 15
   },
   eventImage: {
     height: 25,
@@ -128,6 +138,10 @@ export default StyleSheet.create({
     flex: 1,
     height: undefined,
     width: undefined
+  },
+  markerImage: {
+    width: 20,
+    height: 20
   },
   participantIcon: {
     height: 15,

@@ -15,6 +15,7 @@ import { PastEventContainer } from "../../components";
 
 import { screens } from "../../screens";
 
+import { getPast, savePast } from "../../helpers/store";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import styles from "./styles";
@@ -37,31 +38,46 @@ export default class HistoryFeed extends Component {
     super(props);
     this.state = {
       dataSource: [],
-      isLoading: true,
-      isError: false,
-      error: "",
       token: "",
       profileId: "",
       refreshing: false,
-      noEventsShowed: false,
-      initial: true
+      noEventsShowed: false
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
-    this.loadData();
+  }
+  componentDidMount() {
+    this.getStoragePastEvents();
   }
 
+  async getStoragePastEvents() {
+    this.setState({ refreshing: true });
+    var events = await getPast();
+
+    this.setState({
+      dataSource: events
+    });
+    this.loadStorageItems();
+  }
   // Handle nav bar navigation
   onNavigatorEvent(event) {
     if (event.type == "NavBarButtonPress") {
     }
   }
   _renderItem = ({ item }) => (
-    <PastEventContainer eventItem={item} navigator={this.props.navigator} />
+    <PastEventContainer
+      eventItem={item}
+      navigator={this.props.navigator}
+      masterCallback={(eventId, evaluation) =>
+        this.evaluateAction(eventId, evaluation)
+      }
+    />
   );
-
-  async loadData() {
+  async loadStorageItems() {
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();
+    this.loadData();
+  }
+  async loadData() {
     fetch(`${API_URI}/event/past/${this.state.profileId}`, {
       method: "GET",
       headers: {
@@ -75,12 +91,12 @@ export default class HistoryFeed extends Component {
           return response.json();
         } else {
           this.setState({
-            isLoading: false,
-            isError: true,
-            error: "Network response was not ok.",
-            token: ""
+            refreshing: false
           });
-          return new Error("Network response was not ok.");
+          Toast.show({
+            text: "Imposible conectarse al servidor. Tienes internet?",
+            buttonText: "Ok"
+          });
         }
       })
       .then(jsonResponse => {
@@ -93,64 +109,70 @@ export default class HistoryFeed extends Component {
         }
         this.setState({
           dataSource: jsonResponse,
-          isLoading: false,
-          error: "",
-          token: ""
+          refreshing: false
         });
-        if (this.state.initial) {
-          this.setState({ initial: false });
-          this._refreshListView();
-        }
+        savePast(jsonResponse);
       })
       .catch(error => {
         this.setState({
-          isLoading: false,
-          isError: true,
-          error: error.message,
-          token: ""
+          refreshing: false
         });
-        throw error;
+        Toast.show({
+          text: "Ocurrio un error!",
+          buttonText: "Ok"
+        });
       });
   }
+
+  evaluateAction = (eventId, evaluation) => {
+    fetch(`${API_URI}/playerReview/ReviewAllEventParticipants`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        Rate: evaluation,
+        Message: "Buen Partido!",
+        IdProfileReviews: this.state.profileId,
+        IdProfileReviewed: 0,
+        EventID: eventId
+      })
+    })
+      .then(response => {
+        if (response.ok) {
+          this.setState({ dataSource: [] });
+          this._refreshListView();
+        } else {
+          console.log("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
   toggleNoEventsShowed = () => {
     this.state.noEventsShowed = true;
   };
   _refreshListView = () => {
     this.setState({ refreshing: true });
-    this.loadData().then(() => {
-      this.setState({ refreshing: false });
-    });
+    this.loadData();
   };
   _refreshControl() {
     return (
       <RefreshControl
+        title="buscando eventos pasados"
+        titleColor={colors.text_orange}
         refreshing={this.state.refreshing}
         onRefresh={() => this._refreshListView()}
       />
     );
   }
   render() {
-    return this.state.isLoading ? (
-      <Root>
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#ecf0f1" animating />
-        </View>
-      </Root>
-    ) : this.state.isError ? (
-      <Root>
-        <View style={styles.noEventsContainer}>
-          <View style={styles.noEventsSubContainer}>
-            <Image
-              style={styles.noEventsImage}
-              source={require("../../assets/images/no_internet.png")}
-            />
-            <Text style={styles.noEventsText}>
-              No tienes conexion a internet.
-            </Text>
-          </View>
-        </View>
-      </Root>
-    ) : this.state.dataSource.length == 0 ? (
+    return this.state.dataSource.length == 0 ? (
       <Root>
         <View style={styles.noEventsContainer}>
           <TouchableOpacity

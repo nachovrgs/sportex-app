@@ -55,7 +55,8 @@ export default class addMembersConfirmModal extends Component {
             "Bearer " +
             (this.state.token ? this.state.token.replace(/"/g, "") : ""),
           Accept: "application/json",
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Cache-Control": "no-cache"
         },
         body: JSON.stringify({
           idProfile: memberId,

@@ -98,3 +98,26 @@ export async function getNotifications() {
     return [];
   }
 }
+
+//PastEvents
+export async function savePast(pastEvents) {
+  await store.delete("pastEvents");
+  await store.save("pastEvents", {
+    items: pastEvents,
+    stored: new Date()
+  });
+}
+export async function getPast() {
+  var pastEvents = await store.get("pastEvents");
+  if (pastEvents != null) {
+    var diff = Math.abs(new Date() - pastEvents.stored) / 36e5;
+    if (diff > STORE_EXPIRATION_HOURS) {
+      store.delete("pastEvents");
+      return [];
+    } else {
+      return pastEvents.items;
+    }
+  } else {
+    return [];
+  }
+}
