@@ -1,6 +1,7 @@
 //import libraries
 import React, { Component } from "react";
 import { View, Text, Image, TouchableOpacity } from "react-native";
+import RNFS from "react-native-fs";
 import RNFetchBlob from "rn-fetch-blob";
 import { screens } from "../../screens";
 import PhotoUpload from "react-native-photo-upload";
@@ -13,7 +14,7 @@ import {
   getProfileIdForUsage,
   resetAndLogout
 } from "../../helpers/storage";
-import { API_URI, BLOB_URI, BLOB_ACCESS_KEY } from "../../constants";
+import { API_URI } from "../../constants";
 import styles from "./styles";
 import { colors } from "../../styles";
 
@@ -150,7 +151,6 @@ export default class UserProfile extends Component {
         this.setState({
           groups: jsonResponse
         });
-        console.log(JSON.stringify(jsonResponse));
       })
       .catch(error => {
         Toast.show({
@@ -159,7 +159,34 @@ export default class UserProfile extends Component {
         });
       });
   }
-  uploadImage = image => {};
+
+  uploadImage = image => {
+    const url = "http://192.168.1.117:45455/api";
+    fetch(`${url}/standardProfile/updateImage/${this.state.profileId}`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(image)
+    })
+      .then(response => {
+        if (response.ok) {
+          //Image uploaded
+          console.log("Uploaded images");
+        } else {
+          console.log(JSON.stringify(response));
+          console.log("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        throw error;
+      });
+  };
 
   handleGroupPress(groupId) {
     this.props.navigator.showModal({
@@ -181,7 +208,6 @@ export default class UserProfile extends Component {
       JSON.stringify(profile) != JSON.stringify({}) &&
       JSON.stringify(groups) != JSON.stringify([])
     ) {
-      console.log(JSON.stringify(profile));
       return (
         <View style={styles.container}>
           <View style={styles.head}>
