@@ -37,6 +37,15 @@ export default class UserProfile extends Component {
         buttonFontSize: 50,
         buttonFontWeight: "900"
       }
+    ],
+    rightButtons: [
+      {
+        icon: require("../../assets/images/cog.png"),
+        id: "settings",
+        buttonColor: "#ecf0f1",
+        buttonFontSize: 50,
+        buttonFontWeight: "900"
+      }
     ]
   };
   constructor(props) {
@@ -70,6 +79,14 @@ export default class UserProfile extends Component {
     if (event.type == "NavBarButtonPress") {
       if (event.id == "logout") {
         resetAndLogout();
+      } else if (event.id == "settings") {
+        this.props.navigator.showModal({
+          screen: screens.settings.id,
+          title: screens.settings.title,
+          animated: true,
+          animationType: "fade",
+          backButtonHidden: screens.settings.backButtonHidden
+        });
       }
     }
   }
@@ -161,8 +178,7 @@ export default class UserProfile extends Component {
   }
 
   uploadImage = image => {
-    const url = "http://192.168.1.117:45455/api";
-    fetch(`${url}/standardProfile/updateImage/${this.state.profileId}`, {
+    fetch(`${API_URI}/standardProfile/updateImage/${this.state.profileId}`, {
       method: "POST",
       headers: {
         Authorization:

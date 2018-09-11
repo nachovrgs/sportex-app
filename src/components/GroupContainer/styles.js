@@ -6,7 +6,9 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     height: 80,
-    margin: 22,
+    marginTop: 14,
+    marginLeft: 14,
+    marginRight: 14,
     padding: 15,
     backgroundColor: "rgba(255,255,255,0.9)",
     borderRadius: 10,

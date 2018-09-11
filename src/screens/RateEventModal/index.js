@@ -39,7 +39,8 @@ export default class RateEventModal extends Component {
       event: this.props.event,
       profileId: this.props.profileId,
       token: this.props.token,
-      callback: this.props.callback
+      callback: this.props.callback,
+      callbackIndividual: this.props.callbackIndividual
     });
   }
   //Helper methods
@@ -50,9 +51,28 @@ export default class RateEventModal extends Component {
       animationType: "slide-down"
     });
   };
-
+  evaluateIndividualAction = evaluations => {
+    this.setState({ isLoading: true });
+    this.state.callbackIndividual(evaluations);
+    this.props.navigator.dismissModal({
+      animationType: "slide-down"
+    });
+  };
   //UI
-  rateIndividualsAction = async () => {};
+  rateIndividualsAction = async () => {
+    this.props.navigator.showModal({
+      screen: screens.rateIndividualModal.id,
+      title: screens.rateIndividualModal.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.rateIndividualModal.backButtonHidden,
+      passProps: {
+        event: this.state.event,
+        token: this.state.token,
+        callback: evaluation => this.evaluateIndividualAction(evaluation)
+      }
+    });
+  };
 
   storeEvaluation = rating => {
     this.setState({

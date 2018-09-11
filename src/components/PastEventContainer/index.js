@@ -31,7 +31,7 @@ class PastEventContainer extends Component {
       token: null,
       profileId: null,
       evaluation: 0,
-      reviewExist: false
+      reviewExist: true
     };
     this.selectBackgroundColor = this.selectBackgroundColor.bind(this);
     this.loadStorageItems = this.loadStorageItems.bind(this);
@@ -45,7 +45,8 @@ class PastEventContainer extends Component {
     this.setState({
       item: this.props.eventItem,
       coords: {},
-      masterCallback: this.props.masterCallback
+      masterCallback: this.props.masterCallback,
+      masterIndividualCallback: this.props.masterIndividualCallback
     });
     this.selectBackgroundColor();
   }
@@ -110,7 +111,11 @@ class PastEventContainer extends Component {
       });
   };
   callback = evaluation => {
-    this.state.masterCallback(this.state.eventId, evaluation);
+    this.state.masterCallback(this.state.item.id, evaluation);
+  };
+
+  callbackIndividual = evaluation => {
+    this.state.masterIndividualCallback(this.state.item.id, evaluation);
   };
   //UI
   handleReviewPress = () => {
@@ -124,7 +129,8 @@ class PastEventContainer extends Component {
         event: this.state.item,
         profileId: this.state.profileId,
         token: this.state.token,
-        callback: evaluation => this.callback(evaluation)
+        callback: evaluation => this.callback(evaluation),
+        callbackIndividual: evaluation => this.callbackIndividual(evaluation)
       }
     });
   };

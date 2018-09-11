@@ -8,8 +8,10 @@ import {
   ScrollView,
   RefreshControl,
   TouchableOpacity,
-  Image
+  Image,
+  Geolocation
 } from "react-native";
+import geolib from "geolib";
 import { Container, Header, Content, Toast, Button, Root } from "native-base";
 import { PastEventContainer } from "../../components";
 
@@ -41,12 +43,24 @@ export default class HistoryFeed extends Component {
       token: "",
       profileId: "",
       refreshing: false,
-      noEventsShowed: false
+      noEventsShowed: false,
+      latitude: 0,
+      longitude: 0
     };
     this.props.navigator.setOnNavigatorEvent(this.onNavigatorEvent.bind(this));
   }
   componentDidMount() {
     this.getStoragePastEvents();
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        });
+      },
+      error => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
   }
 
   async getStoragePastEvents() {
@@ -63,12 +77,18 @@ export default class HistoryFeed extends Component {
     if (event.type == "NavBarButtonPress") {
     }
   }
+  saveLocation = () => {
+    this.setState({});
+  };
   _renderItem = ({ item }) => (
     <PastEventContainer
       eventItem={item}
       navigator={this.props.navigator}
       masterCallback={(eventId, evaluation) =>
         this.evaluateAction(eventId, evaluation)
+      }
+      masterIndividualCallback={(eventId, profileId, evaluation) =>
+        this.evaluateIndividualAction(eventId, profileId, evaluation)
       }
     />
   );
@@ -125,7 +145,53 @@ export default class HistoryFeed extends Component {
   }
 
   evaluateAction = (eventId, evaluation) => {
-    fetch(`${API_URI}/playerReview/ReviewAllEventParticipants`, {
+    fetch(
+      `${API_URI}/playerReview/ReviewAllEventParticipantsML/${
+        this.state.longitude
+      }/${this.state.latitude}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Bearer " +
+            (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          Rate: evaluation,
+          Message: "Buen Partido!",
+          IdProfileReviews: this.state.profileId,
+          IdProfileReviewed: 0,
+          EventID: eventId
+        })
+      }
+    )
+      .then(response => {
+        if (response.ok) {
+          this.setState({ dataSource: [] });
+          this._refreshListView();
+        } else {
+          console.log("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+  evaluateIndividualAction = async (eventId, evaluations) => {
+    for (var key in evaluations) {
+      if (evaluations.hasOwnProperty(key)) {
+        await this.evaluateIndividualPlayerApiCall(
+          eventId,
+          key,
+          evaluations[key]
+        );
+      }
+    }
+  };
+  evaluateIndividualPlayerApiCall = (eventId, profileId, evaluation) => {
+    fetch(`${API_URI}/playerReview`, {
       method: "POST",
       headers: {
         Authorization:
@@ -138,7 +204,7 @@ export default class HistoryFeed extends Component {
         Rate: evaluation,
         Message: "Buen Partido!",
         IdProfileReviews: this.state.profileId,
-        IdProfileReviewed: 0,
+        IdProfileReviewed: profileId,
         EventID: eventId
       })
     })
@@ -154,6 +220,7 @@ export default class HistoryFeed extends Component {
         console.log(error);
       });
   };
+
   toggleNoEventsShowed = () => {
     this.state.noEventsShowed = true;
   };

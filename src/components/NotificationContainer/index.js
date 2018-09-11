@@ -63,7 +63,10 @@ class NotificationContainer extends Component {
                 <Text style={styles.title}>{notification.message}</Text>
               </View>
               <View style={styles.subtitleContainer}>
-                <Text style={styles.subtitle}>{notification.createdOn}</Text>
+                <Text style={styles.subtitle}>
+                  {notification.createdOn.split("T")[1].split(":")[0]} :{" "}
+                  {notification.createdOn.split("T")[1].split(":")[1]} hs
+                </Text>
               </View>
             </View>
             <View style={styles.info}>

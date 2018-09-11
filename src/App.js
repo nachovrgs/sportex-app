@@ -1,13 +1,27 @@
 import { Navigation } from "react-native-navigation";
 import { registerScreens, screens } from "./screens";
 
-import { isLoggedIn } from "./helpers/storage";
-
+import { LANGUAGE_ES, LANGUAGE_EN } from "./constants";
+import {
+  isLoggedIn,
+  setLanguage,
+  setAlgorithm,
+  getLanguage,
+  getAlgorithm
+} from "./helpers/storage";
 import { logInfo } from "./helpers/logger";
 
 // call from index.js
 async function init() {
   logInfo("Initializing app");
+  var lan = await getLanguage();
+  var alg = await getAlgorithm();
+  if (lan == null) {
+    await setLanguage(LANGUAGE_ES);
+  }
+  if (alg == null) {
+    await setAlgorithm("0");
+  }
   var isLogged = await isLoggedIn();
   if (isLogged) {
     startMainApp();

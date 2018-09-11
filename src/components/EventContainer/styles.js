@@ -6,7 +6,7 @@ export default StyleSheet.create({
   //General
   container: {
     flex: 1,
-    height: 120,
+    height: sizes.itemCard,
     marginLeft: 17,
     marginRight: 17,
     marginTop: 17,
@@ -18,7 +18,7 @@ export default StyleSheet.create({
   },
   allContainer: {
     flexDirection: "row",
-    height: 120
+    height: sizes.itemCard
   },
   //Regular
   sidebar: {
@@ -70,8 +70,7 @@ export default StyleSheet.create({
   },
   timeContainer: {
     flex: 1,
-    flexDirection: "row",
-    marginTop: 20
+    flexDirection: "row"
   },
   timeIcon: {
     fontSize: sizes.medium
@@ -109,7 +108,7 @@ export default StyleSheet.create({
   fillIcon: {
     flex: 1,
     fontSize: sizes.large,
-    marginTop: 15
+    marginTop: 10
   },
   eventImage: {
     height: 25,
@@ -117,21 +116,21 @@ export default StyleSheet.create({
   },
   //Expanded
   mapRegion: {
-    height: 190,
+    height: 210,
     flex: 1
   },
   mapContainer: {
-    height: 190
+    height: 210
   },
   map: {
-    height: 190
+    height: 210
   },
   swiper: {
-    height: 190,
+    height: 210,
     flex: 1
   },
   swiperCard: {
-    height: 190,
+    height: 210,
     elevation: 3
   },
   mapImage: {

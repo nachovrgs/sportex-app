@@ -20,6 +20,8 @@ import AddPlayersConfirmModal from "./AddPlayersConfirmModal";
 import AddMembersModal from "./AddMembersModal";
 import AddMembersConfirmModal from "./AddMembersConfirmModal";
 import RateEventModal from "./RateEventModal";
+import RateIndividualModal from "./RateIndividualModal";
+import Settings from "./Settings";
 
 // Add ALL screens here for easy use all over project
 export const screens = {
@@ -122,6 +124,16 @@ export const screens = {
     id: "sportex.RateEventModal",
     title: "Evaluar Evento",
     backButtonHidden: true
+  },
+  rateIndividualModal: {
+    id: "sportex.RateIndividualModal",
+    title: "Evaluar Cada Participante",
+    backButtonHidden: false
+  },
+  settings: {
+    id: "sportex.Settings",
+    title: "Configurcion",
+    backButtonHidden: true
   }
 };
 
@@ -171,4 +183,9 @@ export function registerScreens() {
     () => AddMembersConfirmModal
   );
   Navigation.registerComponent(screens.rateEventModal.id, () => RateEventModal);
+  Navigation.registerComponent(
+    screens.rateIndividualModal.id,
+    () => RateIndividualModal
+  );
+  Navigation.registerComponent(screens.settings.id, () => Settings);
 }

@@ -217,7 +217,6 @@ export default class GroupScreen extends Component {
       });
   };
   createMatch = () => {
-    console.log("estoy aca conchudo");
     this.props.navigator.showModal({
       screen: screens.createEvent.id,
       title: screens.createEvent.title,
@@ -230,6 +229,34 @@ export default class GroupScreen extends Component {
       }
     });
   };
+
+  uploadImage = image => {
+    fetch(`${API_URI}/group/updateImage/${this.state.groupId}`, {
+      method: "POST",
+      headers: {
+        Authorization:
+          "Bearer " +
+          (this.state.token ? this.state.token.replace(/"/g, "") : ""),
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(image)
+    })
+      .then(response => {
+        if (response.ok) {
+          //Image uploaded
+          console.log("Uploaded images");
+        } else {
+          console.log(JSON.stringify(response));
+          console.log("Network response was not ok.");
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        throw error;
+      });
+  };
+
   //UI Helpers
   close() {
     this.props.navigator.dismissAllModals({
@@ -272,8 +299,7 @@ export default class GroupScreen extends Component {
                   <PhotoUpload
                     onPhotoSelect={avatar => {
                       if (avatar) {
-                        //Send image to azure blob
-                        console.log("Image base64 string: ", avatar);
+                        this.uploadImage(avatar);
                       }
                     }}
                   >
@@ -282,7 +308,9 @@ export default class GroupScreen extends Component {
                       resizeMode="cover"
                       source={{
                         uri:
-                          "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
+                          group.picturePath != null && group.picturePath != ""
+                            ? group.picturePath
+                            : "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
                       }}
                     />
                   </PhotoUpload>

@@ -27,7 +27,8 @@ import { screens } from "../../screens";
 import {
   getTokenForUsage,
   getProfileIdForUsage,
-  getAccountIdForUsage
+  getAccountIdForUsage,
+  getAlgorithm
 } from "../../helpers/storage";
 import { getEvents, saveEvents } from "../../helpers/store";
 import { API_URI } from "../../constants";
@@ -72,7 +73,9 @@ export default class EventFeed extends Component {
       noEventsShowed: false,
       initial: true,
       allowVerticalScroll: true,
-      readyForApi: false
+      readyForApi: false,
+      latitude: 0,
+      longitude: 0
     };
     NotificationsIOS.addEventListener(
       "remoteNotificationsRegistered",
@@ -120,10 +123,21 @@ export default class EventFeed extends Component {
   }
   componentDidMount() {
     this.getStorageEvents();
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        });
+      },
+      error => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
   }
 
   async getStorageEvents() {
     this.setState({ refreshing: true });
+
     var events = await getEvents();
 
     this.setState({
@@ -260,7 +274,17 @@ export default class EventFeed extends Component {
 
   async loadData() {
     if (this.state.readyForApi) {
-      fetch(`${API_URI}/event/avaiable/${this.state.profileId}`, {
+      var algorithm = await getAlgorithm();
+      var url;
+      if (algorithm == "1") {
+        //Using ML
+        url = `${API_URI}/event/avaiableML/${this.state.profileId}/${
+          this.state.longitude
+        }/${this.state.latitude}`;
+      } else {
+        url = `${API_URI}/event/avaiable/${this.state.profileId}`;
+      }
+      fetch(url, {
         method: "GET",
         headers: {
           Authorization:

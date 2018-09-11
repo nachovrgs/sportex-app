@@ -6,7 +6,10 @@ import {
   TOKEN_EXP_NAME_STORE,
   ACCOUNT_ID_NAME_STORE,
   PROFILE_ID_NAME_STORE,
-  API_URI
+  API_URI,
+  LANGUAGE_NAME_STORE,
+  ALGORITHM_NAME_STORE,
+  IS_LOGGED_NAME_STORE
 } from "../../constants";
 import { logInfo, logError } from "../logger";
 
@@ -39,7 +42,20 @@ export async function setProfileId(profileId) {
     logError(error);
   }
 }
-
+export async function setLanguage(language) {
+  try {
+    await AsyncStorage.setItem(LANGUAGE_NAME_STORE, language);
+  } catch (error) {
+    logError(error);
+  }
+}
+export async function setAlgorithm(algorith) {
+  try {
+    await AsyncStorage.setItem(ALGORITHM_NAME_STORE, algorith);
+  } catch (error) {
+    logError(error);
+  }
+}
 //Get
 export async function getTokenExp() {
   try {
@@ -76,6 +92,22 @@ export async function getToken() {
 export async function getAllKeys() {
   try {
     return await AsyncStorage.getAllKeys();
+  } catch (error) {
+    logError(error);
+    return null;
+  }
+}
+export async function getLanguage() {
+  try {
+    return await AsyncStorage.getItem(LANGUAGE_NAME_STORE);
+  } catch (error) {
+    logError(error);
+    return null;
+  }
+}
+export async function getAlgorithm() {
+  try {
+    return await AsyncStorage.getItem(ALGORITHM_NAME_STORE);
   } catch (error) {
     logError(error);
     return null;
@@ -190,4 +222,20 @@ export async function resetAndLogout() {
 export async function isLoggedIn() {
   var token = await getToken();
   return token != null;
+}
+
+export async function getIsLogged() {
+  try {
+    return await AsyncStorage.getItem(IS_LOGGED_NAME_STORE);
+  } catch (error) {
+    logError(error);
+    return null;
+  }
+}
+export async function setIsLogged(isLogged) {
+  try {
+    await AsyncStorage.setItem(IS_LOGGED_NAME_STORE, JSON.stringify(isLogged));
+  } catch (error) {
+    logError(error);
+  }
 }
