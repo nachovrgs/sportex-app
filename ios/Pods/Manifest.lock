@@ -54,6 +54,8 @@ PODS:
     - React/Core
   - RNFS (2.10.14):
     - React
+  - RNI18n (2.0.15):
+    - React
   - yoga (0.55.4.React)
 
 DEPENDENCIES:
@@ -69,6 +71,7 @@ DEPENDENCIES:
   - React/RCTWebSocket (from `../node_modules/react-native`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
   - RNFS (from `../node_modules/react-native-fs`)
+  - RNI18n (from `../node_modules/react-native-i18n`)
   - yoga (from `../node_modules/react-native/ReactCommon/yoga/yoga.podspec`)
 
 SPEC REPOS:
@@ -90,6 +93,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/rn-fetch-blob"
   RNFS:
     :path: "../node_modules/react-native-fs"
+  RNI18n:
+    :path: "../node_modules/react-native-i18n"
   yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga/yoga.podspec"
 
@@ -104,8 +109,9 @@ SPEC CHECKSUMS:
   react-native-image-resizer: 04a3409e7d4ad646c4468671c69dec490def139c
   rn-fetch-blob: 76a8f798dae965bbcd146a2438f2e1d381c91ae3
   RNFS: bbb1a64eb245763daf34aea86f97c97c4e85f74c
+  RNI18n: 46b8694063fbd699f2c06a4dc8e835b3176763b1
   yoga: a23273df0088bf7f2bb7e5d7b00044ea57a2a54a
 
-PODFILE CHECKSUM: 292f73ac207bb41fa0025d8e8a0bb26e5a95c510
+PODFILE CHECKSUM: 386fa0051d19b95a7c856789052342d8a54bb279
 
 COCOAPODS: 1.5.3

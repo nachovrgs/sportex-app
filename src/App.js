@@ -11,14 +11,19 @@ import {
 } from "./helpers/storage";
 import { logInfo } from "./helpers/logger";
 
+import I18n from "./i18n";
+
 // call from index.js
 async function init() {
-  logInfo("Initializing app");
   var lan = await getLanguage();
   var alg = await getAlgorithm();
   if (lan == null) {
     await setLanguage(LANGUAGE_ES);
+    I18n.locale = LANGUAGE_ES;
+  } else {
+    I18n.locale = lan;
   }
+
   if (alg == null) {
     await setAlgorithm("0");
   }

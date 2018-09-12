@@ -1,4 +1,5 @@
 import { Navigation } from "react-native-navigation";
+import I18n from "../i18n";
 
 import Login from "./Login";
 import RegisterScreen from "./RegisterScreen";
@@ -27,72 +28,72 @@ import Settings from "./Settings";
 export const screens = {
   login: {
     id: "sportex.Login",
-    title: "Sportex",
+    title: I18n.t("general_sportex"),
     backButtonHidden: true
   },
   register: {
     id: "sportex.Register",
-    title: "Sportex",
+    title: I18n.t("general_sportex"),
     backButtonHidden: false
   },
   eventFeed: {
     id: "sportex.EventFeed",
-    title: "Explorar",
+    title: I18n.t("eventfeed_title"),
     backButtonHidden: true
   },
   createEvent: {
     id: "sportex.CreateEvent",
-    title: "Crear Evento",
+    title: I18n.t("create_event_title"),
     backButtonHidden: false
   },
   userProfile: {
     id: "sportex.UserProfile",
-    title: "Mi Perfil",
+    title: I18n.t("my_profile_title"),
     backButtonHidden: false
   },
   event: {
     id: "sportex.EventScreen",
-    title: "Mis Eventos",
+    title: I18n.t("agenda_title"),
     backButtonHidden: false
   },
   invitationEvent: {
     id: "sportex.InvitationEventScreen",
-    title: "Sportex",
+    title: "",
     backButtonHidden: false
   },
   groups: {
     id: "sportex.Groups",
-    title: "Grupos",
+    title: I18n.t("group_feed_title"),
     backButtonHidden: true
   },
   groupScreen: {
     id: "sportex.GroupScreen",
-    title: "Grupo",
+    title: I18n.t("group_title"),
     backButtonHidden: false
   },
   createGroup: {
     id: "sportex.CreateGroup",
-    title: "Nuevo Grupo",
+    title: I18n.t("create_group_title"),
     backButtonHidden: false
   },
   historyFeed: {
     id: "sportex.HistoryFeed",
-    title: "Historial",
+    title: I18n.t("history_title"),
     backButtonHidden: false
   },
   currentEventFeed: {
     id: "sportex.CurrentEventFeed",
-    title: "Agenda",
+    title: I18n.t("agenda_title"),
     backButtonHidden: true
   },
   notificationFeed: {
     id: "sportex.NotificationFeed",
-    title: "Notificaciones",
+    title: I18n.t("notif_title"),
     backButtonHidden: false
   },
   profileScreen: {
     id: "sportex.ProfileScreen",
-    title: "Perfil",
+    title: I18n.t("my_profile_title"),
     backButtonHidden: false
   },
   addPlayersModal: {

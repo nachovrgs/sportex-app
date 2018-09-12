@@ -21,6 +21,7 @@ import {
 import { EventContainer } from "../../components";
 import { screens } from "../../screens";
 
+import I18n from "../../i18n";
 import { GroupContainer } from "../../components";
 import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
@@ -170,7 +171,7 @@ export default class Groups extends Component {
   _refreshControl() {
     return (
       <RefreshControl
-        title="buscando tus grupos"
+        title={I18n.t("group_feed_searching")}
         titleColor={colors.text_orange}
         refreshing={this.state.refreshing}
         onRefresh={() => this._refreshListView()}

@@ -21,6 +21,7 @@ import {
 } from "native-base";
 import { NotificationContainer } from "../../components";
 
+import I18n from "../../i18n";
 import { screens } from "../../screens";
 
 import { getNotifications, saveNotifications } from "../../helpers/store";
@@ -227,7 +228,7 @@ export default class NotificationFeed extends Component {
   _refreshControl() {
     return (
       <RefreshControl
-        title="Trayendo notificaciones"
+        title={I18n.t("notif_searching")}
         titleColor={colors.text_orange}
         refreshing={this.state.refreshing}
         onRefresh={() => this._refreshListView()}

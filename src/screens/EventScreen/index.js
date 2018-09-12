@@ -26,6 +26,7 @@ import {
   Root
 } from "native-base";
 
+import I18n from "../../i18n";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { Button } from "react-native-elements";
 import { screens } from "../../screens";
@@ -488,7 +489,7 @@ export default class EventScreen extends Component {
                 source={require("../../assets/images/no_internet.png")}
               />
               <Text style={styles.noEventsText}>
-                No tienes conexion a internet.
+                {I18n.t("general_no_internet")}
               </Text>
             </View>
           </View>

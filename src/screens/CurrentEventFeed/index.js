@@ -20,6 +20,7 @@ import {
 } from "native-base";
 import { CurrentEventContainer } from "../../components";
 
+import I18n from "../../i18n";
 import { getCurrentEvents, saveCurrentEvents } from "../../helpers/store";
 import { screens } from "../../screens";
 
@@ -183,7 +184,7 @@ export default class CurrentEventFeed extends Component {
   _refreshControl() {
     return (
       <RefreshControl
-        title="buscando tus eventos"
+        title={I18n.t("agenda_searching")}
         titleColor={colors.text_orange}
         refreshing={this.state.refreshing}
         onRefresh={() => this._refreshListView()}

@@ -11,12 +11,13 @@ import {
   AsyncStorage,
   ActivityIndicator
 } from "react-native";
-import { Input, Button} from "react-native-elements";
+import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { login } from "../../helpers/navigation";
 import { logInfo, logError } from "../../helpers/logger";
 
 import { setTokenInfo } from "../../helpers/storage";
+import I18n from "../../i18n";
 
 import { screens } from "../../screens";
 import { API_URI } from "../../constants";
@@ -133,7 +134,7 @@ export default class Login extends Component {
               style={styles.logo}
               source={require("../../assets/images/companylogo.png")}
             />
-            <Text style={styles.title}>Sportex</Text>
+            <Text style={styles.title}>{I18n.t("general_sportex")}</Text>
           </View>
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color="#ecf0f1" animating />
@@ -148,11 +149,11 @@ export default class Login extends Component {
               style={styles.logo}
               source={require("../../assets/images/companylogo.png")}
             />
-            <Text style={styles.title}>Sportex</Text>
+            <Text style={styles.title}>{I18n.t("general_sportex")}</Text>
           </View>
           <View style={styles.formContainer}>
             <Input
-              placeholder="Username"
+              placeholder={I18n.t("form_username")}
               leftIcon={<Icon name="user" size={20} color="black" />}
               returnKeyType="next"
               value={username}
@@ -163,7 +164,7 @@ export default class Login extends Component {
               inputContainerStyle={styles.loginInput}
             />
             <Input
-              placeholder="Contraseña"
+              placeholder={I18n.t("form_password")}
               leftIcon={<Icon name="lock" size={20} color="black" />}
               returnKeyType="next"
               secureTextEntry
@@ -176,11 +177,11 @@ export default class Login extends Component {
               inputContainerStyle={styles.loginInput}
             />
             <TouchableOpacity onPress={this.registerAction}>
-              <Text style={styles.register}>Registrate</Text>
+              <Text style={styles.register}>{I18n.t("login_register")}</Text>
             </TouchableOpacity>
-            
+
             <Button
-              title="Ingresar"
+              title={I18n.t("login_action")}
               onPress={this.loginAction}
               loading={this.state.isLoading}
               disabled={!this.isReady()}

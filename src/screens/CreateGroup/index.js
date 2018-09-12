@@ -19,6 +19,7 @@ import { getTokenForUsage, getProfileIdForUsage } from "../../helpers/storage";
 import { API_URI } from "../../constants";
 import { screens } from "../../screens";
 import styles from "./styles";
+import I18n from "../../i18n";
 import { colors } from "../../styles";
 
 // create a component
@@ -32,7 +33,7 @@ export default class CreateGroup extends Component {
   static navigatorButtons = {
     rightButtons: [
       {
-        title: "Crear",
+        title: I18n.t("general_create"),
         id: "create",
         buttonColor: colors.text_orange,
         buttonFontSize: 20,
@@ -305,10 +306,12 @@ export default class CreateGroup extends Component {
     const invited = this.state.selectedUsers.length;
     if (invited > 0) {
       return (
-        "Invitando " + this.state.selectedUsers.length + " usuarios al grupo"
+        I18n.t("create_group_inv_1") +
+        this.state.selectedUsers.length +
+        I18n.t("create_group_inv_2")
       );
     } else {
-      return "Agregar usuarios";
+      return I18n.t("create_group_add_users");
     }
   };
   render() {
@@ -341,7 +344,7 @@ export default class CreateGroup extends Component {
             </PhotoUpload>
           </View>
           <View style={styles.nameHolder}>
-            <Text style={styles.name}>Nombre</Text>
+            <Text style={styles.name}>{I18n.t("form_name")}</Text>
             <TextInput
               style={styles.nameInput}
               onChangeText={text => this.onNameChanged(text)}

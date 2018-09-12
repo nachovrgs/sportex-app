@@ -1,5 +1,5 @@
 import { AsyncStorage } from "react-native";
-
+import I18n from "../../i18n";
 import { logout } from "../navigation";
 import {
   TOKEN_NAME_STORE,
@@ -44,6 +44,7 @@ export async function setProfileId(profileId) {
 }
 export async function setLanguage(language) {
   try {
+    I18n.locale = language;
     await AsyncStorage.setItem(LANGUAGE_NAME_STORE, language);
   } catch (error) {
     logError(error);

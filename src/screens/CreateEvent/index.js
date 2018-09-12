@@ -11,6 +11,7 @@ import {
   Platform,
   ActivityIndicator
 } from "react-native";
+import I18n from "../../i18n";
 import { Navigation } from "react-native-navigation";
 import { startMainApp } from "../../App";
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -466,7 +467,9 @@ export default class CreateEvent extends Component {
           <Header>
             <Left />
             <Body>
-              <Title style={styles.pageTitle}>Nuevo partido</Title>
+              <Title style={styles.pageTitle}>
+                {I18n.t("create_event_title")}
+              </Title>
             </Body>
             <Right>
               <TouchableOpacity onPress={() => this.close()}>
@@ -480,7 +483,7 @@ export default class CreateEvent extends Component {
           <Content>
             <ScrollView style={styles.form}>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Nombre</Text>
+                <Text style={styles.label}>{I18n.t("form_name")}</Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="information" style={styles.icon} />
@@ -495,7 +498,7 @@ export default class CreateEvent extends Component {
                 </View>
               </View>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Descripcion</Text>
+                <Text style={styles.label}>{I18n.t("form_description")}</Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="information" style={styles.icon} />
@@ -512,7 +515,7 @@ export default class CreateEvent extends Component {
                 </View>
               </View>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Cuando?</Text>
+                <Text style={styles.label}>{I18n.t("create_event_when")}</Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="calendar" style={styles.icon} />
@@ -537,7 +540,7 @@ export default class CreateEvent extends Component {
                 </View>
               </View>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Hora?</Text>
+                <Text style={styles.label}>{I18n.t("create_event_hour")}</Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="clock" style={styles.icon} />
@@ -566,7 +569,7 @@ export default class CreateEvent extends Component {
                 </View>
               </View>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Donde?</Text>
+                <Text style={styles.label}>{I18n.t("create_event_where")}</Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="pin" style={styles.icon} />
@@ -587,7 +590,7 @@ export default class CreateEvent extends Component {
                 </View>
               </View>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Tipo</Text>
+                <Text style={styles.label}>{I18n.t("create_event_type")}</Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="cog" style={styles.icon} />
@@ -602,15 +605,23 @@ export default class CreateEvent extends Component {
                       selectedValue={this.state.isPublic}
                       onValueChange={this.onValueChangePublic.bind(this)}
                     >
-                      <Picker.Item label="Publico" value={true} />
-                      <Picker.Item label="Privado" value={false} />
+                      <Picker.Item
+                        label={I18n.t("create_event_type_pub")}
+                        value={true}
+                      />
+                      <Picker.Item
+                        label={I18n.t("create_event_type_priv")}
+                        value={false}
+                      />
                     </Picker>
                   </View>
                 </View>
               </View>
               {!this.state.isPublic && (
                 <View style={styles.inputHolder}>
-                  <Text style={styles.label}>Grupo</Text>
+                  <Text style={styles.label}>
+                    {I18n.t("create_event_group")}
+                  </Text>
                   <View style={styles.input}>
                     <View style={styles.iconHolder}>
                       <Icon active name="contacts" style={styles.icon} />
@@ -633,7 +644,10 @@ export default class CreateEvent extends Component {
                 </View>
               )}
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Jugadores?</Text>
+                <Text style={styles.label}>
+                  {" "}
+                  {I18n.t("create_event_players")}
+                </Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="football" style={styles.icon} />
@@ -672,7 +686,9 @@ export default class CreateEvent extends Component {
                 </View>
               </View>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Suplentes?</Text>
+                <Text style={styles.label}>
+                  {I18n.t("create_event_alternates")}
+                </Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="football" style={styles.icon} />
@@ -714,7 +730,7 @@ export default class CreateEvent extends Component {
               </View>
               <View style={styles.buttonHolder}>
                 <Button
-                  title="Crear"
+                  title={I18n.t("general_create")}
                   onPress={this.createAction}
                   disabled={!this.isReady()}
                   loading={this.state.isLoading}

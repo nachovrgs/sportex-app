@@ -11,6 +11,7 @@ import {
   Platform,
   ActivityIndicator
 } from "react-native";
+import I18n from "../../i18n";
 import { Navigation } from "react-native-navigation";
 import { startMainApp } from "../../App";
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -45,6 +46,7 @@ import { API_URI } from "../../constants";
 import { screens } from "../../screens";
 import styles from "./styles";
 import { colors } from "../../styles";
+import { getLanguages } from "react-native-i18n";
 
 // create a component
 export default class Settings extends Component {
@@ -101,7 +103,7 @@ export default class Settings extends Component {
           <Header>
             <Left />
             <Body>
-              <Title style={styles.pageTitle}>Configuracion</Title>
+              <Title style={styles.pageTitle}>{I18n.t("config_title")}</Title>
             </Body>
             <Right>
               <TouchableOpacity onPress={() => this.close()}>
@@ -115,7 +117,7 @@ export default class Settings extends Component {
           <Content>
             <ScrollView style={styles.form}>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Lenguaje</Text>
+                <Text style={styles.label}>{I18n.t("config_lang")}</Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="cog" style={styles.icon} />
@@ -130,14 +132,14 @@ export default class Settings extends Component {
                       selectedValue={this.state.language}
                       onValueChange={this.onValueChangeLanguage.bind(this)}
                     >
-                      <Picker.Item label="Espanol" value={"es"} />
-                      <Picker.Item label="Ingles" value={"en"} />
+                      <Picker.Item label={I18n.t("config_es")} value={"es"} />
+                      <Picker.Item label={I18n.t("config_en")} value={"en"} />
                     </Picker>
                   </View>
                 </View>
               </View>
               <View style={styles.inputHolder}>
-                <Text style={styles.label}>Algoritmo de Busqueda</Text>
+                <Text style={styles.label}>{I18n.t("config_alg")}</Text>
                 <View style={styles.input}>
                   <View style={styles.iconHolder}>
                     <Icon active name="cog" style={styles.icon} />
@@ -152,8 +154,14 @@ export default class Settings extends Component {
                       selectedValue={this.state.algorithm}
                       onValueChange={this.onValueChangeAlgorithm.bind(this)}
                     >
-                      <Picker.Item label="Normal" value={"0"} />
-                      <Picker.Item label="Machine Learning" value={"1"} />
+                      <Picker.Item
+                        label={I18n.t("config_alg_normal")}
+                        value={"0"}
+                      />
+                      <Picker.Item
+                        label={I18n.t("config_alg_ml")}
+                        value={"1"}
+                      />
                     </Picker>
                   </View>
                 </View>

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import DateTimePicker from "react-native-modal-datetime-picker";
 
+import I18n from "../../i18n";
 import { Input, Button } from "react-native-elements";
 import { screens } from "../../screens";
 import { logout } from "../../helpers/navigation";
@@ -190,7 +191,7 @@ export default class RegisterScreen extends Component {
           </View>
           <View style={styles.formContainer}>
             <Input
-              placeholder="Usuario"
+              placeholder={I18n.t("form_username")}
               shake={true}
               autoCapitalize="none"
               autoCorrect={false}
@@ -198,7 +199,7 @@ export default class RegisterScreen extends Component {
               inputContainerStyle={styles.loginInput}
             />
             <Input
-              placeholder="Contraseña"
+              placeholder={I18n.t("form_password")}
               shake={true}
               autoCapitalize="none"
               autoCorrect={false}
@@ -207,20 +208,20 @@ export default class RegisterScreen extends Component {
               inputContainerStyle={styles.loginInput}
             />
             <Input
-              placeholder="Email"
+              placeholder={I18n.t("form_email")}
               shake={true}
               onChangeText={this.onEmailChanged}
               autoCapitalize="none"
               inputContainerStyle={styles.loginInput}
             />
             <Input
-              placeholder="Nombre"
+              placeholder={I18n.t("form_firstname")}
               shake={true}
               onChangeText={this.onFirstnameChanged}
               inputContainerStyle={styles.loginInput}
             />
             <Input
-              placeholder="Apellido"
+              placeholder={I18n.t("form_lastname")}
               shake={true}
               onChangeText={this.onLastNameChanged}
               inputContainerStyle={styles.loginInput}
@@ -244,7 +245,7 @@ export default class RegisterScreen extends Component {
             </View>
             <View style={styles.buttonContainer}>
               <Button
-                title="Siguiente"
+                title={I18n.t("general_next")}
                 onPress={this.registerAction}
                 disabled={!this.isReady()}
                 loading={this.state.isLoading}

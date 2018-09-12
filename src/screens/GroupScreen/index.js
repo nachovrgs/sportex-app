@@ -14,6 +14,7 @@ import geolib from "geolib";
 import PhotoUpload from "react-native-photo-upload";
 import Autocomplete from "react-native-autocomplete-input";
 
+import I18n from "../../i18n";
 import {
   List,
   ListItem,

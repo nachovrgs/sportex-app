@@ -24,6 +24,7 @@ import NotificationsIOS from "react-native-notifications";
 
 import { screens } from "../../screens";
 
+import I18n from "../../i18n";
 import {
   getTokenForUsage,
   getProfileIdForUsage,
@@ -347,7 +348,7 @@ export default class EventFeed extends Component {
   _refreshControl() {
     return (
       <RefreshControl
-        title="buscando nuevos partidos"
+        title={I18n.t("eventfeed_searching")}
         titleColor={colors.text_orange}
         refreshing={this.state.refreshing}
         onRefresh={() => this._refreshListView()}
@@ -366,7 +367,7 @@ export default class EventFeed extends Component {
               style={styles.noEventsImage}
               source={require("../../assets/images/none.png")}
             />
-            <Text style={styles.noEventsText}>Refrescar</Text>
+            <Text style={styles.noEventsText}>{I18n.t("general_refresh")}</Text>
           </TouchableOpacity>
         </View>
       </Root>

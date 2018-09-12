@@ -22,6 +22,7 @@ import {
   Body
 } from "native-base";
 
+import I18n from "../../i18n";
 import { Button } from "react-native-elements";
 import { CurrentEventCard, ExpandedCurrentEventCard } from "../../components";
 import { screens } from "../../screens";
@@ -255,7 +256,7 @@ class EventContainer extends Component {
           {this.state.expanded && (
             <View style={styles.buttonHolder}>
               <Button
-                title="Unirse"
+                title={I18n.t("general_join")}
                 onPress={this.joinAction}
                 disabled={!this.canJoin()}
                 loading={this.state.isLoading}
