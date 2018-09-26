@@ -442,6 +442,22 @@ export default class CreateEvent extends Component {
     return d;
     //and that's how you are ready to go, because this issue isn't fixed yet (checked on 28-Dec-2017)
   };
+  addLocationAction() {
+    this.props.navigator.showModal({
+      screen: screens.addLocation.id,
+      title: screens.addLocation.title,
+      animated: true,
+      animationType: "fade",
+      backButtonHidden: screens.addLocation.backButtonHidden,
+      passProps: {
+        token: this.state.token,
+        callback: () => this.addLocationCallback()
+      }
+    });
+  }
+  addLocationCallback = async () => {
+    await this.loadLocations();
+  };
 
   close() {
     this.props.navigator.dismissModal({
@@ -570,23 +586,34 @@ export default class CreateEvent extends Component {
               </View>
               <View style={styles.inputHolder}>
                 <Text style={styles.label}>{I18n.t("create_event_where")}</Text>
-                <View style={styles.input}>
-                  <View style={styles.iconHolder}>
-                    <Icon active name="pin" style={styles.icon} />
+                <View style={styles.addLocationHolder}>
+                  <View style={styles.inputLocation}>
+                    <View style={styles.iconHolder}>
+                      <Icon active name="pin" style={styles.icon} />
+                    </View>
+                    <View style={styles.content}>
+                      <Picker
+                        mode="dropdown"
+                        note={false}
+                        style={{ width: 350 }}
+                        placeholderStyle={{ color: "#bfc6ea" }}
+                        placeholderIconColor="#007aff"
+                        selectedValue={this.state.selectedLocation}
+                        onValueChange={this.onValueChangeLocations.bind(this)}
+                      >
+                        {this._renderLocationOptionItem(locations)}
+                      </Picker>
+                    </View>
                   </View>
-                  <View style={styles.content}>
-                    <Picker
-                      mode="dropdown"
-                      note={false}
-                      style={{ width: 350 }}
-                      placeholderStyle={{ color: "#bfc6ea" }}
-                      placeholderIconColor="#007aff"
-                      selectedValue={this.state.selectedLocation}
-                      onValueChange={this.onValueChangeLocations.bind(this)}
-                    >
-                      {this._renderLocationOptionItem(locations)}
-                    </Picker>
-                  </View>
+                  <TouchableOpacity
+                    style={styles.addLocationButton}
+                    onPress={() => this.addLocationAction()}
+                  >
+                    <Image
+                      style={styles.closeImage}
+                      source={require("../../assets/images/add.png")}
+                    />
+                  </TouchableOpacity>
                 </View>
               </View>
               <View style={styles.inputHolder}>

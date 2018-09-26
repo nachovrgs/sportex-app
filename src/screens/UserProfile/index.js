@@ -1,6 +1,12 @@
 //import libraries
 import React, { Component } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator
+} from "react-native";
 import RNFS from "react-native-fs";
 import RNFetchBlob from "rn-fetch-blob";
 import { screens } from "../../screens";
@@ -15,6 +21,7 @@ import {
   resetAndLogout
 } from "../../helpers/storage";
 import { API_URI } from "../../constants";
+import I18n from "../../i18n";
 import styles from "./styles";
 import { colors } from "../../styles";
 
@@ -380,7 +387,11 @@ export default class UserProfile extends Component {
         </View>
       );
     } else {
-      return null;
+      return (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color={colors.background} animating />
+        </View>
+      );
     }
   }
 }

@@ -5,6 +5,7 @@ export default {
   general_join: "Join",
   general_create: "Create",
   general_no_internet: "You have no internet conection.",
+  general_loading: "Loading",
 
   form_username: "Username",
   form_password: "Password",
@@ -17,6 +18,8 @@ export default {
   login_register: "Register",
   login_action: "Login",
 
+  add_location_title: "Add Location",
+  add_location_name: "Name the location",
   eventfeed_title: "Explore",
   eventfeed_searching: "searching new events",
 

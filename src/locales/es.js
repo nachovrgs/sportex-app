@@ -5,6 +5,7 @@ export default {
   general_join: "Unirse",
   general_create: "Crear",
   general_no_internet: "No tienes conexion a internet.",
+  general_loading: "Cargando",
 
   form_username: "Usuario",
   form_password: "Contraseña",
@@ -17,8 +18,10 @@ export default {
   login_register: "Registrate",
   login_action: "Ingresar",
 
-  eventfeed_title: "Explorar",
+  add_location_title: "Agregar una Ubicacion",
+  add_location_name: "Nombra la ubicacion",
 
+  eventfeed_title: "Explorar",
   eventfeed_searching: "buscando nuevos partidos",
 
   create_event_title: "Crear Evento",

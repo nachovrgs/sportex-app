@@ -81,6 +81,9 @@ export default class EventScreen extends Component {
   onNavigatorEvent(event) {
     if (event.type == "NavBarButtonPress") {
       if (event.id == "delete") {
+        this.setState({
+          isLoading: true
+        });
         fetch(`${API_URI}/event/${this.state.item.id}`, {
           method: "DELETE",
           headers: {
@@ -90,6 +93,9 @@ export default class EventScreen extends Component {
           }
         })
           .then(response => {
+            this.setState({
+              isLoading: false
+            });
             if (response.ok) {
               //Event deleted, going to feed
               this.props.navigator.dismissAllModals({
@@ -97,7 +103,6 @@ export default class EventScreen extends Component {
               });
             } else {
               this.setState({
-                isLoading: false,
                 isError: true,
                 error: "Network response was not ok.",
                 token: ""
@@ -128,10 +133,16 @@ export default class EventScreen extends Component {
   }
   //Helpers
   async loadStorageItems() {
+    this.setState({
+      isLoading: true
+    });
     this.state.token = await getTokenForUsage();
     this.state.profileId = await getProfileIdForUsage();
     this.loadEvent();
     await this.loadLocations();
+    this.setState({
+      isLoading: false
+    });
   }
 
   //API
@@ -149,7 +160,6 @@ export default class EventScreen extends Component {
           return response.json();
         } else {
           this.setState({
-            isLoading: false,
             isError: true,
             error: "Network response was not ok.",
             token: ""
@@ -160,7 +170,6 @@ export default class EventScreen extends Component {
       .then(jsonResponse => {
         this.setState({
           item: jsonResponse,
-          isLoading: false,
           selectedLocation: jsonResponse.locationID,
           error: "",
           isOwner: jsonResponse.standardProfileID == this.state.profileId
@@ -191,7 +200,6 @@ export default class EventScreen extends Component {
           return response.json();
         } else {
           this.setState({
-            isLoading: false,
             isError: true,
             error: "Network response was not ok.",
             token: ""
@@ -202,7 +210,6 @@ export default class EventScreen extends Component {
       .then(jsonResponse => {
         this.setState({
           locations: jsonResponse,
-          isLoading: false,
           error: ""
         });
       })
@@ -777,7 +784,17 @@ export default class EventScreen extends Component {
         </Root>
       );
     } else {
-      return null;
+      return (
+        <Root>
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator
+              size="large"
+              color={colors.background}
+              animating
+            />
+          </View>
+        </Root>
+      );
     }
   }
 }

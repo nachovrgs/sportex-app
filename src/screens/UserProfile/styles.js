@@ -21,6 +21,12 @@ export default StyleSheet.create({
   imageContainer: {
     flex: 3
   },
+  loaderContainer: {
+    flex: 1,
+    backgroundColor: "rgba(255,255,255,0.1)",
+    justifyContent: "center",
+    alignItems: "center"
+  },
   avatar: {
     paddingVertical: 30,
     width: 90,

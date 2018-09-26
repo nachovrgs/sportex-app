@@ -23,6 +23,7 @@ import AddMembersConfirmModal from "./AddMembersConfirmModal";
 import RateEventModal from "./RateEventModal";
 import RateIndividualModal from "./RateIndividualModal";
 import Settings from "./Settings";
+import AddLocationModal from "./AddLocationModal";
 
 // Add ALL screens here for easy use all over project
 export const screens = {
@@ -135,6 +136,11 @@ export const screens = {
     id: "sportex.Settings",
     title: "Configurcion",
     backButtonHidden: true
+  },
+  addLocation: {
+    id: "sportex.AddLocationModal",
+    title: I18n.t("add_location_title"),
+    backButtonHidden: false
   }
 };
 
@@ -189,4 +195,5 @@ export function registerScreens() {
     () => RateIndividualModal
   );
   Navigation.registerComponent(screens.settings.id, () => Settings);
+  Navigation.registerComponent(screens.addLocation.id, () => AddLocationModal);
 }

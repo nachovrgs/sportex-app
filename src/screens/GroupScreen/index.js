@@ -280,121 +280,127 @@ export default class GroupScreen extends Component {
     const { group } = this.state;
     if (JSON.stringify(group) != JSON.stringify({})) {
       let members = group.listMembers;
-      return (
+      return this.state.isLoading ? (
         <View style={styles.container}>
-          {this.state.isLoading && (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator
-                style={styles.loading}
-                size="large"
-                color={colors.black}
-                animating={this.state.isLoading}
-                hidesWhenStopped
-              />
-            </View>
-          )}
-          {!this.state.isLoading && (
-            <View style={styles.container}>
-              <View style={styles.head}>
-                <View style={styles.imageContainer}>
-                  <PhotoUpload
-                    onPhotoSelect={avatar => {
-                      if (avatar) {
-                        this.uploadImage(avatar);
-                      }
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator
+              size="large"
+              color={colors.background}
+              animating
+            />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <View style={styles.container}>
+            <View style={styles.head}>
+              <View style={styles.imageContainer}>
+                <PhotoUpload
+                  onPhotoSelect={avatar => {
+                    if (avatar) {
+                      this.uploadImage(avatar);
+                    }
+                  }}
+                >
+                  <Image
+                    style={styles.avatar}
+                    resizeMode="cover"
+                    source={{
+                      uri:
+                        group.picturePath != null && group.picturePath != ""
+                          ? group.picturePath
+                          : "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
                     }}
+                  />
+                </PhotoUpload>
+              </View>
+              <View style={styles.closeHolder}>
+                <TouchableOpacity onPress={() => this.close()}>
+                  <Image
+                    style={styles.closeImage}
+                    source={require("../../assets/images/exit.png")}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>{group.groupName}</Text>
+              </View>
+            </View>
+            <View style={styles.body}>
+              {this.state.group.creatorProfile.id == this.state.profileId && (
+                <View style={styles.addPlayersHolder}>
+                  <TouchableOpacity
+                    style={styles.addPlayers}
+                    onPress={() => this.addPlayersAction()}
                   >
-                    <Image
-                      style={styles.avatar}
-                      resizeMode="cover"
-                      source={{
-                        uri:
-                          group.picturePath != null && group.picturePath != ""
-                            ? group.picturePath
-                            : "https://www.sparklabs.com/forum/styles/comboot/theme/images/default_avatar.jpg"
-                      }}
-                    />
-                  </PhotoUpload>
-                </View>
-                <View style={styles.closeHolder}>
-                  <TouchableOpacity onPress={() => this.close()}>
-                    <Image
-                      style={styles.closeImage}
-                      source={require("../../assets/images/exit.png")}
-                    />
+                    <View style={styles.addPlayersImageHolder}>
+                      <Image
+                        style={styles.addPlayersImage}
+                        source={require("../../assets/images/add.png")}
+                      />
+                    </View>
+                    <View style={styles.addPlayersTextHolder}>
+                      <Text style={styles.addPlayersText}>
+                        Agregar usuarios
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 </View>
-                <View style={styles.titleContainer}>
-                  <Text style={styles.title}>{group.groupName}</Text>
+              )}
+              <View style={styles.membersContainer}>
+                <View style={styles.membersHeader}>
+                  <Text style={styles.membersTitle}>Miembros</Text>
+                  <Text style={styles.membersTotal}>
+                    {members.length} Jugadores
+                  </Text>
+                </View>
+                <View style={styles.memberList}>
+                  <UserList
+                    users={members}
+                    callback={memberId => this.removeMember(memberId)}
+                    creatorId={this.state.group.creatorProfile.id}
+                    isOwner={
+                      this.state.group.creatorProfile.id == this.state.profileId
+                    }
+                  />
                 </View>
               </View>
-              <View style={styles.body}>
-                {this.state.group.creatorProfile.id == this.state.profileId && (
-                  <View style={styles.addPlayersHolder}>
-                    <TouchableOpacity
-                      style={styles.addPlayers}
-                      onPress={() => this.addPlayersAction()}
-                    >
-                      <View style={styles.addPlayersImageHolder}>
-                        <Image
-                          style={styles.addPlayersImage}
-                          source={require("../../assets/images/add.png")}
-                        />
-                      </View>
-                      <View style={styles.addPlayersTextHolder}>
-                        <Text style={styles.addPlayersText}>
-                          Agregar usuarios
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                )}
-                <View style={styles.membersContainer}>
-                  <View style={styles.membersHeader}>
-                    <Text style={styles.membersTitle}>Miembros</Text>
-                    <Text style={styles.membersTotal}>
-                      {members.length} Jugadores
-                    </Text>
-                  </View>
-                  <View style={styles.memberList}>
-                    <UserList
-                      users={members}
-                      callback={memberId => this.removeMember(memberId)}
-                      creatorId={this.state.group.creatorProfile.id}
-                      isOwner={
-                        this.state.group.creatorProfile.id ==
-                        this.state.profileId
-                      }
-                    />
-                  </View>
+              <View style={styles.buttonHolder}>
+                <View style={styles.leaveButton}>
+                  <TouchableOpacity onPress={() => this.leaveGroup()}>
+                    <Text style={styles.leaveText}>Salir</Text>
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.buttonHolder}>
-                  <View style={styles.leaveButton}>
-                    <TouchableOpacity onPress={() => this.leaveGroup()}>
-                      <Text style={styles.leaveText}>Salir</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.createButton}>
-                    <Button
-                      title="Crear Partido"
-                      onPress={this.createMatch}
-                      loading={this.state.isLoading}
-                      loadingProps={{
-                        size: "small",
-                        color: "rgba(111, 202, 186, 1)"
-                      }}
-                      titleStyle={{ fontWeight: "200", fontSize: sizes.medium }}
-                      buttonStyle={styles.button}
-                    />
-                  </View>
+                <View style={styles.createButton}>
+                  <Button
+                    title="Crear Partido"
+                    onPress={this.createMatch}
+                    loading={this.state.isLoading}
+                    loadingProps={{
+                      size: "small",
+                      color: "rgba(111, 202, 186, 1)"
+                    }}
+                    titleStyle={{ fontWeight: "200", fontSize: sizes.medium }}
+                    buttonStyle={styles.button}
+                  />
                 </View>
               </View>
             </View>
-          )}
+          </View>
         </View>
       );
     } else {
-      return null;
+      return (
+        <View style={styles.container}>
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator
+              size="large"
+              color={colors.background}
+              animating
+            />
+          </View>
+        </View>
+      );
     }
   }
 }

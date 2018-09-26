@@ -35,6 +35,26 @@ export default StyleSheet.create({
     flexDirection: "row",
     flex: 1
   },
+  inputLocation: {
+    height: 50,
+    borderWidth: 0.5,
+    marginLeft: 17,
+    borderColor: colors.text_grey,
+    elevation: 1,
+    flexDirection: "row",
+    flex: 6
+  },
+  addLocationHolder: {
+    flexDirection: "row",
+    flex: 1,
+    marginTop: 10
+  },
+  addLocationButton: {
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1
+  },
   iconHolder: {
     flex: 1,
     padding: 10
